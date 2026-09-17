@@ -1,0 +1,4 @@
+node_modules/
+coverage/
+tests/__screenshots__/
+.vitest/
