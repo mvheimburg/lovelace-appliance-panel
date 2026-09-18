@@ -1,5 +1,6 @@
 import { afterEach, expect, test } from "vitest";
 import "../src/appliance-panel-card";
+import { formattingLocale } from "../src/localize";
 import { makeHass, settle } from "./ui-fixtures";
 afterEach(() => document.body.replaceChildren());
 test("Bokmål renders controls and confirmation while preserving raw service values", async () => {
@@ -227,4 +228,44 @@ test("HA formatted readings retain one unit and care uses raw state overrides", 
     card.shadowRoot.querySelector(`[data-reading="${temperature}"] strong`)
       .textContent,
   ).toBe("93 °C");
+});
+
+test("last-reported timestamp preserves regional English formatting", async () => {
+  const env = makeHass();
+  const reported = new Date(2026, 8, 17, 17, 30);
+  for (const state of Object.values(env.hass.states)) {
+    state.last_updated = reported.toISOString();
+    state.last_changed = reported.toISOString();
+  }
+  env.hass.states["sensor.oven_sensor_operation_state"].state = "unavailable";
+  const card = document.createElement("oven-card") as any;
+  card.setConfig({ type: "custom:oven-card", device: "oven" });
+  card.hass = { ...env.hass, language: "en_GB" };
+  document.body.append(card);
+  await settle();
+  expect(card.shadowRoot.textContent).toContain(
+    `Last reported: ${reported.toLocaleString("en-GB")}`,
+  );
+});
+
+test.each([
+  ["en_GB", "en-GB"],
+  ["EN_us", "en-US"],
+  ["NB_no", "nb-NO"],
+  ["no-NO", "nb-NO"],
+  ["nn_NO", "nb-NO"],
+  ["nb", "nb"],
+  ["fr-FR", "en"],
+  ["nb-???", "nb"],
+  ["en-???", "en"],
+])("formatting locale safely canonicalizes %s", (language, expected) => {
+  expect(formattingLocale({ language })).toBe(expected);
+  expect(formattingLocale({ locale: { language } })).toBe(expected);
+});
+
+test("formatting retains HA language precedence and an English default", () => {
+  expect(
+    formattingLocale({ language: "en-GB", locale: { language: "nb-NO" } }),
+  ).toBe("en-GB");
+  expect(formattingLocale(undefined)).toBe("en");
 });

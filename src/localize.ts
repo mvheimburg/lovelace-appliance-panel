@@ -316,6 +316,26 @@ export function language(hass: LanguageSource): "en" | "nb" {
     .split("-")[0];
   return ["nb", "no", "nn"].includes(code) ? "nb" : "en";
 }
+/** Formatting keeps regional preferences independently of the text dictionary. */
+export function formattingLocale(hass: LanguageSource): string {
+  const requested = (hass?.language ?? hass?.locale?.language ?? "en")
+    .toLowerCase()
+    .replace(/_/g, "-");
+  const [base, ...subtags] = requested.split("-");
+  if (!["en", "nb", "no", "nn"].includes(base)) return "en";
+  const candidate = [
+    base === "no" || base === "nn" ? "nb" : base,
+    ...subtags,
+  ].join("-");
+  try {
+    const canonical = Intl.getCanonicalLocales(candidate)[0];
+    if (Intl.DateTimeFormat.supportedLocalesOf(canonical).length)
+      return canonical;
+  } catch {
+    // Malformed HA language values must not prevent the card from rendering.
+  }
+  return language(hass);
+}
 export function localize(
   hass: LanguageSource,
   key: TranslationKey,

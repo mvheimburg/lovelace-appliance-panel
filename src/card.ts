@@ -3,6 +3,7 @@ import {
   message,
   stateLabel,
   language,
+  formattingLocale,
   type TranslationKey,
 } from "./localize";
 import { LitElement, html, nothing, type TemplateResult } from "lit";
@@ -659,7 +660,7 @@ export class ApplianceCard extends LitElement {
           : nothing
       }
       ${device.disabledCount ? html`<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : nothing}
-      ${status.online !== "online" && status.lastReported ? html`<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(language(this.ha)) })}</p>` : nothing}
+      ${status.online !== "online" && status.lastReported ? html`<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(formattingLocale(this.ha)) })}</p>` : nothing}
     `;
   }
   private heading(device: Appliance) {

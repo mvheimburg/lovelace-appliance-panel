@@ -263,6 +263,28 @@ function language(hass) {
         .split("-")[0];
     return ["nb", "no", "nn"].includes(code) ? "nb" : "en";
 }
+/** Formatting keeps regional preferences independently of the text dictionary. */
+function formattingLocale(hass) {
+    const requested = (hass?.language ?? hass?.locale?.language ?? "en")
+        .toLowerCase()
+        .replace(/_/g, "-");
+    const [base, ...subtags] = requested.split("-");
+    if (!["en", "nb", "no", "nn"].includes(base))
+        return "en";
+    const candidate = [
+        base === "no" || base === "nn" ? "nb" : base,
+        ...subtags,
+    ].join("-");
+    try {
+        const canonical = Intl.getCanonicalLocales(candidate)[0];
+        if (Intl.DateTimeFormat.supportedLocalesOf(canonical).length)
+            return canonical;
+    }
+    catch {
+        // Malformed HA language values must not prevent the card from rendering.
+    }
+    return language(hass);
+}
 function localize(hass, key, values = {}) {
     const text = language(hass) === "nb" ? nb[key] : key;
     return text.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
@@ -2216,7 +2238,7 @@ class ApplianceCard extends i {
             </details>`
             : A}
       ${device.disabledCount ? b `<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : A}
-      ${status.online !== "online" && status.lastReported ? b `<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(language(this.ha)) })}</p>` : A}
+      ${status.online !== "online" && status.lastReported ? b `<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(formattingLocale(this.ha)) })}</p>` : A}
     `;
     }
     heading(device) {
