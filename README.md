@@ -1,3 +1,5 @@
+<img src="docs/icon.png" alt="" width="96" align="right">
+
 # Appliance Panel Cards
 
 Dedicated Home Assistant dashboard cards for **Home Connect Local**. One download
