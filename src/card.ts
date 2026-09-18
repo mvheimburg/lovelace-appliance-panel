@@ -1,3 +1,10 @@
+import {
+  localize,
+  message,
+  stateLabel,
+  language,
+  type TranslationKey,
+} from "./localize";
 import { LitElement, html, nothing, type TemplateResult } from "lit";
 import { validateConfig, CARD_KINDS } from "./config";
 import { semanticKey } from "./roles";
@@ -16,7 +23,7 @@ import type {
   ApplianceStatus,
   Role,
 } from "./types";
-const labels: Record<string, string> = {
+const labels: Record<string, TranslationKey> = {
   off: "Off",
   ready: "Ready",
   delayed: "Delayed start",
@@ -29,7 +36,7 @@ const labels: Record<string, string> = {
   offline: "Offline",
   unknown: "Status unknown",
 };
-const kindNames: Record<ApplianceKind, string> = {
+const kindNames: Record<ApplianceKind, TranslationKey> = {
   oven: "Oven",
   dishwasher: "Dishwasher",
   coffee: "Coffee machine",
@@ -47,15 +54,13 @@ const icons: Record<ApplianceKind, string> = {
   dryer: "mdi:tumble-dryer",
   unknown: "mdi:home-outline",
 };
-export function duration(seconds?: number): string {
-  if (seconds === undefined || !Number.isFinite(seconds)) return "Time unknown";
+export function duration(seconds?: number, hass?: HomeAssistant): string {
+  if (seconds === undefined || !Number.isFinite(seconds))
+    return localize(hass, "Time unknown");
   const mins = Math.ceil(Math.max(0, seconds) / 60);
   return mins >= 60
-    ? `${Math.floor(mins / 60)} h${mins % 60 ? ` ${mins % 60} min` : ""}`
+    ? `${Math.floor(mins / 60)} ${language(hass) === "nb" ? "t" : "h"}${mins % 60 ? ` ${mins % 60} min` : ""}`
     : `${mins} min`;
-}
-function titleCase(value: string) {
-  return value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 function moduleOf(entity: ApplianceEntity): "microwave" | "steam" | undefined {
   const key =
@@ -74,6 +79,12 @@ function moduleOf(entity: ApplianceEntity): "microwave" | "steam" | undefined {
 }
 export class ApplianceCard extends LitElement {
   static styles = styles;
+  private t(key: TranslationKey, values: Record<string, string | number> = {}) {
+    return localize(this.ha, key, values);
+  }
+  private m(text: string) {
+    return message(this.ha, text);
+  }
   private config?: ApplianceConfig;
   private ha?: HomeAssistant;
   private registry: RegistryWatchValue = {};
@@ -86,7 +97,6 @@ export class ApplianceCard extends LitElement {
     action: ApplianceAction;
     epoch: number;
     signature: string;
-    label: string;
     reason?: string;
   };
   private busy = false;
@@ -107,7 +117,7 @@ export class ApplianceCard extends LitElement {
     return this.ha!;
   }
   setConfig(value: Record<string, unknown>) {
-    const next = validateConfig(value);
+    const next = validateConfig(value, this.ha);
     if (
       this.config &&
       (this.config.device !== next.device ||
@@ -192,23 +202,68 @@ export class ApplianceCard extends LitElement {
     return this.kind(device) === "cooling" &&
       status.online === "online" &&
       status.operation === "unknown"
-      ? "Cooling"
-      : labels[status.operation];
+      ? this.t("Cooling")
+      : this.t(labels[status.operation]);
   }
   private reading(entity: ApplianceEntity) {
     const state = this.ha?.states[entity.entityId];
-    if (!state) return "Not reported";
-    if (state.state === "unavailable") return "Unavailable";
-    if (state.state === "unknown") return "Unknown";
-    const value =
-      state.attributes.device_class === "door"
-        ? state.state === "on"
-          ? "Open"
-          : state.state === "off"
-            ? "Closed"
-            : titleCase(state.state)
-        : titleCase(state.state);
+    if (!state) return this.t("Not reported");
+    if (state.state === "unavailable") return this.t("Unavailable");
+    if (state.state === "unknown") return this.t("Unknown");
+    const formatted = this.ha?.formatEntityState?.(state);
+    if (formatted && formatted !== state.state) return formatted;
+    const value = stateLabel(
+      this.ha,
+      state,
+      state.state,
+      ["selected_program", "active_program"].includes(entity.role),
+    );
     return `${value}${state.attributes.unit_of_measurement ? ` ${state.attributes.unit_of_measurement}` : ""}`;
+  }
+  private entityName(entity: ApplianceEntity): string {
+    const state = this.ha?.states[entity.entityId];
+    // Integration and user names are not card-owned copy.
+    if (
+      entity.registry.name ||
+      entity.registry.original_name ||
+      state?.attributes.friendly_name
+    )
+      return entity.name;
+    return this.m(entity.name);
+  }
+  private attentionMessage(
+    device: Appliance,
+    item: ApplianceStatus["attention"][number],
+  ): string {
+    const entity = device.entities.find((e) => e.entityId === item.entityId);
+    if (!entity) return this.m(item.message);
+    const value = item.message.slice(entity.name.length + 2);
+    const state = this.ha?.states[entity.entityId];
+    return `${this.entityName(entity)}: ${value === "not reported" ? this.t("Not reported") : value === "due" ? this.t("Due") : value === "unknown" ? this.t("Unknown") : state ? stateLabel(this.ha, state) : this.m(value)}`;
+  }
+  private programLabel(device: Appliance, value: string): string {
+    const entity =
+      device.entities.find((e) => e.role === "active_program") ??
+      device.entities.find((e) => e.role === "selected_program");
+    const state = entity && this.ha?.states[entity.entityId];
+    return state ? stateLabel(this.ha, state, value, true) : value;
+  }
+  private phaseLabel(device: Appliance, value: string): string {
+    const entity = device.entities.find((e) => e.role === "phase");
+    const state = entity && this.ha?.states[entity.entityId];
+    return state ? stateLabel(this.ha, state, value) : value;
+  }
+  private confirmationLabel(): string {
+    const pending = this.pending;
+    if (!pending) return "";
+    const entity = this.selection()
+      .devices.find((d) => d.id === pending.deviceId)
+      ?.entities.find((e) => e.entityId === pending.action.entityId);
+    const name = entity ? this.entityName(entity) : this.t("Action");
+    if (pending.action.value === undefined) return name;
+    const state = this.ha?.states[pending.action.entityId];
+    const value = String(pending.action.value);
+    return `${name}: ${state ? stateLabel(this.ha, state, value, entity?.role === "selected_program" || entity?.role === "active_program") : value}`;
   }
   private signature(device: Appliance, action: ApplianceAction) {
     return JSON.stringify([
@@ -248,9 +303,6 @@ export class ApplianceCard extends LitElement {
         action,
         epoch: this.epoch,
         signature: this.signature(device, action),
-        label:
-          device.entities.find((e) => e.entityId === action.entityId)?.name ??
-          "Action",
       };
       this.requestUpdate();
       await this.updateComplete;
@@ -352,15 +404,19 @@ export class ApplianceCard extends LitElement {
       value: sample,
     });
     const disabled = this.busy || unavailable || !policy.allowed;
-    const reason = unavailable ? "Unavailable" : policy.reason;
+    const reason = unavailable
+      ? this.t("Unavailable")
+      : policy.reason
+        ? this.m(policy.reason)
+        : undefined;
     const act = (value?: string | number | boolean) =>
       void this.requestAction(device, { entityId: entity.entityId, value });
     if (domain === "select" && Array.isArray(state?.attributes.options))
       return html`<label class="control"
-        ><span>${entity.name}</span
+        ><span>${this.entityName(entity)}</span
         ><select
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           .value=${state.state}
           ?disabled=${disabled}
           title=${reason ?? ""}
@@ -369,16 +425,16 @@ export class ApplianceCard extends LitElement {
             (e.target as HTMLSelectElement).value = state.state;
           }}
         >
-          ${!state.attributes.options.includes(state.state) ? html`<option value=${state.state}>${this.reading(entity)}</option>` : nothing}${state.attributes.options.map((option: string) => html`<option value=${option} ?selected=${option === state.state}>${titleCase(option)}</option>`)}</select
+          ${!state.attributes.options.includes(state.state) ? html`<option value=${state.state}>${this.reading(entity)}</option>` : nothing}${state.attributes.options.map((option: string) => html`<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, ["selected_program", "active_program"].includes(entity.role))}</option>`)}</select
         >${!policy.allowed && reason ? html`<small class="muted">${reason}</small>` : nothing}</label
       >`;
     if (domain === "number")
       return html`<label class="control"
         ><span
-          >${entity.name}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
+          >${this.entityName(entity)}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
         ><input
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           type="number"
           .value=${!unavailable ? state.state : ""}
           min=${state?.attributes.min ?? ""}
@@ -398,10 +454,10 @@ export class ApplianceCard extends LitElement {
       >`;
     if (domain === "switch")
       return html`<label class="control switch"
-        ><span>${entity.name}</span
+        ><span>${this.entityName(entity)}</span
         ><input
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           type="checkbox"
           .checked=${state?.state === "on"}
           ?disabled=${disabled}
@@ -419,10 +475,11 @@ export class ApplianceCard extends LitElement {
         title=${reason ?? ""}
         @click=${() => act()}
       >
-        ${entity.name}
+        ${this.entityName(entity)}
       </button>`;
     return html`<div class="reading" data-reading=${entity.entityId}>
-      <span>${entity.name}</span><strong>${this.reading(entity)}</strong>
+      <span>${this.entityName(entity)}</span
+      ><strong>${this.reading(entity)}</strong>
     </div>`;
   }
   private group(
@@ -463,10 +520,10 @@ export class ApplianceCard extends LitElement {
             data-role=${entity.role}
             class=${entity.role === "abort" ? "danger" : entity.role === "start" ? "primary" : ""}
             ?disabled=${this.busy || !policy.allowed}
-            title=${policy.reason ?? ""}
+            title=${this.m(policy.reason ?? "")}
             @click=${() => this.requestAction(device, { entityId: entity.entityId })}
           >
-            ${entity.role === "abort" ? "Stop" : titleCase(entity.role)}
+            ${this.t(({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" } as Partial<Record<Role, TranslationKey>>)[entity.role] ?? "Action")}
           </button>`;
         })}
       </div>
@@ -475,22 +532,22 @@ export class ApplianceCard extends LitElement {
           entityId: entity.entityId,
         });
         return !policy.allowed && policy.reason
-          ? html`<p class="permission">${policy.reason}</p>`
+          ? html`<p class="permission">${this.m(policy.reason)}</p>`
           : nothing;
       })}`;
   }
   private attention(device: Appliance, status: ApplianceStatus) {
     return status.attention.length
       ? html`<section>
-          <h3>Needs attention</h3>
+          <h3>${this.t("Needs attention")}</h3>
           <ul class="attention">
-            ${status.attention.map((item) => html`<li class=${item.severity}>${item.message}</li>`)}
+            ${status.attention.map((item) => html`<li class=${item.severity}>${this.attentionMessage(device, item)}</li>`)}
           </ul>
         </section>`
       : nothing;
   }
   private feedback() {
-    return html`${this.error ? html`<p class="feedback" role="alert">${this.error}</p>` : nothing}${this.notice ? html`<p class="note" role="status">${this.notice}</p>` : nothing}`;
+    return html`${this.error ? html`<p class="feedback" role="alert">${this.m(this.error)}</p>` : nothing}${this.notice ? html`<p class="note" role="status">${this.m(this.notice)}</p>` : nothing}`;
   }
   private deviceBody(device: Appliance) {
     const kind = this.kind(device);
@@ -514,14 +571,16 @@ export class ApplianceCard extends LitElement {
     );
     const picker = ["ready", "off", "finished"].includes(status.operation);
     return html`
-      ${status.operation === "error" || status.operation === "action_required" ? html`<p class="feedback" role="alert">${labels[status.operation]}</p>` : nothing}
+      ${status.operation === "error" || status.operation === "action_required" ? html`<p class="feedback" role="alert">${this.t(labels[status.operation])}</p>` : nothing}
       ${
         kind !== "cooling"
           ? html`${
               picker
                 ? this.group(
                     device,
-                    kind === "coffee" ? "Choose your drink" : "Programme",
+                    kind === "coffee"
+                      ? this.t("Choose your drink")
+                      : this.t("Programme"),
                     roles("selected_program"),
                     "programme",
                   )
@@ -529,28 +588,30 @@ export class ApplianceCard extends LitElement {
                     <div class="progress-head">
                       <div>
                         <strong
-                          >${status.operation === "delayed" ? duration(status.delaySeconds) : duration(status.remainingSeconds)}</strong
+                          >${status.operation === "delayed" ? duration(status.delaySeconds, this.ha) : duration(status.remainingSeconds, this.ha)}</strong
                         ><br /><span
-                          >${status.operation === "delayed" ? "Until start" : status.operation === "paused" ? "Paused · remaining" : "Remaining"}</span
+                          >${status.operation === "delayed" ? this.t("Until start") : status.operation === "paused" ? this.t("Paused · remaining") : this.t("Remaining")}</span
                         >
                       </div>
                       <span
-                        >${status.program ? titleCase(status.program) : labels[status.operation]}</span
+                        >${status.program ? this.programLabel(device, status.program) : this.t(labels[status.operation])}</span
                       >
                     </div>
-                    ${status.progress !== undefined ? html`<progress max="100" value=${status.progress} aria-label="Programme progress"></progress>` : nothing}${status.phase ? html`<div class="phase">${titleCase(status.phase)}</div>` : nothing}
+                    ${status.progress !== undefined ? html`<progress max="100" value=${status.progress} aria-label=${this.t("Programme progress")}></progress>` : nothing}${status.phase ? html`<div class="phase">${this.phaseLabel(device, status.phase)}</div>` : nothing}
                   </section>`
-            }${status.operation === "finished" && status.finishedAt ? html`<p class="note">Finished ${duration((Date.now() - Date.parse(status.finishedAt)) / 1000)} ago</p>` : nothing}${this.transport(device, status)}`
+            }${status.operation === "finished" && status.finishedAt ? html`<p class="note">${this.t("Finished {time} ago", { time: duration((Date.now() - Date.parse(status.finishedAt)) / 1000, this.ha) })}</p>` : nothing}${this.transport(device, status)}`
           : nothing
       }
       ${
         kind === "oven"
-          ? html`${this.group(device, "Oven", roles("target_temperature", "current_temperature", "duration"), "oven")}${(
+          ? html`${this.group(device, this.t("Oven"), roles("target_temperature", "current_temperature", "duration"), "oven")}${(
               ["microwave", "steam"] as const
             ).map((which) =>
               moduleEntries(which).length
                 ? html`<section data-module=${which}>
-                    <h3>${which === "microwave" ? "Microwave" : "Steam"}</h3>
+                    <h3>
+                      ${which === "microwave" ? this.t("Microwave") : this.t("Steam")}
+                    </h3>
                     <div class="controls">
                       ${moduleEntries(which).map((e) => this.control(device, e))}
                     </div>
@@ -559,16 +620,16 @@ export class ApplianceCard extends LitElement {
             )}`
           : nothing
       }
-      ${kind === "cooling" ? html`${this.group(device, "Temperature zones", roles("cooling_setpoint", "target_temperature", "current_temperature"), "cooling")}${this.group(device, "Doors", roles("door"))}${this.group(device, "Cooling modes", roles("super_mode", "vacation"), "cooling-modes")}` : nothing}
-      ${kind === "coffee" ? this.group(device, "Your coffee", options, "coffee") : kind === "dishwasher" ? this.group(device, "Wash options", options, "dishwasher") : kind !== "oven" && kind !== "cooling" ? this.group(device, "Programme options", options) : nothing}
-      ${kind !== "cooling" ? this.group(device, "Door & temperature", roles("door", ...(kind !== "oven" ? ["current_temperature" as Role] : []))) : nothing}
-      ${status.busy ? this.group(device, "Programme timing", roles("elapsed")) : nothing}
+      ${kind === "cooling" ? html`${this.group(device, this.t("Temperature zones"), roles("cooling_setpoint", "target_temperature", "current_temperature"), "cooling")}${this.group(device, this.t("Doors"), roles("door"))}${this.group(device, this.t("Cooling modes"), roles("super_mode", "vacation"), "cooling-modes")}` : nothing}
+      ${kind === "coffee" ? this.group(device, this.t("Your coffee"), options, "coffee") : kind === "dishwasher" ? this.group(device, this.t("Wash options"), options, "dishwasher") : kind !== "oven" && kind !== "cooling" ? this.group(device, this.t("Programme options"), options) : nothing}
+      ${kind !== "cooling" ? this.group(device, this.t("Door & temperature"), roles("door", ...(kind !== "oven" ? ["current_temperature" as Role] : []))) : nothing}
+      ${status.busy ? this.group(device, this.t("Programme timing"), roles("elapsed")) : nothing}
       ${this.attention(device, status)}
       ${
         roles("attention").filter((e) => !moduleCandidates.has(e.entityId))
           .length
           ? html`<details>
-              <summary>Consumables & care</summary>
+              <summary>${this.t("Consumables & care")}</summary>
               ${roles("attention")
                 .filter((e) => !moduleCandidates.has(e.entityId))
                 .map((e) => this.control(device, e))}
@@ -576,17 +637,17 @@ export class ApplianceCard extends LitElement {
           : nothing
       }
       <details>
-        <summary>Settings</summary>
+        <summary>${this.t("Settings")}</summary>
         <div class="controls">
           ${roles("power", "child_lock", "remote_control", "start_delay").map((e) => this.control(device, e))}${kind === "oven" || kind === "cooling" ? options.map((e) => this.control(device, e)) : nothing}${kind !== "oven" && kind !== "cooling" ? roles("target_temperature", "duration").map((e) => this.control(device, e)) : nothing}
         </div>
-        ${!roles("remote_start").length ? html`<p class="permission">Remote-start permission is not exposed. The appliance must permit remote operation.</p>` : roles("remote_start").map((e) => html`<div class="reading"><span>Remote start</span><strong>${this.reading(e)}</strong></div>`)}
+        ${!roles("remote_start").length ? html`<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : roles("remote_start").map((e) => html`<div class="reading"><span>${this.t("Remote start")}</span><strong>${this.reading(e)}</strong></div>`)}
       </details>
       ${
         roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length
           ? html`<details>
               <summary>
-                Other ·
+                ${this.t("Other")} ·
                 ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length}
               </summary>
               <div class="controls">
@@ -597,8 +658,8 @@ export class ApplianceCard extends LitElement {
             </details>`
           : nothing
       }
-      ${device.disabledCount ? html`<p class="note"><a href="/config/entities">${device.disabledCount} disabled ${device.disabledCount === 1 ? "entity" : "entities"}</a> · enable needed capabilities in Home Assistant.</p>` : nothing}
-      ${status.online !== "online" && status.lastReported ? html`<p class="note">Last reported: ${new Date(status.lastReported).toLocaleString(this.ha?.language)}</p>` : nothing}
+      ${device.disabledCount ? html`<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : nothing}
+      ${status.online !== "online" && status.lastReported ? html`<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(language(this.ha)) })}</p>` : nothing}
     `;
   }
   private heading(device: Appliance) {
@@ -606,7 +667,7 @@ export class ApplianceCard extends LitElement {
     return html`<header>
       <div class="icon"><ha-icon icon=${icons[kind]}></ha-icon></div>
       <div class="heading">
-        <div class="eyebrow">${kindNames[kind]}</div>
+        <div class="eyebrow">${this.t(kindNames[kind])}</div>
         <h2>
           ${!this.isOverview ? (this.config?.title ?? device.name) : device.name}
         </h2>
@@ -629,7 +690,7 @@ export class ApplianceCard extends LitElement {
       ><span class="heading"
         ><strong>${this.config?.title ?? device.name}</strong
         ><span class="status"
-          >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds)}` : ""}</span
+          >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds, this.ha)}` : ""}</span
         ></span
       ><span aria-hidden="true">›</span>
     </button>`;
@@ -658,12 +719,14 @@ export class ApplianceCard extends LitElement {
         </div>
         <div class="heading">
           <div class="eyebrow">Home Connect Local</div>
-          <h2>${this.config?.title ?? "Kitchen"}</h2>
+          <h2>${this.config?.title ?? this.t("Kitchen")}</h2>
         </div>
-        <span class="badge">${devices.length} appliances</span>
+        <span class="badge"
+          >${this.t("{count} appliances", { count: devices.length })}</span
+        >
       </header>
       <section>
-        <h3>In progress</h3>
+        <h3>${this.t("In progress")}</h3>
         ${
           busy.length
             ? busy.map(
@@ -678,20 +741,20 @@ export class ApplianceCard extends LitElement {
                     ><span class="heading"
                       ><strong>${device.name}</strong
                       ><small
-                        >${labels[status.operation]}${status.program ? ` · ${titleCase(status.program)}` : ""}</small
+                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</small
                       ></span
                     ><span class="end"
-                      >${status.operation === "delayed" ? `Starts in ${duration(status.delaySeconds)}` : duration(status.remainingSeconds)}</span
+                      >${status.operation === "delayed" ? this.t("Starts in {time}", { time: duration(status.delaySeconds, this.ha) }) : duration(status.remainingSeconds, this.ha)}</span
                     >
                   </button>`,
               )
             : html`<p class="quiet">
-                ${unobserved.length ? "No running programmes reported. Some appliance states are unavailable." : "Nothing is running."}
+                ${unobserved.length ? this.t("No running programmes reported. Some appliance states are unavailable.") : this.t("Nothing is running.")}
               </p>`
         }
       </section>
       <section>
-        <h3>Needs attention</h3>
+        <h3>${this.t("Needs attention")}</h3>
         ${
           alerts.length
             ? html`<ul class="attention">
@@ -704,19 +767,21 @@ export class ApplianceCard extends LitElement {
                       >
                         <span
                           ><strong>${device.name}</strong
-                          ><small>${item.message}</small></span
+                          ><small
+                            >${this.attentionMessage(device, item)}</small
+                          ></span
                         >
                       </button>
                     </li>`,
                 )}
               </ul>`
             : html`<p class="quiet">
-                ${unobserved.length ? "Some appliance states are unavailable." : "All clear."}
+                ${unobserved.length ? this.t("Some appliance states are unavailable.") : this.t("All clear.")}
               </p>`
         }${unobserved.filter((d) => !alerts.some((a) => a.device.id === d.id && a.item.severity === "unknown")).map((device) => html`<p class="note">${device.name}: ${this.statusLabel(device)}</p>`)}
       </section>
       <details>
-        <summary>All appliances</summary>
+        <summary>${this.t("All appliances")}</summary>
         ${devices.map(
           (device) =>
             html`<button class="row" @click=${() => this.openDetails(device)}>
@@ -727,7 +792,7 @@ export class ApplianceCard extends LitElement {
             </button>`,
         )}
       </details>
-      ${devices.some((d) => d.disabledCount) ? html`<p class="note" data-disabled-count><a href="/config/entities">${devices.reduce((sum, d) => sum + d.disabledCount, 0)} disabled entities</a> across these appliances.</p>` : nothing}`;
+      ${devices.some((d) => d.disabledCount) ? html`<p class="note" data-disabled-count><a href="/config/entities">${this.t("{count} disabled entities", { count: devices.reduce((sum, d) => sum + d.disabledCount, 0) })}</a> ${this.t("Across these appliances.")}</p>` : nothing}`;
   }
   render() {
     if (!this.config) return nothing;
@@ -737,14 +802,20 @@ export class ApplianceCard extends LitElement {
     return html`<ha-card
         >${
           this.registry.disconnected
-            ? html`<p role="status">Disconnected from Home Assistant.</p>`
+            ? html`<p role="status">
+                ${this.t("Disconnected from Home Assistant.")}
+              </p>`
             : this.registry.error
               ? html`<p class="feedback" role="alert">${this.registry.error}</p>
-                  <button @click=${this.retry}>Retry discovery</button>`
+                  <button @click=${this.retry}>
+                    ${this.t("Retry discovery")}
+                  </button>`
               : !this.registry.snapshot
-                ? html`<p class="quiet">Finding your appliances…</p>`
+                ? html`<p class="quiet">
+                    ${this.t("Finding your appliances…")}
+                  </p>`
                 : error
-                  ? html`<p class="feedback" role="alert">${error}</p>`
+                  ? html`<p class="feedback" role="alert">${this.m(error)}</p>`
                   : this.isOverview
                     ? this.overview(devices)
                     : individual
@@ -752,7 +823,7 @@ export class ApplianceCard extends LitElement {
                         ? html`${this.heading(individual)}${this.deviceBody(individual)}`
                         : this.compact(individual)
                       : html`<p class="empty">
-                          No matching Home Connect Local appliance.
+                          ${this.t("No matching Home Connect Local appliance.")}
                         </p>`
         }${this.feedback()}</ha-card
       >
@@ -774,10 +845,10 @@ export class ApplianceCard extends LitElement {
         }}
       >
         <div class="dialog-head">
-          <h2>${detail?.name ?? "Appliance"}</h2>
+          <h2>${detail?.name ?? this.t("Appliance")}</h2>
           <button
             class="icon-button"
-            aria-label="Close details"
+            aria-label=${this.t("Close details")}
             @click=${() => this.shadowRoot?.querySelector<HTMLDialogElement>("#details")?.close()}
           >
             ✕
@@ -786,19 +857,16 @@ export class ApplianceCard extends LitElement {
         ${detail ? this.deviceBody(detail) : nothing}${this.feedback()}
       </dialog>
       <dialog id="confirmation" @cancel=${this.cancelConfirm}>
-        <h2>Confirm appliance command</h2>
-        <p>
-          ${this.pending?.label}${this.pending?.action.value !== undefined ? `: ${titleCase(String(this.pending.action.value))}` : ""}
-        </p>
+        <h2>${this.t("Confirm appliance command")}</h2>
+        <p>${this.confirmationLabel()}</p>
         <p class="note">
-          This may start the appliance. Check that it is ready for remote
-          operation.
+          ${this.t("This may start the appliance. Check that it is ready for remote operation.")}
         </p>
-        ${this.pending?.reason ? html`<p class="note">${this.pending.reason}</p>` : nothing}
+        ${this.pending?.reason ? html`<p class="note">${this.m(this.pending.reason)}</p>` : nothing}
         <div class="dialog-actions">
-          <button @click=${this.cancelConfirm}>Cancel</button
+          <button @click=${this.cancelConfirm}>${this.t("Cancel")}</button
           ><button class="primary" data-confirm @click=${this.confirm}>
-            Confirm
+            ${this.t("Confirm")}
           </button>
         </div>
       </dialog>`;

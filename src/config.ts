@@ -1,4 +1,5 @@
-import type { ApplianceConfig } from "./types";
+import { message } from "./localize";
+import type { HomeAssistant, ApplianceConfig } from "./types";
 
 export const CARD_KINDS = {
   "oven-card": "oven",
@@ -8,41 +9,45 @@ export const CARD_KINDS = {
   "appliance-card": "unknown",
 } as const;
 
-export function validateConfig(raw: Record<string, unknown>): ApplianceConfig {
+export function validateConfig(
+  raw: Record<string, unknown>,
+  hass?: HomeAssistant,
+): ApplianceConfig {
+  const error = (text: string) => new Error(message(hass, text));
   if (!raw || typeof raw !== "object" || Array.isArray(raw))
-    throw new Error("Card configuration must be an object.");
+    throw error("Card configuration must be an object.");
   const kind =
     typeof raw.type === "string" ? raw.type.replace(/^custom:/, "") : "";
   if (
     !Object.prototype.hasOwnProperty.call(CARD_KINDS, kind) &&
     kind !== "kitchen-panel-card"
   )
-    throw new Error("Unsupported appliance card type.");
+    throw error("Unsupported appliance card type.");
   for (const field of ["device", "area", "title"]) {
     if (raw[field] !== undefined && typeof raw[field] !== "string")
-      throw new Error(`${field} must be a string.`);
+      throw error(`${field} must be a string.`);
   }
   if (
     kind !== "kitchen-panel-card" &&
     (typeof raw.device !== "string" || !raw.device.trim())
   )
-    throw new Error("Select a Home Connect Local device (ID or name).");
+    throw error("Select a Home Connect Local device (ID or name).");
   if (
     raw.devices !== undefined &&
     (!Array.isArray(raw.devices) ||
       raw.devices.some((value) => typeof value !== "string" || !value.trim()))
   )
-    throw new Error("devices must be an array of device IDs or names.");
+    throw error("devices must be an array of device IDs or names.");
   for (const field of ["expand", "confirm_start"]) {
     if (raw[field] !== undefined && typeof raw[field] !== "boolean")
-      throw new Error(`${field} must be true or false.`);
+      throw error(`${field} must be true or false.`);
   }
   if (
     raw.appearance !== undefined &&
     raw.appearance !== "default" &&
     raw.appearance !== "bubble"
   )
-    throw new Error("appearance must be default or bubble.");
+    throw error("appearance must be default or bubble.");
   const modules = raw.oven_modules ?? "auto";
   if (
     raw.oven_modules === null ||
@@ -50,7 +55,7 @@ export function validateConfig(raw: Record<string, unknown>): ApplianceConfig {
       (!Array.isArray(modules) ||
         modules.some((value) => value !== "microwave" && value !== "steam")))
   )
-    throw new Error(
+    throw error(
       "oven_modules must be auto or an array containing microwave and/or steam.",
     );
   return {

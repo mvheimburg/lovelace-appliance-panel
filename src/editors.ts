@@ -1,3 +1,4 @@
+import { localize, type TranslationKey } from "./localize";
 import { LitElement, css, html, nothing } from "lit";
 import { CARD_KINDS } from "./config";
 import { discoverAppliances } from "./model";
@@ -6,6 +7,9 @@ import type { HomeAssistant, RegistryWatchValue } from "./types";
 
 /** Editors keep the original YAML fields intact and change only the chosen field. */
 class ApplianceEditor extends LitElement {
+  private t(key: TranslationKey, values: Record<string, string | number> = {}) {
+    return localize(this.currentHass, key, values);
+  }
   private raw: Record<string, unknown> = {};
   private currentHass?: HomeAssistant;
   private registry: RegistryWatchValue = {};
@@ -182,12 +186,15 @@ class ApplianceEditor extends LitElement {
       options: { value: string; label: string }[],
     ) =>
       value && !options.some((item) => item.value === value)
-        ? option(value, `${value} (configured name or missing ID)`, value)
+        ? option(
+            value,
+            `${value} ${this.t("(configured name or missing ID)")}`,
+            value,
+          )
         : nothing;
     return html`<form @submit=${(event: Event) => event.preventDefault()}>
       <p class="hint">
-        Devices are discovered from Home Connect Local. Configured names stay
-        unchanged until you select another device.
+        ${this.t("Devices are discovered from Home Connect Local. Configured names stay unchanged until you select another device.")}
       </p>
       ${
         this.registry.error
@@ -196,42 +203,41 @@ class ApplianceEditor extends LitElement {
                 type="button"
                 @click=${() => this.currentHass && refreshRegistries(this.currentHass)}
               >
-                Retry discovery
+                ${this.t("Retry discovery")}
               </button>`
           : nothing
       }
-      ${this.registry.disconnected ? html`<p role="status">Home Assistant is disconnected. Reconnect to refresh devices.</p>` : nothing}
-      ${!snapshot && !this.registry.error ? html`<p role="status">${this.currentHass ? "Loading appliance registries…" : "Connect to Home Assistant to discover devices."}</p>` : nothing}
-      ${snapshot && !appliances.length ? html`<p role="status">No Home Connect Local appliances found. Check the integration and enabled entities.</p>` : nothing}
+      ${this.registry.disconnected ? html`<p role="status">${this.t("Home Assistant is disconnected. Reconnect to refresh devices.")}</p>` : nothing}
+      ${!snapshot && !this.registry.error ? html`<p role="status">${this.currentHass ? this.t("Loading appliance registries…") : this.t("Connect to Home Assistant to discover devices.")}</p>` : nothing}
+      ${snapshot && !appliances.length ? html`<p role="status">${this.t("No Home Connect Local appliances found. Check the integration and enabled entities.")}</p>` : nothing}
       ${
         overview
           ? html`
               <label
-                >Appliance selection<select
+                >${this.t("Appliance selection")}<select
                   name="selection_mode"
                   @change=${(event: Event) => ((event.target as HTMLSelectElement).value === "devices" ? this.updateConfig({ devices: [] }, ["area", "device"]) : this.updateConfig({}, ["devices"]))}
                 >
-                  ${option("area", "All devices or area", explicit ? "devices" : "area")}${option("devices", "Choose devices", explicit ? "devices" : "area")}
+                  ${option("area", this.t("All devices or area"), explicit ? "devices" : "area")}${option("devices", this.t("Choose devices"), explicit ? "devices" : "area")}
                 </select></label
               >
               ${
                 explicit
                   ? html`<label
-                        >Devices<select
+                        >${this.t("Devices")}<select
                           name="devices"
                           multiple
                           @change=${(event: Event) => this.updateConfig({ devices: Array.from((event.target as HTMLSelectElement).selectedOptions, (entry) => entry.value) })}
                         >
-                          ${selected.filter((value) => !choices.some((item) => item.value === value)).map((value) => html`<option value=${value} selected>${value} (configured name or missing ID)</option>`)}
+                          ${selected.filter((value) => !choices.some((item) => item.value === value)).map((value) => html`<option value=${value} selected>${value} ${this.t("(configured name or missing ID)")}</option>`)}
                           ${choices.map((item) => html`<option value=${item.value} ?selected=${selected.includes(item.value)}>${item.label}</option>`)}
                         </select></label
                       >
                       <p class="hint">
-                        An empty selection displays no appliances. Use
-                        Ctrl/Command or Shift to select multiple devices.
+                        ${this.t("An empty selection displays no appliances. Use Ctrl/Command or Shift to select multiple devices.")}
                       </p>`
                   : html` <label
-                      >Area<select
+                      >${this.t("Area")}<select
                         name="area"
                         @change=${(event: Event) => {
                           const value = (event.target as HTMLSelectElement)
@@ -242,47 +248,51 @@ class ApplianceEditor extends LitElement {
                           );
                         }}
                       >
-                        ${option("", "All areas", area)}${retained(area, areas)}${areas.map((item) => option(item.value, item.label, area))}
+                        ${option("", this.t("All areas"), area)}${retained(area, areas)}${areas.map((item) => option(item.value, item.label, area))}
                       </select></label
                     >`
               }
             `
           : html`<label
-                >Device<select name="device" @change=${this.change}>
-                  ${option("", "Select a Local appliance", device)}${retained(device, choices)}${choices.map((item) => option(item.value, item.label, device))}
+                >${this.t("Device")}<select
+                  name="device"
+                  @change=${this.change}
+                >
+                  ${option("", this.t("Select a Local appliance"), device)}${retained(device, choices)}${choices.map((item) => option(item.value, item.label, device))}
                 </select></label
-              >${isMissing ? html`<p role="status">Configured device not found. Choose a Home Connect Local appliance or check its name and integration.</p>` : nothing}
-              ${!device ? html`<p class="hint">A device is required before this card can display an appliance.</p>` : nothing}`
+              >${isMissing ? html`<p role="status">${this.t("Configured device not found. Choose a Home Connect Local appliance or check its name and integration.")}</p>` : nothing}
+              ${!device ? html`<p class="hint">${this.t("A device is required before this card can display an appliance.")}</p>` : nothing}`
       }
       <label
-        >Title<input
+        >${this.t("Title")}<input
           name="title"
           .value=${typeof this.raw.title === "string" ? this.raw.title : ""}
           @change=${this.change}
       /></label>
       <label
-        >Appearance<select name="appearance" @change=${this.change}>
-          ${option("default", "Default", String(this.raw.appearance ?? "default"))}${option("bubble", "Bubble", String(this.raw.appearance ?? "default"))}
+        >${this.t("Appearance")}<select
+          name="appearance"
+          @change=${this.change}
+        >
+          ${option("default", this.t("Default"), String(this.raw.appearance ?? "default"))}${option("bubble", this.t("Bubble"), String(this.raw.appearance ?? "default"))}
         </select></label
       >
-      ${this.checkbox("expand", "Expand appliance details", this.raw.expand !== false)}
-      ${this.checkbox("confirm_start", "Confirm programme selection and start", this.raw.confirm_start !== false)}
+      ${this.checkbox("expand", this.t("Expand appliance details"), this.raw.expand !== false)}
+      ${this.checkbox("confirm_start", this.t("Confirm programme selection and start"), this.raw.confirm_start !== false)}
       ${
         oven
           ? html`<fieldset>
-              <legend>Oven modules</legend>
+              <legend>${this.t("Oven modules")}</legend>
               <label
-                >Module detection<select
+                >${this.t("Module detection")}<select
                   name="module_mode"
                   @change=${(event: Event) => this.updateConfig({ oven_modules: (event.target as HTMLSelectElement).value === "auto" ? "auto" : [] })}
                 >
-                  ${option("auto", "Detect automatically", Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}${option("manual", "Choose modules", Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}
+                  ${option("auto", this.t("Detect automatically"), Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}${option("manual", this.t("Choose modules"), Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}
                 </select></label
-              >${Array.isArray(this.raw.oven_modules) ? ["microwave", "steam"].map((module) => html`<label class="check"><input type="checkbox" name=${module} .checked=${modules.includes(module)} @change=${(event: Event) => this.updateConfig({ oven_modules: (event.target as HTMLInputElement).checked ? [...new Set([...modules, module])] : modules.filter((value) => value !== module) })} />${module === "steam" ? "Steam" : "Microwave"}</label>`) : nothing}
+              >${Array.isArray(this.raw.oven_modules) ? ["microwave", "steam"].map((module) => html`<label class="check"><input type="checkbox" name=${module} .checked=${modules.includes(module)} @change=${(event: Event) => this.updateConfig({ oven_modules: (event.target as HTMLInputElement).checked ? [...new Set([...modules, module])] : modules.filter((value) => value !== module) })} />${module === "steam" ? this.t("Steam") : this.t("Microwave")}</label>`) : nothing}
               <p class="hint">
-                Both modules can be enabled together. No modules selected means
-                a standard oven. Controls appear only when exposed by your
-                appliance.
+                ${this.t("Both modules can be enabled together. No modules selected means a standard oven. Controls appear only when exposed by your appliance.")}
               </p>
             </fieldset>`
           : nothing

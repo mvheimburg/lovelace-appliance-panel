@@ -1,3 +1,380 @@
+const nb = {
+    "Card configuration must be an object.": "Kortkonfigurasjonen må være et objekt.",
+    "Unsupported appliance card type.": "Apparatkorttypen støttes ikke.",
+    "Select a Home Connect Local device (ID or name).": "Velg et Home Connect Local-apparat (ID eller navn).",
+    "devices must be an array of device IDs or names.": "devices må være en liste med apparat-ID-er eller navn.",
+    "appearance must be default or bubble.": "appearance må være default eller bubble.",
+    "oven_modules must be auto or an array containing microwave and/or steam.": "oven_modules må være auto eller en liste som inneholder microwave og/eller steam.",
+    "{field} must be a string.": "{field} må være en tekststreng.",
+    "{field} must be true or false.": "{field} må være true eller false.",
+    Preheating: "Forvarmer",
+    Heating: "Varmer",
+    Washing: "Vasker",
+    Rinsing: "Skyller",
+    Drying: "Tørker",
+    Cleaning: "Rengjør",
+    Descaling: "Avkalker",
+    Brewing: "Brygger",
+    Connected: "Tilkoblet",
+    Ajar: "På gløtt",
+    Off: "Av",
+    Ready: "Klar",
+    "Delayed start": "Utsatt start",
+    Running: "Kjører",
+    Paused: "Satt på pause",
+    Finished: "Ferdig",
+    Error: "Feil",
+    "Needs attention": "Trenger oppmerksomhet",
+    Stopping: "Stopper",
+    Offline: "Frakoblet",
+    "Status unknown": "Ukjent status",
+    Oven: "Stekeovn",
+    Dishwasher: "Oppvaskmaskin",
+    "Coffee machine": "Kaffemaskin",
+    Refrigerator: "Kjøleskap",
+    Washer: "Vaskemaskin",
+    Dryer: "Tørketrommel",
+    Appliance: "Apparat",
+    "Time unknown": "Ukjent tid",
+    Cooling: "Kjøler",
+    "Not reported": "Ikke rapportert",
+    Unavailable: "Utilgjengelig",
+    Unknown: "Ukjent",
+    Open: "Åpen",
+    Closed: "Lukket",
+    Action: "Handling",
+    Stop: "Stopp",
+    Start: "Start",
+    Pause: "Pause",
+    Resume: "Fortsett",
+    "Choose your drink": "Velg drikke",
+    Programme: "Program",
+    "Until start": "Til start",
+    "Paused · remaining": "Satt på pause · gjenstår",
+    Remaining: "Gjenstår",
+    "Programme progress": "Programfremdrift",
+    Microwave: "Mikrobølgeovn",
+    Steam: "Damp",
+    "Temperature zones": "Temperatursoner",
+    Doors: "Dører",
+    "Cooling modes": "Kjølemoduser",
+    "Your coffee": "Din kaffe",
+    "Wash options": "Vaskevalg",
+    "Programme options": "Programvalg",
+    "Door & temperature": "Dør og temperatur",
+    "Programme timing": "Programtid",
+    "Consumables & care": "Forbruksvarer og vedlikehold",
+    Settings: "Innstillinger",
+    "Remote start": "Fjernstart",
+    Other: "Annet",
+    Kitchen: "Kjøkken",
+    "In progress": "Pågår",
+    "No running programmes reported. Some appliance states are unavailable.": "Ingen programmer rapportert som kjørende. Status for enkelte apparater er utilgjengelig.",
+    "Nothing is running.": "Ingen programmer kjører.",
+    "Some appliance states are unavailable.": "Status for enkelte apparater er utilgjengelig.",
+    "All clear.": "Alt i orden.",
+    "All appliances": "Alle apparater",
+    "Disconnected from Home Assistant.": "Frakoblet Home Assistant.",
+    "Retry discovery": "Søk på nytt",
+    "Finding your appliances…": "Søker etter apparatene dine …",
+    "No matching Home Connect Local appliance.": "Fant ingen samsvarende Home Connect Local-apparater.",
+    "Close details": "Lukk detaljer",
+    "Confirm appliance command": "Bekreft apparatkommando",
+    "This may start the appliance. Check that it is ready for remote operation.": "Dette kan starte apparatet. Kontroller at det er klart for fjernstyring.",
+    Cancel: "Avbryt",
+    Confirm: "Bekreft",
+    "Remote-start permission is not exposed. The appliance must permit remote operation.": "Tillatelse til fjernstart er ikke tilgjengelig. Apparatet må tillate fjernstyring.",
+    "This control is unavailable.": "Denne kontrollen er utilgjengelig.",
+    "Device discovery is unavailable. Try again after reconnecting.": "Apparatsøk er utilgjengelig. Prøv igjen etter at tilkoblingen er gjenopprettet.",
+    "Command sent. Waiting for appliance status.": "Kommando sendt. Venter på apparatstatus.",
+    "The appliance changed. Review its current status and try again.": "Apparatet har endret seg. Kontroller gjeldende status og prøv igjen.",
+    "Enter a valid value within the appliance limits.": "Angi en gyldig verdi innenfor apparatets grenser.",
+    "Devices are discovered from Home Connect Local. Configured names stay unchanged until you select another device.": "Apparater hentes fra Home Connect Local. Konfigurerte navn beholdes til du velger et annet apparat.",
+    "Home Assistant is disconnected. Reconnect to refresh devices.": "Home Assistant er frakoblet. Koble til igjen for å oppdatere apparatlisten.",
+    "Loading appliance registries…": "Laster apparatregistre …",
+    "Connect to Home Assistant to discover devices.": "Koble til Home Assistant for å finne apparater.",
+    "No Home Connect Local appliances found. Check the integration and enabled entities.": "Fant ingen Home Connect Local-apparater. Kontroller integrasjonen og aktiverte entiteter.",
+    "Appliance selection": "Apparatvalg",
+    "All devices or area": "Alle apparater eller område",
+    "Choose devices": "Velg apparater",
+    Devices: "Apparater",
+    "An empty selection displays no appliances. Use Ctrl/Command or Shift to select multiple devices.": "Et tomt utvalg viser ingen apparater. Bruk Ctrl/Command eller Shift for å velge flere apparater.",
+    Area: "Område",
+    "All areas": "Alle områder",
+    Device: "Apparat",
+    "Select a Local appliance": "Velg et Local-apparat",
+    "Configured device not found. Choose a Home Connect Local appliance or check its name and integration.": "Fant ikke konfigurert apparat. Velg et Home Connect Local-apparat, eller kontroller navnet og integrasjonen.",
+    "A device is required before this card can display an appliance.": "Du må velge et apparat før kortet kan vise det.",
+    Title: "Tittel",
+    Appearance: "Utseende",
+    Default: "Standard",
+    Bubble: "Boble",
+    "Expand appliance details": "Utvid apparatdetaljer",
+    "Confirm programme selection and start": "Bekreft programvalg og start",
+    "Oven modules": "Stekeovnmoduler",
+    "Module detection": "Modulregistrering",
+    "Detect automatically": "Oppdag automatisk",
+    "Choose modules": "Velg moduler",
+    "Both modules can be enabled together. No modules selected means a standard oven. Controls appear only when exposed by your appliance.": "Begge modulene kan aktiveres samtidig. Ingen valgte moduler betyr en vanlig stekeovn. Kontroller vises bare når apparatet tilbyr dem.",
+    "(configured name or missing ID)": "(konfigurert navn eller manglende ID)",
+    "Appliance offline": "Apparatet er frakoblet",
+    "Appliance status unknown": "Ukjent apparatstatus",
+    "Action required": "Handling kreves",
+    On: "På",
+    Low: "Lav",
+    Medium: "Middels",
+    High: "Høy",
+    Full: "Full",
+    Empty: "Tom",
+    Normal: "Normal",
+    Mild: "Mild",
+    Strong: "Sterk",
+    Due: "Forfalt",
+    Locked: "Låst",
+    Required: "Påkrevd",
+    Present: "Til stede",
+    Nearlyempty: "Nesten tom",
+    Notinserted: "Ikke satt inn",
+    Unplugged: "Frakoblet",
+    Alarm: "Alarm",
+    Confirmed: "Bekreftet",
+    None: "Ingen",
+    Manualremotestart: "Manuell fjernstart",
+    Permanentremotestart: "Permanent fjernstart",
+    Standby: "Hvilemodus",
+    "This appliance is disabled.": "Dette apparatet er deaktivert.",
+    "The control is missing or ambiguous on this appliance.": "Kontrollen mangler eller er tvetydig på dette apparatet.",
+    "The control does not belong to this Home Connect Local appliance.": "Kontrollen tilhører ikke dette Home Connect Local-apparatet.",
+    "This control is disabled in Home Assistant.": "Denne kontrollen er deaktivert i Home Assistant.",
+    "This entity is read-only; its domain has no supported appliance action.": "Denne entiteten er skrivebeskyttet. Domenet støtter ingen apparathandling.",
+    "This control is unavailable or its state is unknown.": "Denne kontrollen er utilgjengelig eller har ukjent status.",
+    "This transport control has an unsupported entity domain.": "Denne programkontrollen har et entitetsdomene som ikke støttes.",
+    "This programme entity is not a supported selector.": "Denne programentiteten er ikke en støttet velger.",
+    "Choose an option currently exposed by this selector.": "Velg et alternativ som er tilgjengelig i denne velgeren.",
+    "Enter a finite numeric value.": "Angi en endelig tallverdi.",
+    "Home Connect Local requires an integer value for this number control.": "Home Connect Local krever et heltall for denne tallkontrollen.",
+    "This control does not expose valid numeric limits or step.": "Denne kontrollen tilbyr ikke gyldige tallgrenser eller trinn.",
+    "Switch controls require an explicit on or off value.": "Brytere krever en uttrykkelig på- eller av-verdi.",
+    "The appliance is offline.": "Apparatet er frakoblet.",
+    "Abort is available only for an active or interrupted programme.": "Stopp er bare tilgjengelig for et aktivt eller avbrutt program.",
+    "Pause requires a running or delayed programme.": "Pause krever et kjørende eller utsatt program.",
+    "Remote control is disabled or unavailable.": "Fjernstyring er deaktivert eller utilgjengelig.",
+    "Remote control permission is unverified; confirm this action.": "Tillatelse til fjernstyring er ikke bekreftet. Bekreft denne handlingen.",
+    "Resume requires a paused programme.": "Fortsett krever et program som er satt på pause.",
+    "This action requires a ready or finished appliance.": "Denne handlingen krever at apparatet er klart eller ferdig.",
+    "Remote start is disabled, unknown or unavailable.": "Fjernstart er deaktivert, ukjent eller utilgjengelig.",
+    "Remote control is disabled, unknown or unavailable.": "Fjernstyring er deaktivert, ukjent eller utilgjengelig.",
+    "Remote permission is unverified; this action may start the appliance. Confirm before proceeding.": "Fjerntillatelsen er ikke bekreftet. Denne handlingen kan starte apparatet. Bekreft før du fortsetter.",
+    "This action may start the appliance. Confirm before proceeding.": "Denne handlingen kan starte apparatet. Bekreft før du fortsetter.",
+    "Home Assistant is disconnected. Reconnect before controlling this appliance.": "Home Assistant er frakoblet. Koble til igjen før du styrer apparatet.",
+    "This action is not permitted.": "Denne handlingen er ikke tillatt.",
+    "Confirm this action before proceeding.": "Bekreft denne handlingen før du fortsetter.",
+    "Home Assistant service calls are unavailable.": "Tjenestekall til Home Assistant er utilgjengelige.",
+    "Finished {time} ago": "Ferdig for {time} siden",
+    "Starts in {time}": "Starter om {time}",
+    "{count} appliances": "{count} apparater",
+    "{count} disabled entity": "{count} deaktivert entitet",
+    "{count} disabled entities": "{count} deaktiverte entiteter",
+    "Enable needed capabilities in Home Assistant.": "Aktiver nødvendige funksjoner i Home Assistant.",
+    "Across these appliances.": "På disse apparatene.",
+    "Last reported: {time}": "Sist rapportert: {time}",
+    "Enter a value between {min} and {max}.": "Angi en verdi mellom {min} og {max}.",
+    "Enter a value aligned with the {step} step from {min}.": "Angi en verdi i trinn på {step} fra {min}.",
+    "Area name is ambiguous: {name}": "Områdenavnet er tvetydig: {name}",
+    "Area not found: {name}": "Fant ikke området: {name}",
+    "Device name is ambiguous: {name}": "Apparatnavnet er tvetydig: {name}",
+    "Device not found: {name}": "Fant ikke apparatet: {name}",
+    Program: "Program",
+    "Oven setpoint temperature": "Måltemperatur for stekeovn",
+    "Microwave power": "Mikrobølgeeffekt",
+    "Oven microwave power": "Mikrobølgeeffekt for stekeovn",
+    "Steam level": "Dampnivå",
+    "Oven steam level": "Dampnivå for stekeovn",
+    "Added steam": "Tilført damp",
+    "Oven water tank": "Vanntank for stekeovn",
+    "Water tank": "Vanntank",
+    Salt: "Salt",
+    "Rinse aid": "Skyllemiddel",
+    "Drip tray": "Dryppbrett",
+    "Bean amount": "Bønnemengde",
+    "Fridge temperature": "Kjøleskapstemperatur",
+    "Freezer temperature": "Frysertemperatur",
+    "Super mode fridge": "Superkjøling",
+    "Super mode freezer": "Superfrysing",
+    "Refrigerator vacation": "Feriemodus",
+    "Fridge door state": "Kjøleskapsdør",
+    "Door state": "Dørstatus",
+    "Start in": "Start om",
+    Duration: "Varighet",
+    "Elapsed program time": "Medgått programtid",
+    "Remote control level": "Fjernstyringsnivå",
+    "Power state": "Strømstatus",
+    "Child lock": "Barnesikring",
+    "Oven child lock setting": "Barnesikring for stekeovn",
+    "Remaining program time": "Gjenstående programtid",
+    "Program progress": "Programfremdrift",
+    "Active program": "Aktivt program",
+    "Start program": "Start program",
+    "Pause program": "Sett program på pause",
+    "Resume program": "Fortsett program",
+    "Abort program": "Stopp program",
+    "Remote start allowed": "Fjernstart tillatt",
+    "Start allowed": "Start tillatt",
+    "Vario speed plus": "Vario Speed Plus",
+    "Oven current temperature": "Gjeldende ovnstemperatur",
+    Connection: "Tilkobling",
+    "Countdown cleaning": "Tid til rengjøring",
+    "Countdown descaling": "Tid til avkalking",
+    "Countdown water filter": "Tid til filterbytte",
+    "Countdown calc n clean": "Tid til Calc’nClean",
+    "Machinecare remaining runs": "Kjøringer til maskinpleie",
+    "Coffee temperature": "Kaffetemperatur",
+    "Beverage size": "Drikkestørrelse",
+    "Coffee milk ratio": "Forhold mellom kaffe og melk",
+    "Hot water temperature": "Varmtvannstemperatur",
+    "Flow rate": "Gjennomstrømning",
+    Coarsness: "Malegrad",
+    "Coffee strength": "Kaffestyrke",
+    "Aroma select": "Aromavalg",
+    "Bean container": "Bønnebeholder",
+    "Shot count": "Antall shots",
+    Cups: "Kopper",
+    "Fill quantity": "Fyllmengde",
+    "Multiple beverages": "Flere drikker",
+    "Cup warmer": "Koppvarmer",
+    "Extra dry option": "Ekstra tørking",
+    "Hygiene plus": "Hygiene Plus",
+    "Intensiv zone": "Intensivsone",
+    "Silence on demand": "Stillemodus",
+    "Brilliance dry": "Glanstørking",
+    "Zeolite dry": "Zeolittørking",
+    "Half load": "Halv maskin",
+    "Extra rinse": "Ekstra skylling",
+    Pretreatment: "Forbehandling",
+    "Oven level": "Ovnsnivå",
+    "Oven used heating mode": "Oppvarmingsmodus",
+    "Pyrolysis level": "Pyrolysenivå",
+    "Oven fast pre heat": "Hurtigoppvarming",
+};
+function language(hass) {
+    const code = (hass?.language ?? hass?.locale?.language ?? "en")
+        .toLowerCase()
+        .replace(/_/g, "-")
+        .split("-")[0];
+    return ["nb", "no", "nn"].includes(code) ? "nb" : "en";
+}
+function localize(hass, key, values = {}) {
+    const text = language(hass) === "nb" ? nb[key] : key;
+    return text.replace(/\{(\w+)\}/g, (match, name) => String(values[name] ?? match));
+}
+/** Only for messages authored by the card/model/policy; never arbitrary names. */
+function message(hass, text) {
+    if (Object.prototype.hasOwnProperty.call(nb, text))
+        return localize(hass, text);
+    const patterns = [
+        [
+            /^(device|area|title) must be a string\.$/,
+            "{field} must be a string.",
+            ["field"],
+        ],
+        [
+            /^(expand|confirm_start) must be true or false\.$/,
+            "{field} must be true or false.",
+            ["field"],
+        ],
+        [
+            /^Enter a value between (.+) and (.+)\.$/,
+            "Enter a value between {min} and {max}.",
+            ["min", "max"],
+        ],
+        [
+            /^Enter a value aligned with the (.+) step from (.+)\.$/,
+            "Enter a value aligned with the {step} step from {min}.",
+            ["step", "min"],
+        ],
+        [
+            /^Area name is ambiguous: (.*)$/,
+            "Area name is ambiguous: {name}",
+            ["name"],
+        ],
+        [/^Area not found: (.*)$/, "Area not found: {name}", ["name"]],
+        [
+            /^Device name is ambiguous: (.*)$/,
+            "Device name is ambiguous: {name}",
+            ["name"],
+        ],
+        [/^Device not found: (.*)$/, "Device not found: {name}", ["name"]],
+    ];
+    for (const [pattern, key, names] of patterns) {
+        const match = text.match(pattern);
+        if (match)
+            return localize(hass, key, Object.fromEntries(names.map((name, i) => [name, match[i + 1]])));
+    }
+    return text;
+}
+/** HA owns integration translations. Preserve unknown firmware/program values. */
+function stateLabel(hass, state, value = state.state, program = false) {
+    const formatted = hass?.formatEntityState?.(state, value);
+    if (formatted && formatted !== value)
+        return formatted;
+    if (program)
+        return value;
+    const labels = {
+        ready: "Ready",
+        run: "Running",
+        running: "Running",
+        pause: "Paused",
+        paused: "Paused",
+        finished: "Finished",
+        delayed: "Delayed start",
+        aborting: "Stopping",
+        actionrequired: "Action required",
+        connected: "Connected",
+        disconnected: "Offline",
+        preheating: "Preheating",
+        heating: "Heating",
+        washing: "Washing",
+        rinsing: "Rinsing",
+        drying: "Drying",
+        cleaning: "Cleaning",
+        descaling: "Descaling",
+        brewing: "Brewing",
+        ajar: "Ajar",
+        on: "On",
+        off: "Off",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+        full: "Full",
+        empty: "Empty",
+        normal: "Normal",
+        mild: "Mild",
+        strong: "Strong",
+        due: "Due",
+        unknown: "Unknown",
+        unavailable: "Unavailable",
+        open: "Open",
+        closed: "Closed",
+        locked: "Locked",
+        required: "Required",
+        present: "Present",
+        nearlyempty: "Nearlyempty",
+        notinserted: "Notinserted",
+        unplugged: "Unplugged",
+        alarm: "Alarm",
+        error: "Error",
+        confirmed: "Confirmed",
+        none: "None",
+        manualremotestart: "Manualremotestart",
+        permanentremotestart: "Permanentremotestart",
+        standby: "Standby",
+    };
+    const key = value.split(".").pop().toLowerCase().replace(/[ _-]/g, "");
+    if (state.attributes.device_class === "door" && ["on", "off"].includes(key))
+        return localize(hass, key === "on" ? "Open" : "Closed");
+    return labels[key] ? localize(hass, labels[key]) : value;
+}
+
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -31,38 +408,39 @@ const CARD_KINDS = {
     "refrigerator-card": "cooling",
     "appliance-card": "unknown",
 };
-function validateConfig(raw) {
+function validateConfig(raw, hass) {
+    const error = (text) => new Error(message(hass, text));
     if (!raw || typeof raw !== "object" || Array.isArray(raw))
-        throw new Error("Card configuration must be an object.");
+        throw error("Card configuration must be an object.");
     const kind = typeof raw.type === "string" ? raw.type.replace(/^custom:/, "") : "";
     if (!Object.prototype.hasOwnProperty.call(CARD_KINDS, kind) &&
         kind !== "kitchen-panel-card")
-        throw new Error("Unsupported appliance card type.");
+        throw error("Unsupported appliance card type.");
     for (const field of ["device", "area", "title"]) {
         if (raw[field] !== undefined && typeof raw[field] !== "string")
-            throw new Error(`${field} must be a string.`);
+            throw error(`${field} must be a string.`);
     }
     if (kind !== "kitchen-panel-card" &&
         (typeof raw.device !== "string" || !raw.device.trim()))
-        throw new Error("Select a Home Connect Local device (ID or name).");
+        throw error("Select a Home Connect Local device (ID or name).");
     if (raw.devices !== undefined &&
         (!Array.isArray(raw.devices) ||
             raw.devices.some((value) => typeof value !== "string" || !value.trim())))
-        throw new Error("devices must be an array of device IDs or names.");
+        throw error("devices must be an array of device IDs or names.");
     for (const field of ["expand", "confirm_start"]) {
         if (raw[field] !== undefined && typeof raw[field] !== "boolean")
-            throw new Error(`${field} must be true or false.`);
+            throw error(`${field} must be true or false.`);
     }
     if (raw.appearance !== undefined &&
         raw.appearance !== "default" &&
         raw.appearance !== "bubble")
-        throw new Error("appearance must be default or bubble.");
+        throw error("appearance must be default or bubble.");
     const modules = raw.oven_modules ?? "auto";
     if (raw.oven_modules === null ||
         (modules !== "auto" &&
             (!Array.isArray(modules) ||
                 modules.some((value) => value !== "microwave" && value !== "steam"))))
-        throw new Error("oven_modules must be auto or an array containing microwave and/or steam.");
+        throw error("oven_modules must be auto or an array containing microwave and/or steam.");
     return {
         ...raw,
         type: raw.type,
@@ -1307,16 +1685,13 @@ const icons = {
     dryer: "mdi:tumble-dryer",
     unknown: "mdi:home-outline",
 };
-function duration(seconds) {
+function duration(seconds, hass) {
     if (seconds === undefined || !Number.isFinite(seconds))
-        return "Time unknown";
+        return localize(hass, "Time unknown");
     const mins = Math.ceil(Math.max(0, seconds) / 60);
     return mins >= 60
-        ? `${Math.floor(mins / 60)} h${mins % 60 ? ` ${mins % 60} min` : ""}`
+        ? `${Math.floor(mins / 60)} ${language(hass) === "nb" ? "t" : "h"}${mins % 60 ? ` ${mins % 60} min` : ""}`
         : `${mins} min`;
-}
-function titleCase(value) {
-    return value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 function moduleOf(entity) {
     const key = semanticKey(entity.registry) ||
@@ -1339,6 +1714,12 @@ class ApplianceCard extends i {
         this.error = "";
         this.notice = "";
     }
+    t(key, values = {}) {
+        return localize(this.ha, key, values);
+    }
+    m(text) {
+        return message(this.ha, text);
+    }
     set hass(value) {
         const replaced = this.ha?.connection !== value.connection;
         this.ha = value;
@@ -1355,7 +1736,7 @@ class ApplianceCard extends i {
         return this.ha;
     }
     setConfig(value) {
-        const next = validateConfig(value);
+        const next = validateConfig(value, this.ha);
         if (this.config &&
             (this.config.device !== next.device ||
                 this.config.type !== next.type ||
@@ -1430,25 +1811,64 @@ class ApplianceCard extends i {
         return this.kind(device) === "cooling" &&
             status.online === "online" &&
             status.operation === "unknown"
-            ? "Cooling"
-            : labels[status.operation];
+            ? this.t("Cooling")
+            : this.t(labels[status.operation]);
     }
     reading(entity) {
         const state = this.ha?.states[entity.entityId];
         if (!state)
-            return "Not reported";
+            return this.t("Not reported");
         if (state.state === "unavailable")
-            return "Unavailable";
+            return this.t("Unavailable");
         if (state.state === "unknown")
-            return "Unknown";
-        const value = state.attributes.device_class === "door"
-            ? state.state === "on"
-                ? "Open"
-                : state.state === "off"
-                    ? "Closed"
-                    : titleCase(state.state)
-            : titleCase(state.state);
+            return this.t("Unknown");
+        const formatted = this.ha?.formatEntityState?.(state);
+        if (formatted && formatted !== state.state)
+            return formatted;
+        const value = stateLabel(this.ha, state, state.state, ["selected_program", "active_program"].includes(entity.role));
         return `${value}${state.attributes.unit_of_measurement ? ` ${state.attributes.unit_of_measurement}` : ""}`;
+    }
+    entityName(entity) {
+        const state = this.ha?.states[entity.entityId];
+        // Integration and user names are not card-owned copy.
+        if (entity.registry.name ||
+            entity.registry.original_name ||
+            state?.attributes.friendly_name)
+            return entity.name;
+        return this.m(entity.name);
+    }
+    attentionMessage(device, item) {
+        const entity = device.entities.find((e) => e.entityId === item.entityId);
+        if (!entity)
+            return this.m(item.message);
+        const value = item.message.slice(entity.name.length + 2);
+        const state = this.ha?.states[entity.entityId];
+        return `${this.entityName(entity)}: ${value === "not reported" ? this.t("Not reported") : value === "due" ? this.t("Due") : value === "unknown" ? this.t("Unknown") : state ? stateLabel(this.ha, state) : this.m(value)}`;
+    }
+    programLabel(device, value) {
+        const entity = device.entities.find((e) => e.role === "active_program") ??
+            device.entities.find((e) => e.role === "selected_program");
+        const state = entity && this.ha?.states[entity.entityId];
+        return state ? stateLabel(this.ha, state, value, true) : value;
+    }
+    phaseLabel(device, value) {
+        const entity = device.entities.find((e) => e.role === "phase");
+        const state = entity && this.ha?.states[entity.entityId];
+        return state ? stateLabel(this.ha, state, value) : value;
+    }
+    confirmationLabel() {
+        const pending = this.pending;
+        if (!pending)
+            return "";
+        const entity = this.selection()
+            .devices.find((d) => d.id === pending.deviceId)
+            ?.entities.find((e) => e.entityId === pending.action.entityId);
+        const name = entity ? this.entityName(entity) : this.t("Action");
+        if (pending.action.value === undefined)
+            return name;
+        const state = this.ha?.states[pending.action.entityId];
+        const value = String(pending.action.value);
+        return `${name}: ${state ? stateLabel(this.ha, state, value, entity?.role === "selected_program" || entity?.role === "active_program") : value}`;
     }
     signature(device, action) {
         return JSON.stringify([
@@ -1486,8 +1906,6 @@ class ApplianceCard extends i {
                 action,
                 epoch: this.epoch,
                 signature: this.signature(device, action),
-                label: device.entities.find((e) => e.entityId === action.entityId)?.name ??
-                    "Action",
             };
             this.requestUpdate();
             await this.updateComplete;
@@ -1577,14 +1995,18 @@ class ApplianceCard extends i {
             value: sample,
         });
         const disabled = this.busy || unavailable || !policy.allowed;
-        const reason = unavailable ? "Unavailable" : policy.reason;
+        const reason = unavailable
+            ? this.t("Unavailable")
+            : policy.reason
+                ? this.m(policy.reason)
+                : undefined;
         const act = (value) => void this.requestAction(device, { entityId: entity.entityId, value });
         if (domain === "select" && Array.isArray(state?.attributes.options))
             return b `<label class="control"
-        ><span>${entity.name}</span
+        ><span>${this.entityName(entity)}</span
         ><select
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           .value=${state.state}
           ?disabled=${disabled}
           title=${reason ?? ""}
@@ -1593,16 +2015,16 @@ class ApplianceCard extends i {
                 e.target.value = state.state;
             }}
         >
-          ${!state.attributes.options.includes(state.state) ? b `<option value=${state.state}>${this.reading(entity)}</option>` : A}${state.attributes.options.map((option) => b `<option value=${option} ?selected=${option === state.state}>${titleCase(option)}</option>`)}</select
+          ${!state.attributes.options.includes(state.state) ? b `<option value=${state.state}>${this.reading(entity)}</option>` : A}${state.attributes.options.map((option) => b `<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, ["selected_program", "active_program"].includes(entity.role))}</option>`)}</select
         >${!policy.allowed && reason ? b `<small class="muted">${reason}</small>` : A}</label
       >`;
         if (domain === "number")
             return b `<label class="control"
         ><span
-          >${entity.name}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
+          >${this.entityName(entity)}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
         ><input
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           type="number"
           .value=${!unavailable ? state.state : ""}
           min=${state?.attributes.min ?? ""}
@@ -1622,10 +2044,10 @@ class ApplianceCard extends i {
       >`;
         if (domain === "switch")
             return b `<label class="control switch"
-        ><span>${entity.name}</span
+        ><span>${this.entityName(entity)}</span
         ><input
           data-entity=${entity.entityId}
-          aria-label=${entity.name}
+          aria-label=${this.entityName(entity)}
           type="checkbox"
           .checked=${state?.state === "on"}
           ?disabled=${disabled}
@@ -1643,10 +2065,11 @@ class ApplianceCard extends i {
         title=${reason ?? ""}
         @click=${() => act()}
       >
-        ${entity.name}
+        ${this.entityName(entity)}
       </button>`;
         return b `<div class="reading" data-reading=${entity.entityId}>
-      <span>${entity.name}</span><strong>${this.reading(entity)}</strong>
+      <span>${this.entityName(entity)}</span
+      ><strong>${this.reading(entity)}</strong>
     </div>`;
     }
     group(device, title, entities, section) {
@@ -1679,10 +2102,10 @@ class ApplianceCard extends i {
             data-role=${entity.role}
             class=${entity.role === "abort" ? "danger" : entity.role === "start" ? "primary" : ""}
             ?disabled=${this.busy || !policy.allowed}
-            title=${policy.reason ?? ""}
+            title=${this.m(policy.reason ?? "")}
             @click=${() => this.requestAction(device, { entityId: entity.entityId })}
           >
-            ${entity.role === "abort" ? "Stop" : titleCase(entity.role)}
+            ${this.t({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" }[entity.role] ?? "Action")}
           </button>`;
         })}
       </div>
@@ -1691,22 +2114,22 @@ class ApplianceCard extends i {
                 entityId: entity.entityId,
             });
             return !policy.allowed && policy.reason
-                ? b `<p class="permission">${policy.reason}</p>`
+                ? b `<p class="permission">${this.m(policy.reason)}</p>`
                 : A;
         })}`;
     }
     attention(device, status) {
         return status.attention.length
             ? b `<section>
-          <h3>Needs attention</h3>
+          <h3>${this.t("Needs attention")}</h3>
           <ul class="attention">
-            ${status.attention.map((item) => b `<li class=${item.severity}>${item.message}</li>`)}
+            ${status.attention.map((item) => b `<li class=${item.severity}>${this.attentionMessage(device, item)}</li>`)}
           </ul>
         </section>`
             : A;
     }
     feedback() {
-        return b `${this.error ? b `<p class="feedback" role="alert">${this.error}</p>` : A}${this.notice ? b `<p class="note" role="status">${this.notice}</p>` : A}`;
+        return b `${this.error ? b `<p class="feedback" role="alert">${this.m(this.error)}</p>` : A}${this.notice ? b `<p class="note" role="status">${this.m(this.notice)}</p>` : A}`;
     }
     deviceBody(device) {
         const kind = this.kind(device);
@@ -1724,61 +2147,65 @@ class ApplianceCard extends i {
         const options = roles("option").filter((e) => !moduleCandidates.has(e.entityId));
         const picker = ["ready", "off", "finished"].includes(status.operation);
         return b `
-      ${status.operation === "error" || status.operation === "action_required" ? b `<p class="feedback" role="alert">${labels[status.operation]}</p>` : A}
+      ${status.operation === "error" || status.operation === "action_required" ? b `<p class="feedback" role="alert">${this.t(labels[status.operation])}</p>` : A}
       ${kind !== "cooling"
             ? b `${picker
-                ? this.group(device, kind === "coffee" ? "Choose your drink" : "Programme", roles("selected_program"), "programme")
+                ? this.group(device, kind === "coffee"
+                    ? this.t("Choose your drink")
+                    : this.t("Programme"), roles("selected_program"), "programme")
                 : b `<section class="surface">
                     <div class="progress-head">
                       <div>
                         <strong
-                          >${status.operation === "delayed" ? duration(status.delaySeconds) : duration(status.remainingSeconds)}</strong
+                          >${status.operation === "delayed" ? duration(status.delaySeconds, this.ha) : duration(status.remainingSeconds, this.ha)}</strong
                         ><br /><span
-                          >${status.operation === "delayed" ? "Until start" : status.operation === "paused" ? "Paused · remaining" : "Remaining"}</span
+                          >${status.operation === "delayed" ? this.t("Until start") : status.operation === "paused" ? this.t("Paused · remaining") : this.t("Remaining")}</span
                         >
                       </div>
                       <span
-                        >${status.program ? titleCase(status.program) : labels[status.operation]}</span
+                        >${status.program ? this.programLabel(device, status.program) : this.t(labels[status.operation])}</span
                       >
                     </div>
-                    ${status.progress !== undefined ? b `<progress max="100" value=${status.progress} aria-label="Programme progress"></progress>` : A}${status.phase ? b `<div class="phase">${titleCase(status.phase)}</div>` : A}
-                  </section>`}${status.operation === "finished" && status.finishedAt ? b `<p class="note">Finished ${duration((Date.now() - Date.parse(status.finishedAt)) / 1000)} ago</p>` : A}${this.transport(device, status)}`
+                    ${status.progress !== undefined ? b `<progress max="100" value=${status.progress} aria-label=${this.t("Programme progress")}></progress>` : A}${status.phase ? b `<div class="phase">${this.phaseLabel(device, status.phase)}</div>` : A}
+                  </section>`}${status.operation === "finished" && status.finishedAt ? b `<p class="note">${this.t("Finished {time} ago", { time: duration((Date.now() - Date.parse(status.finishedAt)) / 1000, this.ha) })}</p>` : A}${this.transport(device, status)}`
             : A}
       ${kind === "oven"
-            ? b `${this.group(device, "Oven", roles("target_temperature", "current_temperature", "duration"), "oven")}${["microwave", "steam"].map((which) => moduleEntries(which).length
+            ? b `${this.group(device, this.t("Oven"), roles("target_temperature", "current_temperature", "duration"), "oven")}${["microwave", "steam"].map((which) => moduleEntries(which).length
                 ? b `<section data-module=${which}>
-                    <h3>${which === "microwave" ? "Microwave" : "Steam"}</h3>
+                    <h3>
+                      ${which === "microwave" ? this.t("Microwave") : this.t("Steam")}
+                    </h3>
                     <div class="controls">
                       ${moduleEntries(which).map((e) => this.control(device, e))}
                     </div>
                   </section>`
                 : A)}`
             : A}
-      ${kind === "cooling" ? b `${this.group(device, "Temperature zones", roles("cooling_setpoint", "target_temperature", "current_temperature"), "cooling")}${this.group(device, "Doors", roles("door"))}${this.group(device, "Cooling modes", roles("super_mode", "vacation"), "cooling-modes")}` : A}
-      ${kind === "coffee" ? this.group(device, "Your coffee", options, "coffee") : kind === "dishwasher" ? this.group(device, "Wash options", options, "dishwasher") : kind !== "oven" && kind !== "cooling" ? this.group(device, "Programme options", options) : A}
-      ${kind !== "cooling" ? this.group(device, "Door & temperature", roles("door", ...(kind !== "oven" ? ["current_temperature"] : []))) : A}
-      ${status.busy ? this.group(device, "Programme timing", roles("elapsed")) : A}
+      ${kind === "cooling" ? b `${this.group(device, this.t("Temperature zones"), roles("cooling_setpoint", "target_temperature", "current_temperature"), "cooling")}${this.group(device, this.t("Doors"), roles("door"))}${this.group(device, this.t("Cooling modes"), roles("super_mode", "vacation"), "cooling-modes")}` : A}
+      ${kind === "coffee" ? this.group(device, this.t("Your coffee"), options, "coffee") : kind === "dishwasher" ? this.group(device, this.t("Wash options"), options, "dishwasher") : kind !== "oven" && kind !== "cooling" ? this.group(device, this.t("Programme options"), options) : A}
+      ${kind !== "cooling" ? this.group(device, this.t("Door & temperature"), roles("door", ...(kind !== "oven" ? ["current_temperature"] : []))) : A}
+      ${status.busy ? this.group(device, this.t("Programme timing"), roles("elapsed")) : A}
       ${this.attention(device, status)}
       ${roles("attention").filter((e) => !moduleCandidates.has(e.entityId))
             .length
             ? b `<details>
-              <summary>Consumables & care</summary>
+              <summary>${this.t("Consumables & care")}</summary>
               ${roles("attention")
                 .filter((e) => !moduleCandidates.has(e.entityId))
                 .map((e) => this.control(device, e))}
             </details>`
             : A}
       <details>
-        <summary>Settings</summary>
+        <summary>${this.t("Settings")}</summary>
         <div class="controls">
           ${roles("power", "child_lock", "remote_control", "start_delay").map((e) => this.control(device, e))}${kind === "oven" || kind === "cooling" ? options.map((e) => this.control(device, e)) : A}${kind !== "oven" && kind !== "cooling" ? roles("target_temperature", "duration").map((e) => this.control(device, e)) : A}
         </div>
-        ${!roles("remote_start").length ? b `<p class="permission">Remote-start permission is not exposed. The appliance must permit remote operation.</p>` : roles("remote_start").map((e) => b `<div class="reading"><span>Remote start</span><strong>${this.reading(e)}</strong></div>`)}
+        ${!roles("remote_start").length ? b `<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : roles("remote_start").map((e) => b `<div class="reading"><span>${this.t("Remote start")}</span><strong>${this.reading(e)}</strong></div>`)}
       </details>
       ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length
             ? b `<details>
               <summary>
-                Other ·
+                ${this.t("Other")} ·
                 ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length}
               </summary>
               <div class="controls">
@@ -1788,8 +2215,8 @@ class ApplianceCard extends i {
               </div>
             </details>`
             : A}
-      ${device.disabledCount ? b `<p class="note"><a href="/config/entities">${device.disabledCount} disabled ${device.disabledCount === 1 ? "entity" : "entities"}</a> · enable needed capabilities in Home Assistant.</p>` : A}
-      ${status.online !== "online" && status.lastReported ? b `<p class="note">Last reported: ${new Date(status.lastReported).toLocaleString(this.ha?.language)}</p>` : A}
+      ${device.disabledCount ? b `<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : A}
+      ${status.online !== "online" && status.lastReported ? b `<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(language(this.ha)) })}</p>` : A}
     `;
     }
     heading(device) {
@@ -1797,7 +2224,7 @@ class ApplianceCard extends i {
         return b `<header>
       <div class="icon"><ha-icon icon=${icons[kind]}></ha-icon></div>
       <div class="heading">
-        <div class="eyebrow">${kindNames[kind]}</div>
+        <div class="eyebrow">${this.t(kindNames[kind])}</div>
         <h2>
           ${!this.isOverview ? (this.config?.title ?? device.name) : device.name}
         </h2>
@@ -1820,7 +2247,7 @@ class ApplianceCard extends i {
       ><span class="heading"
         ><strong>${this.config?.title ?? device.name}</strong
         ><span class="status"
-          >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds)}` : ""}</span
+          >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds, this.ha)}` : ""}</span
         ></span
       ><span aria-hidden="true">›</span>
     </button>`;
@@ -1842,12 +2269,14 @@ class ApplianceCard extends i {
         </div>
         <div class="heading">
           <div class="eyebrow">Home Connect Local</div>
-          <h2>${this.config?.title ?? "Kitchen"}</h2>
+          <h2>${this.config?.title ?? this.t("Kitchen")}</h2>
         </div>
-        <span class="badge">${devices.length} appliances</span>
+        <span class="badge"
+          >${this.t("{count} appliances", { count: devices.length })}</span
+        >
       </header>
       <section>
-        <h3>In progress</h3>
+        <h3>${this.t("In progress")}</h3>
         ${busy.length
             ? busy.map(({ device, status }) => b `<button
                     class="row"
@@ -1859,18 +2288,18 @@ class ApplianceCard extends i {
                     ><span class="heading"
                       ><strong>${device.name}</strong
                       ><small
-                        >${labels[status.operation]}${status.program ? ` · ${titleCase(status.program)}` : ""}</small
+                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</small
                       ></span
                     ><span class="end"
-                      >${status.operation === "delayed" ? `Starts in ${duration(status.delaySeconds)}` : duration(status.remainingSeconds)}</span
+                      >${status.operation === "delayed" ? this.t("Starts in {time}", { time: duration(status.delaySeconds, this.ha) }) : duration(status.remainingSeconds, this.ha)}</span
                     >
                   </button>`)
             : b `<p class="quiet">
-                ${unobserved.length ? "No running programmes reported. Some appliance states are unavailable." : "Nothing is running."}
+                ${unobserved.length ? this.t("No running programmes reported. Some appliance states are unavailable.") : this.t("Nothing is running.")}
               </p>`}
       </section>
       <section>
-        <h3>Needs attention</h3>
+        <h3>${this.t("Needs attention")}</h3>
         ${alerts.length
             ? b `<ul class="attention">
                 ${alerts.map(({ device, item }) => b `<li class=${item.severity}>
@@ -1880,17 +2309,19 @@ class ApplianceCard extends i {
                       >
                         <span
                           ><strong>${device.name}</strong
-                          ><small>${item.message}</small></span
+                          ><small
+                            >${this.attentionMessage(device, item)}</small
+                          ></span
                         >
                       </button>
                     </li>`)}
               </ul>`
             : b `<p class="quiet">
-                ${unobserved.length ? "Some appliance states are unavailable." : "All clear."}
+                ${unobserved.length ? this.t("Some appliance states are unavailable.") : this.t("All clear.")}
               </p>`}${unobserved.filter((d) => !alerts.some((a) => a.device.id === d.id && a.item.severity === "unknown")).map((device) => b `<p class="note">${device.name}: ${this.statusLabel(device)}</p>`)}
       </section>
       <details>
-        <summary>All appliances</summary>
+        <summary>${this.t("All appliances")}</summary>
         ${devices.map((device) => b `<button class="row" @click=${() => this.openDetails(device)}>
               <span class="heading"
                 ><strong>${device.name}</strong
@@ -1898,7 +2329,7 @@ class ApplianceCard extends i {
               ><span>›</span>
             </button>`)}
       </details>
-      ${devices.some((d) => d.disabledCount) ? b `<p class="note" data-disabled-count><a href="/config/entities">${devices.reduce((sum, d) => sum + d.disabledCount, 0)} disabled entities</a> across these appliances.</p>` : A}`;
+      ${devices.some((d) => d.disabledCount) ? b `<p class="note" data-disabled-count><a href="/config/entities">${this.t("{count} disabled entities", { count: devices.reduce((sum, d) => sum + d.disabledCount, 0) })}</a> ${this.t("Across these appliances.")}</p>` : A}`;
     }
     render() {
         if (!this.config)
@@ -1908,14 +2339,20 @@ class ApplianceCard extends i {
         const detail = devices.find((d) => d.id === this.detailId);
         return b `<ha-card
         >${this.registry.disconnected
-            ? b `<p role="status">Disconnected from Home Assistant.</p>`
+            ? b `<p role="status">
+                ${this.t("Disconnected from Home Assistant.")}
+              </p>`
             : this.registry.error
                 ? b `<p class="feedback" role="alert">${this.registry.error}</p>
-                  <button @click=${this.retry}>Retry discovery</button>`
+                  <button @click=${this.retry}>
+                    ${this.t("Retry discovery")}
+                  </button>`
                 : !this.registry.snapshot
-                    ? b `<p class="quiet">Finding your appliances…</p>`
+                    ? b `<p class="quiet">
+                    ${this.t("Finding your appliances…")}
+                  </p>`
                     : error
-                        ? b `<p class="feedback" role="alert">${error}</p>`
+                        ? b `<p class="feedback" role="alert">${this.m(error)}</p>`
                         : this.isOverview
                             ? this.overview(devices)
                             : individual
@@ -1923,7 +2360,7 @@ class ApplianceCard extends i {
                                     ? b `${this.heading(individual)}${this.deviceBody(individual)}`
                                     : this.compact(individual)
                                 : b `<p class="empty">
-                          No matching Home Connect Local appliance.
+                          ${this.t("No matching Home Connect Local appliance.")}
                         </p>`}${this.feedback()}</ha-card
       >
       <dialog
@@ -1940,10 +2377,10 @@ class ApplianceCard extends i {
         }}
       >
         <div class="dialog-head">
-          <h2>${detail?.name ?? "Appliance"}</h2>
+          <h2>${detail?.name ?? this.t("Appliance")}</h2>
           <button
             class="icon-button"
-            aria-label="Close details"
+            aria-label=${this.t("Close details")}
             @click=${() => this.shadowRoot?.querySelector("#details")?.close()}
           >
             ✕
@@ -1952,19 +2389,16 @@ class ApplianceCard extends i {
         ${detail ? this.deviceBody(detail) : A}${this.feedback()}
       </dialog>
       <dialog id="confirmation" @cancel=${this.cancelConfirm}>
-        <h2>Confirm appliance command</h2>
-        <p>
-          ${this.pending?.label}${this.pending?.action.value !== undefined ? `: ${titleCase(String(this.pending.action.value))}` : ""}
-        </p>
+        <h2>${this.t("Confirm appliance command")}</h2>
+        <p>${this.confirmationLabel()}</p>
         <p class="note">
-          This may start the appliance. Check that it is ready for remote
-          operation.
+          ${this.t("This may start the appliance. Check that it is ready for remote operation.")}
         </p>
-        ${this.pending?.reason ? b `<p class="note">${this.pending.reason}</p>` : A}
+        ${this.pending?.reason ? b `<p class="note">${this.m(this.pending.reason)}</p>` : A}
         <div class="dialog-actions">
-          <button @click=${this.cancelConfirm}>Cancel</button
+          <button @click=${this.cancelConfirm}>${this.t("Cancel")}</button
           ><button class="primary" data-confirm @click=${this.confirm}>
-            Confirm
+            ${this.t("Confirm")}
           </button>
         </div>
       </dialog>`;
@@ -1984,6 +2418,9 @@ class ApplianceEditor extends i {
                 [input.name]: input.type === "checkbox" ? input.checked : input.value,
             });
         };
+    }
+    t(key, values = {}) {
+        return localize(this.currentHass, key, values);
     }
     setConfig(raw) {
         this.raw = { ...raw };
@@ -2072,12 +2509,11 @@ class ApplianceEditor extends i {
         ${label}
       </option>`;
         const retained = (value, options) => value && !options.some((item) => item.value === value)
-            ? option(value, `${value} (configured name or missing ID)`, value)
+            ? option(value, `${value} ${this.t("(configured name or missing ID)")}`, value)
             : A;
         return b `<form @submit=${(event) => event.preventDefault()}>
       <p class="hint">
-        Devices are discovered from Home Connect Local. Configured names stay
-        unchanged until you select another device.
+        ${this.t("Devices are discovered from Home Connect Local. Configured names stay unchanged until you select another device.")}
       </p>
       ${this.registry.error
             ? b `<p role="alert">${this.registry.error}</p>
@@ -2085,39 +2521,38 @@ class ApplianceEditor extends i {
                 type="button"
                 @click=${() => this.currentHass && refreshRegistries(this.currentHass)}
               >
-                Retry discovery
+                ${this.t("Retry discovery")}
               </button>`
             : A}
-      ${this.registry.disconnected ? b `<p role="status">Home Assistant is disconnected. Reconnect to refresh devices.</p>` : A}
-      ${!snapshot && !this.registry.error ? b `<p role="status">${this.currentHass ? "Loading appliance registries…" : "Connect to Home Assistant to discover devices."}</p>` : A}
-      ${snapshot && !appliances.length ? b `<p role="status">No Home Connect Local appliances found. Check the integration and enabled entities.</p>` : A}
+      ${this.registry.disconnected ? b `<p role="status">${this.t("Home Assistant is disconnected. Reconnect to refresh devices.")}</p>` : A}
+      ${!snapshot && !this.registry.error ? b `<p role="status">${this.currentHass ? this.t("Loading appliance registries…") : this.t("Connect to Home Assistant to discover devices.")}</p>` : A}
+      ${snapshot && !appliances.length ? b `<p role="status">${this.t("No Home Connect Local appliances found. Check the integration and enabled entities.")}</p>` : A}
       ${overview
             ? b `
               <label
-                >Appliance selection<select
+                >${this.t("Appliance selection")}<select
                   name="selection_mode"
                   @change=${(event) => (event.target.value === "devices" ? this.updateConfig({ devices: [] }, ["area", "device"]) : this.updateConfig({}, ["devices"]))}
                 >
-                  ${option("area", "All devices or area", explicit ? "devices" : "area")}${option("devices", "Choose devices", explicit ? "devices" : "area")}
+                  ${option("area", this.t("All devices or area"), explicit ? "devices" : "area")}${option("devices", this.t("Choose devices"), explicit ? "devices" : "area")}
                 </select></label
               >
               ${explicit
                 ? b `<label
-                        >Devices<select
+                        >${this.t("Devices")}<select
                           name="devices"
                           multiple
                           @change=${(event) => this.updateConfig({ devices: Array.from(event.target.selectedOptions, (entry) => entry.value) })}
                         >
-                          ${selected.filter((value) => !choices.some((item) => item.value === value)).map((value) => b `<option value=${value} selected>${value} (configured name or missing ID)</option>`)}
+                          ${selected.filter((value) => !choices.some((item) => item.value === value)).map((value) => b `<option value=${value} selected>${value} ${this.t("(configured name or missing ID)")}</option>`)}
                           ${choices.map((item) => b `<option value=${item.value} ?selected=${selected.includes(item.value)}>${item.label}</option>`)}
                         </select></label
                       >
                       <p class="hint">
-                        An empty selection displays no appliances. Use
-                        Ctrl/Command or Shift to select multiple devices.
+                        ${this.t("An empty selection displays no appliances. Use Ctrl/Command or Shift to select multiple devices.")}
                       </p>`
                 : b ` <label
-                      >Area<select
+                      >${this.t("Area")}<select
                         name="area"
                         @change=${(event) => {
                     const value = event.target
@@ -2125,44 +2560,48 @@ class ApplianceEditor extends i {
                     this.updateConfig(value ? { area: value } : {}, value ? [] : ["area"]);
                 }}
                       >
-                        ${option("", "All areas", area)}${retained(area, areas)}${areas.map((item) => option(item.value, item.label, area))}
+                        ${option("", this.t("All areas"), area)}${retained(area, areas)}${areas.map((item) => option(item.value, item.label, area))}
                       </select></label
                     >`}
             `
             : b `<label
-                >Device<select name="device" @change=${this.change}>
-                  ${option("", "Select a Local appliance", device)}${retained(device, choices)}${choices.map((item) => option(item.value, item.label, device))}
+                >${this.t("Device")}<select
+                  name="device"
+                  @change=${this.change}
+                >
+                  ${option("", this.t("Select a Local appliance"), device)}${retained(device, choices)}${choices.map((item) => option(item.value, item.label, device))}
                 </select></label
-              >${isMissing ? b `<p role="status">Configured device not found. Choose a Home Connect Local appliance or check its name and integration.</p>` : A}
-              ${!device ? b `<p class="hint">A device is required before this card can display an appliance.</p>` : A}`}
+              >${isMissing ? b `<p role="status">${this.t("Configured device not found. Choose a Home Connect Local appliance or check its name and integration.")}</p>` : A}
+              ${!device ? b `<p class="hint">${this.t("A device is required before this card can display an appliance.")}</p>` : A}`}
       <label
-        >Title<input
+        >${this.t("Title")}<input
           name="title"
           .value=${typeof this.raw.title === "string" ? this.raw.title : ""}
           @change=${this.change}
       /></label>
       <label
-        >Appearance<select name="appearance" @change=${this.change}>
-          ${option("default", "Default", String(this.raw.appearance ?? "default"))}${option("bubble", "Bubble", String(this.raw.appearance ?? "default"))}
+        >${this.t("Appearance")}<select
+          name="appearance"
+          @change=${this.change}
+        >
+          ${option("default", this.t("Default"), String(this.raw.appearance ?? "default"))}${option("bubble", this.t("Bubble"), String(this.raw.appearance ?? "default"))}
         </select></label
       >
-      ${this.checkbox("expand", "Expand appliance details", this.raw.expand !== false)}
-      ${this.checkbox("confirm_start", "Confirm programme selection and start", this.raw.confirm_start !== false)}
+      ${this.checkbox("expand", this.t("Expand appliance details"), this.raw.expand !== false)}
+      ${this.checkbox("confirm_start", this.t("Confirm programme selection and start"), this.raw.confirm_start !== false)}
       ${oven
             ? b `<fieldset>
-              <legend>Oven modules</legend>
+              <legend>${this.t("Oven modules")}</legend>
               <label
-                >Module detection<select
+                >${this.t("Module detection")}<select
                   name="module_mode"
                   @change=${(event) => this.updateConfig({ oven_modules: event.target.value === "auto" ? "auto" : [] })}
                 >
-                  ${option("auto", "Detect automatically", Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}${option("manual", "Choose modules", Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}
+                  ${option("auto", this.t("Detect automatically"), Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}${option("manual", this.t("Choose modules"), Array.isArray(this.raw.oven_modules) ? "manual" : "auto")}
                 </select></label
-              >${Array.isArray(this.raw.oven_modules) ? ["microwave", "steam"].map((module) => b `<label class="check"><input type="checkbox" name=${module} .checked=${modules.includes(module)} @change=${(event) => this.updateConfig({ oven_modules: event.target.checked ? [...new Set([...modules, module])] : modules.filter((value) => value !== module) })} />${module === "steam" ? "Steam" : "Microwave"}</label>`) : A}
+              >${Array.isArray(this.raw.oven_modules) ? ["microwave", "steam"].map((module) => b `<label class="check"><input type="checkbox" name=${module} .checked=${modules.includes(module)} @change=${(event) => this.updateConfig({ oven_modules: event.target.checked ? [...new Set([...modules, module])] : modules.filter((value) => value !== module) })} />${module === "steam" ? this.t("Steam") : this.t("Microwave")}</label>`) : A}
               <p class="hint">
-                Both modules can be enabled together. No modules selected means
-                a standard oven. Controls appear only when exposed by your
-                appliance.
+                ${this.t("Both modules can be enabled together. No modules selected means a standard oven. Controls appear only when exposed by your appliance.")}
               </p>
             </fieldset>`
             : A}

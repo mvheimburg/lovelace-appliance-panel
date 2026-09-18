@@ -158,3 +158,18 @@ and legacy aliases are explicitly labelled. See `tests/fixtures/local.ts` and
 `src/roles.ts`. These tests exercise registry discovery, lifecycle, units, actions,
 editors and actual card DOM, with HA sockets/services stubbed. They do not validate
 physical appliances or model-specific remote-start behavior.
+
+### Language
+
+Cards and visual editors follow Home Assistant's current language and update when
+it changes. `hass.language` takes precedence over `hass.locale.language`. Bokmål
+is used for `nb`, regional variants such as `nb-NO`, legacy `no`, and `nn` as a
+Norwegian fallback; language codes are case-insensitive and accept underscores.
+Missing or unsupported languages use English.
+
+Card text, accessibility labels, confirmations, policy explanations, and known
+control states are translated. User titles and device/entity/area names are
+preserved. Integration program and option labels use Home Assistant's state
+formatter when available; unknown values remain unchanged. Configuration keys,
+option values, and service payloads are never translated. Static card-picker
+product names remain English.
