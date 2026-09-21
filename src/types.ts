@@ -57,7 +57,7 @@ export interface HomeAssistant {
   connection: HassConnection;
   states: HassStates;
   language?: string;
-  locale?: { language?: string };
+  locale?: { language?: string; time_format?: string };
   formatEntityState?(state: HassEntity, stateOverride?: string): string;
   callService?(
     domain: string,

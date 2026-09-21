@@ -314,6 +314,15 @@ const nb = {
   "Done around {time}": "Ferdig rundt {time}",
   "Decrease {name}": "Reduser {name}",
   "Increase {name}": "Øk {name}",
+  History: "Historikk",
+  "Show history": "Vis historikk",
+  "Close history": "Lukk historikk",
+  "History ranges": "Tidsrom for historikk",
+  "Loading history…": "Henter historikk …",
+  "No history for this period.": "Ingen historikk for denne perioden.",
+  "Could not load history": "Kunne ikke hente historikk",
+  Now: "Nå",
+  Setpoint: "Innstilt",
 } as const;
 export type TranslationKey = keyof typeof nb;
 type LanguageSource = Pick<HomeAssistant, "language" | "locale"> | undefined;

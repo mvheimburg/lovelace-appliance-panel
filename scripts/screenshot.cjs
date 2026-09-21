@@ -110,7 +110,16 @@ function simulate() {
     "Oven temperature",
     {
       unit_of_measurement: "°C",
+      state_class: "measurement",
     },
+  );
+  add(
+    "oven",
+    "sensor",
+    "sensor_oven_current_meatprobe_temperature",
+    "54",
+    "Meat probe",
+    { unit_of_measurement: "°C", state_class: "measurement" },
   );
   add("oven", "number", "number_microwave_power", "600", "Microwave power", {
     min: 90,
@@ -153,6 +162,14 @@ function simulate() {
   });
   add(
     "fridge",
+    "sensor",
+    "sensor_temperature_memory_freezer",
+    "-17.6",
+    "Freezer temperature",
+    { unit_of_measurement: "°C", state_class: "measurement" },
+  );
+  add(
+    "fridge",
     "binary_sensor",
     "binary_sensor_fridge_door_state",
     "off",
@@ -170,6 +187,64 @@ function simulate() {
     },
     states,
   };
+}
+
+/** A simulated recorder: yesterday's roast and the bake running now. */
+function history() {
+  const now = Date.now();
+  const HOUR = 3_600_000;
+  const rows = {
+    "sensor.oven_sensor_oven_current_temperature": [],
+    "sensor.oven_sensor_oven_current_meatprobe_temperature": [],
+    "number.oven_number_oven_setpoint_temperature": [
+      { s: "180", lu: (now - 30 * HOUR) / 1000 },
+      { s: "200", lu: (now - 0.7 * HOUR) / 1000 },
+    ],
+    "sensor.fridge_sensor_temperature_memory_freezer": [],
+    "number.fridge_number_setpoint_refrigerator": [
+      { s: "4", lu: (now - 30 * HOUR) / 1000 },
+    ],
+    "number.fridge_number_setpoint_freezer": [
+      { s: "-18", lu: (now - 30 * HOUR) / 1000 },
+    ],
+  };
+  const sessions = [
+    { from: 19, to: 17.4, set: 180 },
+    { from: 0.7, to: -1, set: 200 },
+  ];
+  let last = 21;
+  for (let ago = 24; ago >= 0; ago -= 1 / 12) {
+    const lu = (now - ago * HOUR) / 1000;
+    const on = sessions.find((s) => ago <= s.from && ago > s.to);
+    const ended = sessions.find((s) => ago <= s.to && ago > s.to - 6);
+    let oven = 21;
+    if (on) {
+      const t = on.from - ago;
+      oven =
+        21 + (on.set - 21) * (1 - Math.exp(-t / 0.3)) + Math.sin(t * 25) * 2;
+      last = oven;
+    } else if (ended)
+      oven = 21 + (last - 21) * Math.exp(-(ended.to - ago) / 1.1);
+    rows["sensor.oven_sensor_oven_current_temperature"].push({
+      s: oven.toFixed(0),
+      lu,
+    });
+    rows["sensor.oven_sensor_oven_current_meatprobe_temperature"].push({
+      s: on
+        ? (20 + 45 * (1 - Math.exp(-(on.from - ago) / 0.9))).toFixed(0)
+        : "unavailable",
+      lu,
+    });
+    rows["sensor.fridge_sensor_temperature_memory_freezer"].push({
+      s: (
+        -17.8 +
+        Math.sin(ago * 1.3) * 0.6 +
+        (ago > 8 && ago < 8.4 ? 3 : 0)
+      ).toFixed(1),
+      lu,
+    });
+  }
+  return rows;
 }
 
 const labels = {
@@ -219,7 +294,11 @@ async function shot(
     async ({ cards, appearance, data, labels, open }) => {
       const connection = {
         connected: true,
-        async sendMessagePromise({ type }) {
+        async sendMessagePromise({ type, entity_ids }) {
+          if (type === "history/history_during_period")
+            return Object.fromEntries(
+              entity_ids.map((id) => [id, data.history[id] ?? []]),
+            );
           const key = {
             entity_registry: "entities",
             device_registry: "devices",
@@ -238,7 +317,7 @@ async function shot(
         connection,
         states: data.states,
         language: "en-GB",
-        locale: { language: "en-GB" },
+        locale: { language: "en-GB", time_format: "24" },
         formatEntityState(state, value = state.state) {
           const unit = state.attributes.unit_of_measurement;
           if (labels[value]) return labels[value];
@@ -262,8 +341,29 @@ async function shot(
         await new Promise((r) => setTimeout(r, 200));
       }
     },
-    { cards, appearance, data: simulate(), labels, open },
+    {
+      cards,
+      appearance,
+      data: { ...simulate(), history: history() },
+      labels,
+      open,
+    },
   );
+  if (open?.hover !== undefined) {
+    const chart = await page.evaluateHandle(
+      (index) =>
+        document
+          .querySelectorAll("main > *")
+          [index].shadowRoot.querySelector(".history-chart"),
+      open.index,
+    );
+    const box = await chart.boundingBox();
+    await page.mouse.move(
+      box.x + box.width * open.hover,
+      box.y + box.height / 2,
+    );
+    await page.waitForTimeout(150);
+  }
   await page.waitForFunction(
     (count) =>
       [...document.querySelectorAll("main > *")].filter((card) =>
@@ -319,9 +419,23 @@ async function shot(
       cards: [cards[1], cards[2]],
       open: { index: 1, selector: "[data-configure]" },
     });
+    await shot(browser, errors, {
+      file: "appliance-panel-history.png",
+      width: 880,
+      height: 800,
+      theme: light,
+      appearance: "default",
+      cards: [cards[1]],
+      open: {
+        index: 0,
+        selector:
+          '[data-reading="sensor.oven_sensor_oven_current_temperature"]',
+        hover: 0.3,
+      },
+    });
     if (errors.length) throw new Error(`Browser errors: ${errors.join("; ")}`);
     console.log(
-      "Wrote docs/appliance-panel-{dark,light,more,settings}.png with simulated Home Assistant data.",
+      "Wrote docs/appliance-panel-{dark,light,more,settings,history}.png with simulated Home Assistant data.",
     );
   } finally {
     await browser.close();

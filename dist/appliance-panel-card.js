@@ -16,7 +16,7 @@ const t$2=globalThis,e$3=t$2.ShadowRoot&&(void 0===t$2.ShadyCSS||t$2.ShadyCSS.na
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t$1=globalThis,i$2=t=>t,s$1=t$1.trustedTypes,e$1=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r$1=`<${n}>`,l$1=document,c=()=>l$1.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),w=x(2),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l$1.createTreeWalker(l$1,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$1?e$1.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m$1:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p$1):void 0!==u[3]&&(c=p$1):c===p$1?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p$1:'"'===u[3]?$:g):c===$||c===g?c=p$1:c===_||c===m$1?c=v:(c=p$1,n=void 0);const x=c===p$1&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r$1:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l$1).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l$1,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l$1.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$2(t).nextSibling;i$2(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class I extends H{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t$1.litHtmlPolyfillSupport;B?.(S,k),(t$1.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
+const t$1=globalThis,i$2=t=>t,s$1=t$1.trustedTypes,e$1=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r$1=`<${n}>`,l$1=document,c=()=>l$1.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),w=x(2),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l$1.createTreeWalker(l$1,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$1?e$1.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m$1:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p$1):void 0!==u[3]&&(c=p$1):c===p$1?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p$1:'"'===u[3]?$:g):c===$||c===g?c=p$1:c===_||c===m$1?c=v:(c=p$1,n=void 0);const x=c===p$1&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r$1:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H$1}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l$1).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l$1,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l$1.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$2(t).nextSibling;i$2(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}let H$1 = class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}};class I extends H$1{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H$1{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H$1{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t$1.litHtmlPolyfillSupport;B?.(S,k),(t$1.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
 
 /**
  * @license
@@ -443,6 +443,15 @@ const nb = {
     "Done around {time}": "Ferdig rundt {time}",
     "Decrease {name}": "Reduser {name}",
     "Increase {name}": "Øk {name}",
+    History: "Historikk",
+    "Show history": "Vis historikk",
+    "Close history": "Lukk historikk",
+    "History ranges": "Tidsrom for historikk",
+    "Loading history…": "Henter historikk …",
+    "No history for this period.": "Ingen historikk for denne perioden.",
+    "Could not load history": "Kunne ikke hente historikk",
+    Now: "Nå",
+    Setpoint: "Innstilt",
 };
 function language(hass) {
     const code = (hass?.language ?? hass?.locale?.language ?? "en")
@@ -853,14 +862,14 @@ function discoverAppliances(snapshot, states) {
 const normalized = (value) => (value ?? "").split(".").pop().toLowerCase().replace(/[ _-]/g, "");
 const valid = (state) => !!state &&
     !["unknown", "unavailable", ""].includes(state.state.toLowerCase());
-function numeric(state) {
+function numeric$1(state) {
     if (!valid(state))
         return undefined;
     const value = Number(state.state);
     return Number.isFinite(value) ? value : undefined;
 }
 function seconds(state) {
-    const value = numeric(state);
+    const value = numeric$1(state);
     if (value === undefined || value < 0)
         return undefined;
     const unit = String(state.attributes.unit_of_measurement ?? "s").toLowerCase();
@@ -959,7 +968,7 @@ function applianceStatus(appliance, states, now = Date.now()) {
         const value = normalized(state.state);
         const key = semanticKey(entity.registry) || entity.entityId;
         if (/sensor_(?:countdown_|machinecare_remaining_runs)/.test(key)) {
-            const count = numeric(state);
+            const count = numeric$1(state);
             if (count === undefined || count <= 0)
                 attention.push({
                     entityId: entity.entityId,
@@ -994,7 +1003,7 @@ function applianceStatus(appliance, states, now = Date.now()) {
                 severity: bad ? "warning" : "unknown",
             });
     }
-    const progress = numeric(get("progress"));
+    const progress = numeric$1(get("progress"));
     const remainingSeconds = seconds(get("remaining"));
     const delaySeconds = seconds(get("start_delay"));
     const dates = reported
@@ -2114,6 +2123,135 @@ const styles = i$4 `
   .dialog-actions .pill {
     flex: 1;
   }
+  /* A measurement tile opens the appliance's history. */
+  .reading-button {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding-right: 34px;
+  }
+  .tile-mark {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 16px;
+    height: 16px;
+    color: var(--ap-muted);
+    opacity: 0.7;
+  }
+  /* History: one chart per appliance, the main unit left, another right. */
+  .series-0 {
+    --series: var(--ap-accent);
+  }
+  .series-1 {
+    --series: var(--ap-offline);
+  }
+  .series-2 {
+    --series: var(--ap-ok);
+  }
+  .series-3 {
+    --series: var(--purple-color, #8e44ad);
+  }
+  .series-4 {
+    --series: var(--ap-warn);
+  }
+  #history {
+    width: min(640px, calc(100vw - 24px));
+  }
+  .history-ranges {
+    display: flex;
+    gap: 6px;
+  }
+  .history-range {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--ap-text) 7%, transparent);
+  }
+  .history-range[aria-pressed="true"] {
+    color: color-mix(in srgb, var(--ap-accent) 65%, var(--ap-text));
+    background: color-mix(in srgb, var(--ap-accent) 24%, transparent);
+    box-shadow: inset 0 0 0 1.5px
+      color-mix(in srgb, var(--ap-accent) 60%, transparent);
+  }
+  .history-plot {
+    min-height: 120px;
+    touch-action: pan-y;
+  }
+  .history-chart {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .history-chart .grid {
+    stroke: color-mix(in srgb, var(--ap-muted) 22%, transparent);
+  }
+  .history-chart .axis {
+    fill: var(--ap-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .history-chart .line {
+    fill: none;
+    stroke: var(--series);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  .history-chart .dashed {
+    stroke-dasharray: 5 4;
+  }
+  .history-chart .cursor {
+    stroke: var(--ap-muted);
+    stroke-dasharray: 3 3;
+  }
+  .history-note {
+    margin: 40px 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--ap-muted);
+  }
+  .history-when {
+    margin: -6px 8px 0;
+    font-size: 12.5px;
+    color: var(--ap-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .history-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    gap: 6px;
+  }
+  .history-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2px 10px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: var(--ap-tile);
+    background: var(--ap-pill);
+    text-align: left;
+  }
+  .history-item .swatch {
+    grid-row: span 2;
+    width: 16px;
+    height: 0;
+    border-top: 3px solid var(--series);
+  }
+  .history-item.setpoint .swatch {
+    border-top-style: dashed;
+  }
+  .history-item .label {
+    font-size: 0.78rem;
+    color: var(--ap-muted);
+    overflow-wrap: anywhere;
+  }
+  .history-item strong {
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
   @media (max-width: 400px) {
     ha-card {
       padding: 12px;
@@ -2159,12 +2297,309 @@ const paths = {
     check: w `<path d="M20 6 9 17l-5-5"></path>`,
     spinner: w `<path d="M21 12a9 9 0 1 1-6.2-8.56"></path>`,
     offline: w `<path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.4 5M5 12.9a10 10 0 0 1 3.4-2M19 12.9a10 10 0 0 0-2.7-1.8M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M2 2l20 20"></path>`,
+    history: w `<path d="M3 3v18h18"></path><path d="m7 15 4-5 3 3 5-6"></path>`,
     clock: w `<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>`,
 };
 // No whitespace inside <svg>: it would leak into a button's textContent.
 function icon(name, extra = "") {
     // prettier-ignore
     return b `<svg class="i ${extra}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
+}
+
+const RANGES = [6, 24, 168];
+/** Number of palette slots in styles.ts (.series-0 … .series-4). */
+const PALETTE = 5;
+const isTemperature = (unit) => ["°C", "°F", "K"].includes(unit);
+function numeric(state) {
+    if (["unavailable", "unknown", ""].includes(state))
+        return undefined;
+    const value = Number(state);
+    return Number.isFinite(value) ? value : undefined;
+}
+/** Roles whose value is a countdown, timer or label, not a measurement. */
+const NOT_A_MEASUREMENT = [
+    "operation",
+    "selected_program",
+    "active_program",
+    "progress",
+    "remaining",
+    "elapsed",
+    "start_delay",
+    "phase",
+    "power",
+    "connection",
+];
+/**
+ * A reading tile opens the history when it is a numeric sensor measurement.
+ * Programme timing, progress, labels, on/off states and timestamps do not.
+ */
+function hasHistory(entity, state) {
+    if (!entity.entityId.startsWith("sensor.") || !state)
+        return false;
+    if (NOT_A_MEASUREMENT.includes(entity.role))
+        return false;
+    const attributes = state.attributes;
+    if (["duration", "timestamp", "date", "enum"].includes(attributes.device_class))
+        return false;
+    if (!attributes.unit_of_measurement && !attributes.state_class)
+        return false;
+    return (["unavailable", "unknown"].includes(state.state) ||
+        numeric(state.state) !== undefined);
+}
+/** The zone an entity measures or controls, to pair a reading with its setpoint. */
+function zone(entity) {
+    // The unique key, not the entity ID: that starts with the device's name.
+    const key = (semanticKey(entity.registry) || entity.entityId.split(".")[1]).toLowerCase();
+    if (/meat_?probe/.test(key))
+        return "meatprobe";
+    if (/freezer/.test(key))
+        return "freezer";
+    if (/chiller/.test(key))
+        return "chiller";
+    if (/fridge|refrigerator/.test(key))
+        return "fridge";
+    if (/oven/.test(key))
+        return "oven";
+    return "";
+}
+/**
+ * The readings drawn together for one appliance: its current temperatures,
+ * the matching setpoints (dashed, in the reading's colour) and the reading
+ * that was tapped when it is something else.
+ */
+function historySources(device, tapped, states) {
+    const unit = (e) => String(states[e.entityId]?.attributes.unit_of_measurement ?? "");
+    const readings = device.entities.filter((e) => e.role === "current_temperature" &&
+        (e.entityId === tapped.entityId || hasHistory(e, states[e.entityId])));
+    const setpoints = device.entities.filter((e) => ["cooling_setpoint", "target_temperature"].includes(e.role) &&
+        e.entityId.startsWith("number.") &&
+        !!states[e.entityId]);
+    const temperature = tapped.role === "current_temperature" || isTemperature(unit(tapped));
+    const sources = [];
+    const colors = new Map();
+    let next = 0;
+    const color = () => next++ % PALETTE;
+    for (const e of readings) {
+        const c = color();
+        sources.push({ entityId: e.entityId, color: c, setpoint: false });
+        const z = zone(e);
+        if (z && !colors.has(z))
+            colors.set(z, c);
+    }
+    if (!temperature && !readings.some((e) => e.entityId === tapped.entityId))
+        sources.push({
+            entityId: tapped.entityId,
+            color: color(),
+            setpoint: false,
+        });
+    const lone = readings.length === 1 && setpoints.length === 1
+        ? sources[0]?.color
+        : undefined;
+    for (const e of setpoints) {
+        const matched = colors.get(zone(e)) ?? lone;
+        sources.push({
+            entityId: e.entityId,
+            color: matched ?? color(),
+            setpoint: true,
+        });
+    }
+    // A reading's own entity first, then the rest in card order.
+    if (temperature && !sources.some((s) => s.entityId === tapped.entityId))
+        sources.unshift({
+            entityId: tapped.entityId,
+            color: color(),
+            setpoint: false,
+        });
+    return sources;
+}
+/**
+ * The history of each source over the last `hours`, from Home Assistant's
+ * recorder, ending with the current state.
+ */
+async function loadHistory(connection, sources, states, hours, now = Date.now()) {
+    const start = now - hours * 3600000;
+    const reply = sources.length
+        ? await connection.sendMessagePromise({
+            type: "history/history_during_period",
+            start_time: new Date(start).toISOString(),
+            entity_ids: [...new Set(sources.map((s) => s.entityId))],
+            minimal_response: true,
+            no_attributes: true,
+            significant_changes_only: false,
+        })
+        : {};
+    return sources.map((source) => {
+        const current = states[source.entityId];
+        const points = (reply?.[source.entityId] ?? []).map((row) => [
+            Math.max(start, (row.lu ?? row.lc ?? 0) * 1000),
+            numeric(row.s),
+        ]);
+        if (current)
+            points.push([now, numeric(current.state)]);
+        return {
+            ...source,
+            unit: String(current?.attributes.unit_of_measurement ?? ""),
+            points,
+        };
+    });
+}
+/** The value in force at `time`: the last point at or before it. */
+function valueAt(series, time) {
+    let value;
+    for (const [t, v] of series.points) {
+        if (t > time)
+            break;
+        value = v;
+    }
+    return value;
+}
+/** Round-number ticks covering [min, max], about `count` of them. */
+function ticks(min, max, count = 4) {
+    const raw = (max - min) / count || 1;
+    const power = 10 ** Math.floor(Math.log10(raw));
+    const step = [1, 2, 2.5, 5, 10].map((m) => m * power).find((s) => s >= raw) ??
+        10 * power;
+    const out = [];
+    // From the step at or below min up to the first step at or above max.
+    for (let v = Math.floor(min / step) * step;; v += step) {
+        out.push(Number(v.toFixed(6)));
+        if (v >= max - 1e-9)
+            break;
+    }
+    return out;
+}
+
+const LEFT = 44, TOP = 24, BOTTOM = 196, H = 230, 
+/** Room right of the plot for the second scale. */
+GUTTER = 44;
+/**
+ * Unbroken spells of a series. With `hold`, a value lasts until the next
+ * change, so the spell runs on to the moment it became unavailable.
+ */
+function runs(points, hold) {
+    const out = [];
+    let current = [];
+    for (const [t, v] of points) {
+        if (v === undefined) {
+            if (current.length) {
+                if (hold)
+                    current.push([t, current[current.length - 1][1]]);
+                out.push(current);
+            }
+            current = [];
+        }
+        else
+            current.push([t, v]);
+    }
+    if (current.length)
+        out.push(current);
+    return out;
+}
+function scale(series, pad) {
+    const values = series.flatMap((s) => s.points.flatMap(([, v]) => (v === undefined ? [] : [v])));
+    if (!values.length)
+        return undefined;
+    const lo = Math.min(...values), hi = Math.max(...values);
+    const marks = ticks(lo - pad, hi + pad);
+    return { marks, min: marks[0], max: marks[marks.length - 1] };
+}
+/** The left unit: temperatures when there are any, else the first reading's. */
+function units(series) {
+    const left = series.find((s) => isTemperature(s.unit))?.unit ?? series[0]?.unit ?? "";
+    return [left, series.find((s) => s.unit !== left)?.unit];
+}
+/**
+ * One chart of an appliance's readings: the left scale in the main unit
+ * (temperatures), a right-hand scale for a reading in another unit.
+ * Unavailable spells are gaps; setpoints are dashed.
+ */
+function chart(series, start, end, hover, text, W = 600) {
+    const [leftUnit, rightUnit] = units(series);
+    const RIGHT = W - (rightUnit === undefined ? 12 : GUTTER);
+    const left = series.filter((s) => s.unit === leftUnit);
+    const right = rightUnit === undefined ? [] : series.filter((s) => s.unit === rightUnit);
+    const pad = (list, unit) => isTemperature(unit)
+        ? 1
+        : list.some((s) => s.points.some(([, v]) => v !== undefined && Math.abs(v) >= 10))
+            ? 1
+            : 0.1;
+    const l = scale(left, pad(left, leftUnit)), r = scale(right, pad(right, rightUnit ?? ""));
+    const x = (t) => LEFT +
+        ((Math.min(Math.max(t, start), end) - start) / (end - start)) *
+            (RIGHT - LEFT);
+    const y = (v, s) => BOTTOM - ((v - s.min) / (s.max - s.min || 1)) * (BOTTOM - TOP);
+    const hours = (end - start) / 3600000;
+    const narrow = W < 480;
+    const every = hours <= 6
+        ? narrow
+            ? 2
+            : 1
+        : hours <= 24
+            ? narrow
+                ? 6
+                : 4
+            : narrow
+                ? 48
+                : 24;
+    const xTicks = [];
+    const hour = new Date(start);
+    hour.setMinutes(0, 0, 0);
+    let midnights = 0;
+    for (let t = hour.getTime(); t <= end; t += 3600000) {
+        const h = new Date(t).getHours();
+        if (t < start)
+            continue;
+        if (every >= 24
+            ? h === 0 && midnights++ % (every / 24) === 0
+            : h % every === 0)
+            xTicks.push(t);
+    }
+    const path = (s, sc) => runs(s.points, s.setpoint)
+        .map((run) => 
+    // A setpoint holds each value until it is changed: steps.
+    run
+        .map(([t, v], i) => i
+        ? s.setpoint
+            ? `H${x(t).toFixed(1)} V${y(v, sc).toFixed(1)}`
+            : `L${x(t).toFixed(1)},${y(v, sc).toFixed(1)}`
+        : `M${x(t).toFixed(1)},${y(v, sc).toFixed(1)}`)
+        .join(" "))
+        .join(" ");
+    // As many decimals as the tick steps need (2.5 steps show 57.5, not 58).
+    const digits = (sc) => Math.min(2, Math.max(...sc.marks.map((v) => String(v).split(".")[1]?.length ?? 0)));
+    const line = (s, sc) => w `<path class=${`line series-${s.color}${s.setpoint ? " dashed" : ""}`} data-entity=${s.entityId} d=${path(s, sc)}></path>`;
+    const grid = l ?? r;
+    return w `<svg class="history-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label=${text.label}>
+    <title>${text.label}</title>
+    ${grid?.marks.map((v) => w `<line class="grid" x1=${LEFT} x2=${RIGHT} y1=${y(v, grid)} y2=${y(v, grid)}></line>`)}
+    ${l
+        ? l.marks.map((v) => w `<text class="axis" x=${LEFT - 6} y=${y(v, l) + 4} text-anchor="end">${text.number(v, digits(l))}</text>`)
+        : A}
+    ${l && leftUnit
+        ? w `<text class="axis unit" x="4" y="12">${leftUnit}</text>`
+        : A}
+    ${r
+        ? r.marks.map((v) => w `<text class="axis" x=${RIGHT + 6} y=${y(v, r) + 4}>${text.number(v, digits(r))}</text>`)
+        : A}
+    ${r && rightUnit
+        ? w `<text class="axis unit" x=${W - 4} y="12" text-anchor="end">${rightUnit}</text>`
+        : A}
+    ${xTicks.map((t) => w `<line class="grid" x1=${x(t)} x2=${x(t)} y1=${TOP} y2=${BOTTOM}></line>
+        <text class="axis" x=${x(t)} y=${BOTTOM + 18} text-anchor="middle">${text.time(t, every >= 24)}</text>`)}
+    ${l ? left.map((s) => line(s, l)) : A}
+    ${r ? right.map((s) => line(s, r)) : A}
+    ${hover === undefined
+        ? A
+        : w `<line class="cursor" x1=${x(hover)} x2=${x(hover)} y1=${TOP} y2=${BOTTOM}></line>`}
+  </svg>`;
+}
+/** The time under a pointer over the chart. */
+function timeAt(event, element, start, end, twoScales) {
+    const box = element.getBoundingClientRect();
+    const W = element.viewBox?.baseVal?.width || box.width;
+    const px = ((event.clientX - box.left) / box.width) * W;
+    const ratio = (px - LEFT) / (W - (twoScales ? GUTTER : 12) - LEFT);
+    return start + Math.min(1, Math.max(0, ratio)) * (end - start);
 }
 
 const labels = {
@@ -2227,6 +2662,11 @@ class ApplianceCard extends i$1 {
         this.busy = false;
         this.error = "";
         this.notice = "";
+        this.range = 24;
+        this.historyLoading = false;
+        this.historyError = "";
+        this.historyTicket = 0;
+        this.plotWidth = 600;
     }
     t(key, values = {}) {
         return localize(this.ha, key, values);
@@ -2258,6 +2698,7 @@ class ApplianceCard extends i$1 {
                 JSON.stringify(this.config.devices) !== JSON.stringify(next.devices) ||
                 this.config.area !== next.area)) {
             this.closeDialogs();
+            this.resetHistory();
             this.pending = undefined;
             this.detailId = undefined;
             this.configureId = undefined;
@@ -2284,6 +2725,23 @@ class ApplianceCard extends i$1 {
         clearInterval(this.timer);
         this.closeDialogs();
         this.invalidate();
+        this.resize?.disconnect();
+        this.resize = undefined;
+    }
+    updated() {
+        const plot = this.shadowRoot?.querySelector(".history-plot");
+        if (!plot || this.resize)
+            return;
+        this.resize = new ResizeObserver(([entry]) => {
+            const width = Math.round(entry.contentRect.width);
+            // Redraw next frame, outside the observer's own layout pass.
+            if (width > 0 && Math.abs(width - this.plotWidth) > 4)
+                requestAnimationFrame(() => {
+                    this.plotWidth = width;
+                    this.requestUpdate();
+                });
+        });
+        this.resize.observe(plot);
     }
     get isOverview() {
         return this.config?.type.replace("custom:", "") === "kitchen-panel-card";
@@ -2305,6 +2763,14 @@ class ApplianceCard extends i$1 {
         this.epoch++;
         this.pending = undefined;
         this.closeDialogs();
+        this.resetHistory();
+    }
+    /** Drop loaded history and ignore replies still in flight. */
+    resetHistory() {
+        this.historyTicket++;
+        this.historyFor = this.series = this.window = this.hover = undefined;
+        this.historyLoading = false;
+        this.historyError = "";
     }
     closeDialogs() {
         this.shadowRoot?.querySelectorAll("dialog").forEach((d) => d.close());
@@ -2553,11 +3019,212 @@ class ApplianceCard extends i$1 {
         return (domain === "select" &&
             !Array.isArray(this.ha?.states[entity.entityId]?.attributes.options));
     }
-    tile(entity) {
+    tile(entity, device) {
+        if (device && hasHistory(entity, this.ha?.states[entity.entityId]))
+            return b `<button
+        class="tile reading-button"
+        data-reading=${entity.entityId}
+        data-history
+        aria-haspopup="dialog"
+        title=${this.t("Show history")}
+        @click=${() => void this.openHistory(device, entity)}
+      >
+        <span class="label">${this.entityName(entity)}</span
+        ><strong class="value">${this.reading(entity)}</strong
+        >${icon("history", "tile-mark")}
+      </button>`;
         return b `<div class="tile" data-reading=${entity.entityId}>
       <span class="label">${this.entityName(entity)}</span
       ><strong class="value">${this.reading(entity)}</strong>
     </div>`;
+    }
+    async openHistory(device, entity) {
+        if (!this.ha)
+            return;
+        this.resetHistory();
+        this.historyFor = {
+            deviceId: device.id,
+            sources: historySources(device, entity, this.ha.states),
+        };
+        this.requestUpdate();
+        await this.updateComplete;
+        const dialog = this.shadowRoot?.querySelector("#history");
+        if (dialog && !dialog.open)
+            dialog.showModal();
+        void this.loadHistory();
+    }
+    async loadHistory(range = this.range) {
+        const target = this.historyFor;
+        if (!this.ha || !target)
+            return;
+        const ticket = ++this.historyTicket;
+        this.range = range;
+        this.historyLoading = true;
+        this.historyError = "";
+        this.hover = undefined;
+        this.requestUpdate();
+        const end = Date.now();
+        try {
+            const series = await loadHistory(this.ha.connection, target.sources, this.ha.states, range, end);
+            if (ticket !== this.historyTicket)
+                return;
+            this.series = series;
+            this.window = [end - range * 3600000, end];
+        }
+        catch (error) {
+            if (ticket !== this.historyTicket)
+                return;
+            this.series = this.window = undefined;
+            this.historyError = `${this.t("Could not load history")}: ${error instanceof Error
+                ? error.message
+                : typeof error === "object" && error && "message" in error
+                    ? String(error.message)
+                    : String(error)}`;
+        }
+        this.historyLoading = false;
+        this.requestUpdate();
+    }
+    moreInfo(entityId) {
+        this.dispatchEvent(new CustomEvent("hass-more-info", {
+            detail: { entityId },
+            bubbles: true,
+            composed: true,
+        }));
+    }
+    historyDialog() {
+        const locale = formattingLocale(this.ha);
+        const format = this.ha?.locale?.time_format;
+        const hour12 = format === "12" ? true : format === "24" ? false : undefined;
+        const time = (ms, withDay) => {
+            try {
+                return new Intl.DateTimeFormat(locale, withDay
+                    ? { weekday: "short", day: "numeric" }
+                    : { hour: "2-digit", minute: "2-digit", hour12 }).format(ms);
+            }
+            catch {
+                return new Date(ms).toLocaleTimeString();
+            }
+        };
+        const span = (hours) => new Intl.NumberFormat(locale, {
+            style: "unit",
+            unit: hours < 48 ? "hour" : "day",
+            unitDisplay: "short",
+        }).format(hours < 48 ? hours : hours / 24);
+        const number = (value, digits) => new Intl.NumberFormat(locale, {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+        }).format(value);
+        const reading = (value) => new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value);
+        const target = this.historyFor;
+        const device = target
+            ? this.selection().devices.find((d) => d.id === target.deviceId)
+            : undefined;
+        const entity = (id) => device?.entities.find((e) => e.entityId === id);
+        const series = this.series;
+        const window = this.window;
+        const at = this.hover;
+        const twoScales = !!series && units(series)[1] !== undefined;
+        const close = () => this.shadowRoot?.querySelector("#history")?.close();
+        return b `<dialog
+      id="history"
+      aria-labelledby="history-title"
+      @click=${this.closeOnBackdrop}
+      @close=${() => {
+            this.historyTicket++;
+            this.historyLoading = false;
+            this.hover = undefined;
+        }}
+    >
+      <div class="top">
+        <h2 class="title" id="history-title">
+          ${this.t("History")}${device ? b `<span class="subtitle">${this.config?.title && !this.isOverview ? this.config.title : device.name}</span>` : A}
+        </h2>
+        <button
+          class="icon-btn"
+          data-close-history
+          aria-label=${this.t("Close history")}
+          title=${this.t("Close history")}
+          @click=${close}
+        >
+          ${icon("close")}
+        </button>
+      </div>
+      <div
+        class="history-ranges"
+        role="group"
+        aria-label=${this.t("History ranges")}
+      >
+        ${RANGES.map((hours) => b `<button
+              class="history-range"
+              data-range=${hours}
+              aria-pressed=${String(this.range === hours)}
+              @click=${() => void this.loadHistory(hours)}
+            >
+              ${span(hours)}
+            </button>`)}
+      </div>
+      <div
+        class="history-plot"
+        aria-busy=${String(this.historyLoading)}
+        @pointermove=${(e) => {
+            const svg = e.currentTarget.querySelector("svg");
+            if (!svg || !window)
+                return;
+            this.hover = timeAt(e, svg, window[0], window[1], twoScales);
+            this.requestUpdate();
+        }}
+        @pointerleave=${() => {
+            this.hover = undefined;
+            this.requestUpdate();
+        }}
+      >
+        ${this.historyError
+            ? b `<div class="feedback failed" role="alert">
+                <span class="circ">${icon("warning")}</span
+                ><span class="feedback-title">${this.historyError}</span>
+              </div>`
+            : !series || !window
+                ? b `<p class="history-note" role="status">
+                  ${this.t("Loading history…")}
+                </p>`
+                : series.every((s) => s.points.every(([, v]) => v === undefined))
+                    ? b `<p class="history-note">
+                    ${this.t("No history for this period.")}
+                  </p>`
+                    : chart(series, window[0], window[1], at, {
+                        number,
+                        time,
+                        label: `${this.t("History")}${device ? `: ${device.name}` : ""}`,
+                    }, Math.max(280, this.plotWidth))}
+      </div>
+      <p class="history-when" aria-live="polite">
+        ${at === undefined ? this.t("Now") : time(at, false)}
+      </p>
+      <div class="history-legend">
+        ${(series ?? []).map((s) => {
+            const value = at === undefined
+                ? s.points[s.points.length - 1]?.[1]
+                : valueAt(s, at);
+            const e = entity(s.entityId);
+            const name = e ? this.entityName(e) : s.entityId;
+            return b `<button
+            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}`}
+            data-series=${s.entityId}
+            title=${s.setpoint ? this.t("Setpoint") : ""}
+            @click=${() => {
+                close();
+                this.moreInfo(s.entityId);
+            }}
+          >
+            <span class="swatch" aria-hidden="true"></span>
+            <span class="label">${name}</span>
+            <strong
+              >${value === undefined ? "—" : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`}</strong
+            >
+          </button>`;
+        })}
+      </div>
+    </dialog>`;
     }
     control(device, entity) {
         const state = this.ha.states[entity.entityId];
@@ -2737,7 +3404,7 @@ class ApplianceCard extends i$1 {
         </button>
         ${hint}
       </div>`;
-        return this.tile(entity);
+        return this.tile(entity, device);
     }
     group(device, title, entities, section, module) {
         if (!entities.length)
@@ -2750,7 +3417,7 @@ class ApplianceCard extends i$1 {
       data-module=${module ?? A}
     >
       <h3>${title}</h3>
-      ${readings.length ? b `<div class="tiles">${readings.map((e) => this.tile(e))}</div>` : A}
+      ${readings.length ? b `<div class="tiles">${readings.map((e) => this.tile(e, device))}</div>` : A}
       ${controls.length ? b `<div class="controls">${controls.map((e) => this.control(device, e))}</div>` : A}
     </section>`;
     }
@@ -3246,6 +3913,7 @@ class ApplianceCard extends i$1 {
         </div>
         ${configure ? this.configureBody(configure) : A}${this.feedback()}
       </dialog>
+      ${this.historyDialog()}
       <dialog id="confirmation" @cancel=${this.cancelConfirm}>
         <div class="confirm-head">
           <span class="circ big">${icon("warning")}</span>

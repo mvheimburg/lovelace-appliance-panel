@@ -35,6 +35,9 @@ a small title line, a status **hero**, reading tiles and pill controls.
   temperature and duration steppers, microwave and steam modules, wash and
   coffee options, cooling zones and modes. Short option lists are chips;
   switches are toggle pills; numbers are − / + steppers with an editable value.
+- **Readings**: measured values such as the oven, meat-probe and freezer
+  temperatures are tiles with a small chart mark. Tap one to open its history
+  (see below).
 - **Needs attention**: salt, rinse aid, water tank, doors, errors and offline
   states as tinted rows.
 - **Settings (cog)**: a dialog with the controls that are not everyday tasks:
@@ -45,6 +48,37 @@ a small title line, a status **hero**, reading tiles and pill controls.
   service calls are the same as before; only where they are shown changed.
 
 ![Settings dialog for the dishwasher](docs/appliance-panel-settings.png)
+
+### Reading history
+
+From 0.4.0 a measured reading opens a history of its appliance, drawn in the
+card's own style from Home Assistant's recorder:
+
+- **What is drawn**: the appliance's current temperatures (oven, meat probe,
+  fridge/freezer zones) together with their setpoints — the oven's target
+  temperature, the fridge/freezer setpoints — drawn **dashed** in the colour of
+  the zone they control. A setpoint holds its value until it is changed, so it
+  is drawn as steps. When the tapped reading is something else (for example a
+  humidity sensor or a care countdown with a unit), it is added with its own
+  **right-hand scale** in its unit.
+- **Ranges**: 6 h, 24 h and 7 d. Move the pointer (or drag a finger) over the
+  chart to read every value at that moment in the legend; the time is shown
+  above it, following Home Assistant's 12/24-hour setting and your regional
+  format.
+- **Legend**: each entry opens Home Assistant's more-info dialog for that entity.
+- **Gaps**: spells when a reading was unavailable (for example a meat probe that
+  is not plugged in) are left as gaps rather than bridged.
+- A failed request is explained in the dialog; nothing on the card changes.
+
+A tile opens the history when it is a numeric **sensor** with a unit or state
+class. These stay plain, by design, to keep the card lean: programme remaining
+and elapsed time, delayed-start countdowns, progress, programme and phase names,
+operation state, on/off and door states, enum sensors such as salt or water tank
+levels, and timestamps. Controls stay controls: temperature steppers, chips,
+selects and switches never become history buttons; their values appear in the
+chart as setpoints instead.
+
+![History of a running oven: oven temperature, meat probe and the dashed target temperature](docs/appliance-panel-history.png)
 
 The kitchen overview shows summary tiles (running, needing attention,
 appliances), one row per running appliance with its remaining time, one

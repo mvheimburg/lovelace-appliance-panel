@@ -25,6 +25,7 @@ const paths = {
   check: svg`<path d="M20 6 9 17l-5-5"></path>`,
   spinner: svg`<path d="M21 12a9 9 0 1 1-6.2-8.56"></path>`,
   offline: svg`<path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.4 5M5 12.9a10 10 0 0 1 3.4-2M19 12.9a10 10 0 0 0-2.7-1.8M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M2 2l20 20"></path>`,
+  history: svg`<path d="M3 3v18h18"></path><path d="m7 15 4-5 3 3 5-6"></path>`,
   clock: svg`<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>`,
 } satisfies Record<string, SVGTemplateResult>;
 
