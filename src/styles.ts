@@ -1,3 +1,4 @@
+import { colorSchemeStyles } from "./color-schemes";
 import { css } from "lit";
 /**
  * One style module for every card in this package, in the same visual family
@@ -715,4 +716,5 @@ export const styles = css`
       display: none;
     }
   }
+  ${colorSchemeStyles}
 `;

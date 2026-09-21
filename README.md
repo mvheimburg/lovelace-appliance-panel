@@ -223,3 +223,34 @@ preserved. Integration program and option labels use Home Assistant's state
 formatter when available; unknown values remain unchanged. Configuration keys,
 option values, and service payloads are never translated. Static card-picker
 product names remain English.
+
+## Color schemes
+
+Choose **Color scheme** in the card's visual editor. The setting is per card and
+works with both **Default** and **Bubble** appearance, including in-card dialogs.
+Every card supplied by this package offers the same choices:
+
+| Scheme | YAML value | Palette |
+| --- | --- | --- |
+| Home Assistant (default) | `home-assistant` | Follows your dashboard theme and Bubble color variables |
+| Bright | `bright` | White surfaces with blue accents |
+| Warm | `warm` | Ivory surfaces with warm brown accents |
+| Mint | `mint` | Pale green surfaces with green accents |
+| Sky | `sky` | Pale blue surfaces with blue accents |
+| Lavender | `lavender` | Pale purple surfaces with purple accents |
+
+For example, add these options to your existing card configuration:
+
+```yaml
+appearance: bubble
+color_scheme: mint
+```
+
+The five light schemes stay light even on a dark dashboard and override inherited
+colors only within this card. Status colors retain their meaning (green for
+success, amber for warnings and red for errors). Remove `color_scheme` or choose
+**Home Assistant** to follow the dashboard again. Existing configurations keep
+their current appearance. Scheme names and the editor label support English and
+Norwegian Bokmål; YAML values remain unchanged in either language. Static
+card-picker metadata remains English because it has no Home Assistant language
+context.

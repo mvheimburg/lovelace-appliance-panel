@@ -1,3 +1,4 @@
+import { colorSchemeSelector } from "./color-schemes";
 import { localize, type TranslationKey } from "./localize";
 import { LitElement, css, html, nothing } from "lit";
 import { CARD_KINDS } from "./config";
@@ -193,6 +194,7 @@ class ApplianceEditor extends LitElement {
           )
         : nothing;
     return html`<form @submit=${(event: Event) => event.preventDefault()}>
+      ${colorSchemeSelector(this.hass, this.raw.color_scheme, (scheme) => this.updateConfig({ color_scheme: scheme }))}
       <p class="hint">
         ${this.t("Devices are discovered from Home Connect Local. Configured names stay unchanged until you select another device.")}
       </p>

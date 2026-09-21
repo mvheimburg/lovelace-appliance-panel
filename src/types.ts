@@ -1,3 +1,4 @@
+import type { ColorScheme } from "./color-schemes";
 export interface HassEntity {
   entity_id: string;
   state: string;
@@ -153,6 +154,7 @@ export interface ApplianceConfig {
   devices?: string[];
   title?: string;
   appearance: "default" | "bubble";
+  color_scheme?: ColorScheme;
   expand: boolean;
   confirm_start: boolean;
   [key: string]: unknown;

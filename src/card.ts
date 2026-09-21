@@ -1,3 +1,4 @@
+import { applyColorScheme } from "./color-schemes";
 import {
   localize,
   message,
@@ -127,6 +128,7 @@ export class ApplianceCard extends LitElement {
   }
   setConfig(value: Record<string, unknown>) {
     const next = validateConfig(value, this.ha);
+    applyColorScheme(this, value.color_scheme, this.ha);
     if (
       this.config &&
       (this.config.device !== next.device ||
