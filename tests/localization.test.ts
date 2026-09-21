@@ -14,12 +14,15 @@ test("Bokmål renders controls and confirmation while preserving raw service val
   const root = card.shadowRoot as ShadowRoot;
   expect(root.textContent).toContain("Innstillinger");
   expect(root.textContent).toContain("Klar");
-  const steam = root.querySelector<HTMLSelectElement>(
+  const steam = root.querySelector<HTMLElement>(
     '[data-entity="select.oven_select_steam_level"]',
   )!;
   expect(steam.textContent).toContain("Høy");
-  steam.value = "high";
-  steam.dispatchEvent(new Event("change"));
+  // Short option sets render as chips; the payload keeps the raw option value.
+  expect(
+    steam.querySelector('[data-value="medium"]')?.getAttribute("aria-pressed"),
+  ).toBe("true");
+  steam.querySelector<HTMLButtonElement>('[data-value="high"]')!.click();
   await settle();
   expect(env.calls[0]).toEqual([
     "select",
@@ -268,4 +271,30 @@ test("formatting retains HA language precedence and an English default", () => {
     formattingLocale({ language: "en-GB", locale: { language: "nb-NO" } }),
   ).toBe("en-GB");
   expect(formattingLocale(undefined)).toBe("en");
+});
+
+test("header settings and power controls have Bokmål accessible names", async () => {
+  const env = makeHass();
+  env.add("oven", "switch", "switch_power_state", "off");
+  const card = document.createElement("oven-card") as any;
+  card.setConfig({ type: "custom:oven-card", device: "oven" });
+  card.hass = { ...env.hass, language: "nb-NO" };
+  document.body.append(card);
+  await settle();
+  const root = card.shadowRoot as ShadowRoot;
+  expect(
+    root.querySelector("[data-configure]")?.getAttribute("aria-label"),
+  ).toBe("Apparatinnstillinger");
+  expect(root.querySelector("[data-power]")?.getAttribute("aria-label")).toBe(
+    "Strøm",
+  );
+  expect(root.querySelector("[data-power]")?.textContent).toContain("Av");
+  expect(
+    root.querySelector("[data-close-configure]")?.getAttribute("aria-label"),
+  ).toBe("Lukk innstillinger");
+  card.hass = { ...env.hass, language: "en" };
+  await settle();
+  expect(
+    root.querySelector("[data-configure]")?.getAttribute("aria-label"),
+  ).toBe("Appliance settings");
 });

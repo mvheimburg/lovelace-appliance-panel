@@ -255,6 +255,14 @@ const nb = {
     "Oven used heating mode": "Oppvarmingsmodus",
     "Pyrolysis level": "Pyrolysenivå",
     "Oven fast pre heat": "Hurtigoppvarming",
+    Power: "Strøm",
+    Appliances: "Apparater",
+    "Appliance settings": "Apparatinnstillinger",
+    "Close settings": "Lukk innstillinger",
+    "Sending…": "Sender …",
+    "Done around {time}": "Ferdig rundt {time}",
+    "Decrease {name}": "Reduser {name}",
+    "Increase {name}": "Øk {name}",
 };
 function language(hass) {
     const code = (hass?.language ?? hass?.locale?.language ?? "en")
@@ -415,7 +423,7 @@ const t$1=globalThis,e$2=t$1.ShadowRoot&&(void 0===t$1.ShadyCSS||t$1.ShadyCSS.na
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t=globalThis,i$1=t=>t,s$1=t.trustedTypes,e=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r=`<${n}>`,l=document,c=()=>l.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m=/>/g,p=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l.createTreeWalker(l,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e?e.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p):void 0!==u[3]&&(c=p):c===p?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p:'"'===u[3]?$:g):c===$||c===g?c=p:c===_||c===m?c=v:(c=p,n=void 0);const x=c===p&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$1(t).nextSibling;i$1(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class I extends H{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t.litHtmlPolyfillSupport;B?.(S,k),(t.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
+const t=globalThis,i$1=t=>t,s$1=t.trustedTypes,e=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r=`<${n}>`,l=document,c=()=>l.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m=/>/g,p=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),w=x(2),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l.createTreeWalker(l,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e?e.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p):void 0!==u[3]&&(c=p):c===p?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p:'"'===u[3]?$:g):c===$||c===g?c=p:c===_||c===m?c=v:(c=p,n=void 0);const x=c===p&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$1(t).nextSibling;i$1(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class I extends H{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t.litHtmlPolyfillSupport;B?.(S,k),(t.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
 
 /**
  * @license
@@ -1253,428 +1261,756 @@ function refreshRegistries(hass) {
     void sharedByConnection.get(hass.connection)?.refresh();
 }
 
+/**
+ * One style module for every card in this package, in the same visual family
+ * as our other cards: muted title line, a hero with a tinted status circle,
+ * reading tiles, pill controls and chips. Colours come from HA theme variables.
+ */
 const styles = i$3 `
   :host {
     display: block;
-    --ap-accent: var(--primary-color, #2563eb);
-    --ap-bg: var(--ha-card-background, var(--card-background-color, #fff));
-    --ap-surface: var(--secondary-background-color, #f3f5f8);
-    --ap-text: var(--primary-text-color, #192435);
-    --ap-muted: var(--secondary-text-color, #607086);
-    --ap-border: var(--divider-color, #dce2eb);
-    --ap-radius: 20px;
-    --ap-icon-radius: 15px;
-    --ap-button-radius: 12px;
-    --ap-icon-bg: var(--ap-surface);
-    --ap-button-bg: var(--ap-surface);
-    --ap-card-border: 1px solid var(--ap-border);
-    --ap-shadow: none;
-    --ap-error: #b42330;
-    --ap-warning: #9b5900;
-    color: var(--ap-text);
+    color: var(--primary-text-color, #1b1b1a);
     font-family: var(--paper-font-body1_-_font-family, system-ui, sans-serif);
+    --ap-text: var(--primary-text-color, #1b1b1a);
+    --ap-muted: var(--secondary-text-color, #5b5a55);
+    --ap-accent: var(--primary-color, #03a9f4);
+    --ap-ok: var(--success-color, #2e7d32);
+    --ap-warn: var(--warning-color, #f59e0b);
+    --ap-offline: var(--orange-color, #ea580c);
+    --ap-error: var(--error-color, #c62828);
+    --ap-neutral: var(--disabled-text-color, #8a8984);
+    --ap-surface: var(--ha-card-background, var(--card-background-color, #fff));
+    --ap-pill: var(--secondary-background-color, #f3f2ee);
+    --ap-radius: 20px;
+    --ap-tile: 16px;
+    --ap-circle: 50%;
   }
   :host([appearance="bubble"]) {
-    --ap-bg: var(
-      --bubble-main-background-color,
-      var(--card-background-color, #fff)
-    );
     --ap-surface: var(
+      --bubble-main-background-color,
+      var(--ha-card-background, var(--card-background-color, #fff))
+    );
+    --ap-pill: var(
       --bubble-secondary-background-color,
-      var(--secondary-background-color, #f1f4f8)
+      var(--secondary-background-color, #f3f2ee)
     );
-    --ap-accent: var(--bubble-accent-color, var(--primary-color, #2563eb));
-    --ap-radius: var(--bubble-border-radius, 28px);
-    --ap-icon-radius: var(--bubble-icon-border-radius, 15px);
-    --ap-button-radius: var(--bubble-sub-button-border-radius, 12px);
-    --ap-icon-bg: var(--bubble-icon-background-color, var(--ap-surface));
-    --ap-button-bg: var(
-      --bubble-sub-button-background-color,
-      var(--ap-surface)
-    );
-    --ap-card-border: var(--bubble-border, 1px solid var(--ap-border));
-    --ap-shadow: var(--bubble-box-shadow, none);
+    --ap-accent: var(--bubble-accent-color, var(--primary-color, #03a9f4));
+    --ap-radius: var(--bubble-border-radius, 32px);
+    --ap-tile: var(--bubble-sub-button-border-radius, 22px);
+    --ap-circle: var(--bubble-icon-border-radius, 50%);
   }
   * {
     box-sizing: border-box;
   }
   ha-card {
-    display: block;
-    background: var(--ap-bg);
-    border: var(--ap-card-border);
-    border-radius: var(--ap-radius);
-    box-shadow: var(--ap-shadow);
-    padding: 20px;
-    overflow: hidden;
-  }
-  header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-    margin-bottom: 16px;
-  }
-  .heading {
-    flex: 1;
-    min-width: 0;
-  }
-  h2 {
-    font-size: 1.1rem;
-    line-height: 1.35;
-    margin: 0;
-    overflow-wrap: anywhere;
-  }
-  h3 {
-    font-size: 0.82rem;
-    letter-spacing: 0.03em;
-    margin: 0 0 12px;
-    font-weight: 650;
-    color: var(--ap-muted);
-  }
-  .eyebrow {
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ap-muted);
-    margin: 0 0 5px;
-  }
-  .icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: var(--ap-icon-radius);
-    color: var(--ap-accent);
-    background: var(--ap-icon-bg);
-  }
-  .icon ha-icon {
-    --mdc-icon-size: 24px;
-  }
-  .status {
-    font-size: 0.78rem;
-    color: var(--ap-muted);
-    margin-top: 3px;
-  }
-  .badge {
-    padding: 4px 9px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    background: var(--ap-surface);
-    white-space: nowrap;
-  }
-  section {
-    margin-top: 18px;
-  }
-  .surface {
-    padding: 14px;
-    background: var(--ap-surface);
-    border-radius: 16px;
-  }
-  .controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
-    gap: 12px;
-  }
-  .control {
     display: flex;
     flex-direction: column;
-    gap: 7px;
-    min-width: 0;
-  }
-  .control > span {
-    font-size: 0.8rem;
-    color: var(--ap-muted);
-    overflow-wrap: anywhere;
-  }
-  input,
-  select,
-  button {
-    font: inherit;
-    color: var(--ap-text);
-  }
-  input,
-  select {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    min-height: 42px;
-    padding: 8px 10px;
-    border: 1px solid var(--ap-border);
-    border-radius: 10px;
-    background: var(--ap-bg);
-  }
-  button {
-    min-height: 40px;
-    padding: 9px 13px;
-    border: 1px solid var(--ap-border);
-    background: var(--ap-button-bg);
-    border-radius: var(--ap-button-radius);
-    cursor: pointer;
-    overflow-wrap: anywhere;
-  }
-  button:hover:enabled {
-    filter: brightness(0.96);
-  }
-  button:disabled,
-  input:disabled,
-  select:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-  button.primary {
-    background: var(--ap-accent);
-    color: #fff;
-    border-color: transparent;
-  }
-  button.danger {
-    background: #b42330;
-    color: #fff;
-    border-color: transparent;
-  }
-  .transport,
-  .dialog-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-top: 16px;
-  }
-  .transport button {
-    flex: 1;
-  }
-  .feedback {
-    font-size: 0.84rem;
-    border-left: 3px solid var(--ap-error);
-    padding: 10px 12px;
-    color: var(--ap-error);
-    overflow-wrap: anywhere;
-  }
-  .muted,
-  .note {
-    font-size: 0.78rem;
-    color: var(--ap-muted);
-    line-height: 1.5;
-  }
-  .note {
-    margin: 10px 0 0;
-  }
-  .reading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
     gap: 12px;
-    font-size: 0.86rem;
-    min-width: 0;
-    padding: 7px 0;
+    padding: 16px;
+    background: var(--ap-surface);
+    border-radius: var(--ha-card-border-radius, 16px);
+    overflow: hidden;
+    --sev: var(--ap-neutral);
   }
-  .reading span {
-    overflow-wrap: anywhere;
+  :host([appearance="bubble"]) ha-card {
+    border: var(--bubble-border, none);
+    border-radius: var(--bubble-border-radius, 32px);
+    box-shadow: var(--bubble-box-shadow, var(--ha-card-box-shadow));
   }
-  .reading strong {
-    font-weight: 550;
-    overflow-wrap: anywhere;
-    text-align: right;
+  /* Status tones -> --sev, used by circles, status lines and tiles. */
+  .tone-active {
+    --sev: var(--ap-ok);
   }
-  .progress-head {
+  .tone-ready {
+    --sev: var(--ap-accent);
+  }
+  .tone-done {
+    --sev: var(--ap-ok);
+  }
+  .tone-attention,
+  .warning {
+    --sev: var(--ap-warn);
+  }
+  .tone-error,
+  .error,
+  .failed {
+    --sev: var(--ap-error);
+  }
+  .tone-offline {
+    --sev: var(--ap-offline);
+  }
+  .tone-idle,
+  .unknown {
+    --sev: var(--ap-neutral);
+  }
+  .i {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spin {
+      animation: none;
+    }
+  }
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+  /* Title line */
+  .top {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 12px;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding-left: 8px;
+  }
+  .title {
+    flex: 1;
+    min-width: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ap-muted);
     overflow-wrap: anywhere;
   }
-  .progress-head strong {
-    font-size: 1.3rem;
-    font-weight: 550;
+  .subtitle {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
   }
-  .progress-head span {
+  .icon-btn {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
     color: var(--ap-muted);
-    font-size: 0.8rem;
+    background: var(--ap-pill);
+  }
+  .power {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px 0 11px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ap-muted);
+    background: var(--ap-pill);
+  }
+  .power .i {
+    width: 18px;
+    height: 18px;
+  }
+  .power.on {
+    color: color-mix(in srgb, var(--ap-ok) 70%, var(--ap-text));
+    background: color-mix(in srgb, var(--ap-ok) 22%, var(--ap-pill));
+  }
+  /* Hero */
+  .circ {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ap-circle);
+    color: color-mix(in srgb, var(--sev) 75%, var(--ap-text));
+    background: color-mix(in srgb, var(--sev) 20%, transparent);
+  }
+  .circ.big {
+    flex-basis: 52px;
+    width: 52px;
+    height: 52px;
+  }
+  .circ.big .i {
+    width: 26px;
+    height: 26px;
+  }
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    border-radius: var(--ap-radius);
+    background: var(--ap-pill);
+  }
+  .hero-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hero-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .status {
+    font-size: 13px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--sev) 65%, var(--ap-text));
+    overflow-wrap: anywhere;
+  }
+  .current {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  .context {
+    font-size: 13px;
+    color: var(--ap-muted);
+    overflow-wrap: anywhere;
   }
   progress {
     display: block;
     width: 100%;
     height: 8px;
-    accent-color: var(--ap-accent);
     border: 0;
-    border-radius: 10px;
+    border-radius: 4px;
     overflow: hidden;
+    accent-color: var(--sev);
+    background: color-mix(in srgb, var(--ap-text) 10%, transparent);
   }
   progress::-webkit-progress-bar {
-    background: var(--ap-border);
+    background: color-mix(in srgb, var(--ap-text) 10%, transparent);
   }
   progress::-webkit-progress-value {
-    background: var(--ap-accent);
-    border-radius: 10px;
+    background: color-mix(in srgb, var(--sev) 80%, var(--ap-text));
+    border-radius: 4px;
   }
-  .phase {
-    margin-top: 8px;
-    font-size: 0.8rem;
-    color: var(--ap-muted);
+  progress::-moz-progress-bar {
+    background: color-mix(in srgb, var(--sev) 80%, var(--ap-text));
   }
-  .attention {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
+  /* Sections */
+  .group {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
-  .attention li {
-    border-radius: 10px;
-    background: var(--ap-surface);
-    padding: 10px 12px;
-    font-size: 0.82rem;
+  h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ap-muted);
+    margin: 4px 8px 0;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(110px, 100%), 1fr));
+    gap: 6px;
+  }
+  .tiles:empty {
+    display: none;
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: var(--ap-tile);
+    background: var(--ap-pill);
+  }
+  .tile .label {
+    font-size: 0.78rem;
+    color: var(--ap-muted);
     overflow-wrap: anywhere;
-    border-left: 3px solid var(--ap-warning);
   }
-  .attention li.error {
-    border-left-color: var(--ap-error);
+  .tile .value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
   }
-  .attention li.unknown {
-    border-left-color: var(--ap-muted);
+  .summary .tile .value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--sev) 70%, var(--ap-text));
   }
-  .row {
+  .summary .tile.flagged {
+    background: color-mix(in srgb, var(--sev) 16%, var(--ap-pill));
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    gap: 8px;
+  }
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .control > .label {
+    font-size: 13px;
+    color: var(--ap-muted);
+    padding: 0 8px;
+    overflow-wrap: anywhere;
+  }
+  /* The section heading already names the programme picker. */
+  [data-section="programme"] .control > .label {
+    display: none;
+  }
+  .hint,
+  .permission {
+    font-size: 12.5px;
+    color: var(--ap-muted);
+    padding: 0 8px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  /* Controls */
+  button,
+  input,
+  select {
+    font: inherit;
+    color: var(--ap-text);
+  }
+  button {
+    border: 0;
+    cursor: pointer;
+    background: none;
+  }
+  .pill,
+  .toggle,
+  .action,
+  select {
+    min-height: 48px;
+    border-radius: 24px;
+    padding: 0 18px;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--ap-text) 7%, transparent);
+    overflow-wrap: anywhere;
+  }
+  .pill {
+    width: 100%;
+  }
+  .pill.primary,
+  .action.primary {
+    color: #fff;
+    background: color-mix(in srgb, var(--ap-accent) 62%, #000);
+  }
+  .select-wrap {
+    position: relative;
+    display: block;
+  }
+  select {
+    appearance: none;
+    width: 100%;
+    min-width: 0;
+    padding-right: 44px;
+    border: 0;
+    cursor: pointer;
+  }
+  select option {
+    color: #1b1b1a;
+  }
+  .caret {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    color: var(--ap-muted);
+    pointer-events: none;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    flex: 1 1 auto;
+    min-height: 44px;
+    border-radius: 22px;
+    padding: 0 16px;
+    font-weight: 600;
+    font-size: 14px;
+    background: color-mix(in srgb, var(--ap-text) 7%, transparent);
+  }
+  .chip[aria-pressed="true"] {
+    color: color-mix(in srgb, var(--ap-accent) 65%, var(--ap-text));
+    background: color-mix(in srgb, var(--ap-accent) 24%, transparent);
+    box-shadow: inset 0 0 0 1.5px
+      color-mix(in srgb, var(--ap-accent) 60%, transparent);
+  }
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 48px;
+    padding: 2px;
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--ap-text) 7%, transparent);
+  }
+  .step {
+    flex: 0 0 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ap-surface);
+  }
+  .stepper input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    height: 44px;
+    border: 0;
+    background: none;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .stepper input::-webkit-inner-spin-button,
+  .stepper input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .toggle {
     width: 100%;
     display: flex;
-    text-align: left;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: var(--ap-surface);
-    border: 0;
-  }
-  .row .heading {
-    display: block;
-  }
-  .row strong {
-    display: block;
-    font-size: 0.87rem;
-    font-weight: 600;
-  }
-  .row small {
-    display: block;
-    color: var(--ap-muted);
-    margin-top: 4px;
-  }
-  .row .end {
-    font-size: 0.8rem;
-    white-space: nowrap;
-  }
-  .quiet {
-    padding: 12px 0;
-    color: var(--ap-muted);
-    font-size: 0.87rem;
-  }
-  details {
-    margin-top: 16px;
-    border-top: 1px solid var(--ap-border);
-    padding-top: 12px;
-  }
-  summary {
-    cursor: pointer;
-    font-size: 0.86rem;
-    color: var(--ap-muted);
-    padding: 4px 0 10px;
-  }
-  .compact {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
     text-align: left;
-    background: none;
-    border: 0;
-    padding: 0;
-  }
-  .compact .heading {
-    flex: 1;
-  }
-  .compact .status {
-    display: block;
-  }
-  dialog {
-    color: var(--ap-text);
-    background: var(--ap-bg);
-    border: 1px solid var(--ap-border);
-    border-radius: var(--ap-radius);
-    width: min(560px, calc(100vw - 24px));
-    max-width: calc(100vw - 24px);
-    max-height: calc(100dvh - 32px);
-    padding: 22px;
-    overflow: auto;
-  }
-  dialog::backdrop {
-    background: #10182780;
-  }
-  dialog h2 {
     padding-right: 10px;
   }
-  .dialog-head {
+  .toggle-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .knob {
+    position: relative;
+    flex: 0 0 44px;
+    height: 26px;
+    border-radius: 13px;
+    background: color-mix(in srgb, var(--ap-text) 22%, transparent);
+    transition: background 0.2s;
+  }
+  .knob::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s;
+  }
+  .toggle.on {
+    color: color-mix(in srgb, var(--ap-accent) 65%, var(--ap-text));
+    background: color-mix(in srgb, var(--ap-accent) 20%, transparent);
+  }
+  .toggle.on .knob {
+    background: color-mix(in srgb, var(--ap-accent) 62%, #000);
+  }
+  .toggle.on .knob::after {
+    transform: translateX(18px);
+  }
+  .transport {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .action {
+    flex: 1 1 120px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+  .action .i {
+    width: 18px;
+    height: 18px;
+  }
+  .action.danger {
+    color: color-mix(in srgb, var(--ap-error) 70%, var(--ap-text));
+    background: color-mix(in srgb, var(--ap-error) 20%, var(--ap-pill));
+  }
+  [aria-busy="true"],
+  .pending {
+    cursor: progress;
+  }
+  button:disabled,
+  input:disabled,
+  select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  button:hover:enabled {
+    filter: brightness(0.97);
+  }
+  button:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  summary:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--primary-color, #03a9f4);
+    outline-offset: 2px;
+  }
+  /* Rows (attention, overview, compact) */
+  .attention,
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .row,
+  .compact {
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
-    margin-bottom: 15px;
+    min-height: 56px;
+    padding: 6px 14px 6px 6px;
+    border-radius: var(--ap-radius);
+    background: var(--ap-pill);
+    text-align: left;
   }
-  .dialog-actions {
-    justify-content: flex-end;
+  li.warning > .row,
+  li.error > .row,
+  li.row.warning,
+  li.row.error {
+    background: color-mix(in srgb, var(--sev) 14%, var(--ap-pill));
   }
-  .icon-button {
-    flex: none;
-    min-width: 40px;
-    padding: 8px;
+  .compact {
+    min-height: 64px;
   }
+  .text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .text strong {
+    font-size: 15px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .sub {
+    font-size: 13px;
+    color: var(--ap-muted);
+    overflow-wrap: anywhere;
+  }
+  .compact .sub {
+    color: color-mix(in srgb, var(--sev) 65%, var(--ap-text));
+    font-weight: 600;
+  }
+  .end {
+    font-size: 17px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .chev {
+    color: var(--ap-muted);
+    width: 20px;
+    height: 20px;
+  }
+  .panel {
+    border-radius: var(--ap-radius);
+    background: var(--ap-pill);
+    padding: 4px;
+  }
+  .panel summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 6px 0 14px;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: calc(var(--ap-radius) - 4px);
+  }
+  .panel summary::-webkit-details-marker {
+    display: none;
+  }
+  .panel-title {
+    flex: 1;
+  }
+  .chevron {
+    width: 20px;
+    height: 20px;
+    margin: 0 10px;
+    color: var(--ap-muted);
+    transition: transform 0.2s;
+  }
+  .panel[open] .chevron {
+    transform: rotate(180deg);
+  }
+  .panel .rows {
+    padding: 4px;
+  }
+  .panel .row {
+    background: var(--ap-surface);
+  }
+  /* Feedback */
+  .feedback {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 8px 8px;
+    border-radius: var(--ap-radius);
+    background: var(--ap-pill);
+    --sev: var(--ap-neutral);
+  }
+  .feedback.sent {
+    --sev: var(--ap-ok);
+  }
+  .feedback.pending {
+    --sev: var(--ap-accent);
+  }
+  .feedback.failed {
+    background: color-mix(in srgb, var(--ap-error) 16%, var(--ap-pill));
+  }
+  .feedback-title {
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .note {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: var(--ap-tile);
+    background: color-mix(in srgb, var(--ap-muted) 12%, var(--ap-pill));
+    overflow-wrap: anywhere;
+  }
+  .quiet,
   .empty {
-    font-size: 0.85rem;
+    font-size: 14px;
     color: var(--ap-muted);
-  }
-  .permission {
-    font-size: 0.77rem;
-    color: var(--ap-muted);
-    margin-top: 10px;
-  }
-  .control.switch {
-    flex-direction: row;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  .switch input {
-    width: 22px;
-    height: 22px;
-    min-height: 0;
-    accent-color: var(--ap-accent);
+    padding: 4px 8px;
   }
   a {
     color: var(--ap-accent);
   }
-  @media (max-width: 380px) {
+  /* Dialogs carry the card's tokens: they are inside the same host. */
+  dialog {
+    color: var(--ap-text);
+    background: var(--ap-surface);
+    border: 0;
+    border-radius: 24px;
+    padding: 16px;
+    width: min(520px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 32px);
+    overflow: auto;
+    box-shadow: 0 16px 60px #0006;
+    --sev: var(--ap-neutral);
+  }
+  :host([appearance="bubble"]) dialog {
+    border-radius: var(--bubble-border-radius, 32px);
+  }
+  dialog[open] {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  dialog::backdrop {
+    background: #0008;
+  }
+  #confirmation {
+    width: min(440px, calc(100vw - 24px));
+    --sev: var(--ap-warn);
+  }
+  .confirm-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .confirm-head h2 {
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .confirm-what {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 0 4px;
+    overflow-wrap: anywhere;
+  }
+  .dialog-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .dialog-actions .pill {
+    flex: 1;
+  }
+  @media (max-width: 400px) {
     ha-card {
-      padding: 15px;
-    }
-    header {
-      gap: 9px;
-    }
-    .icon {
-      width: 38px;
-      height: 38px;
+      padding: 12px;
     }
     dialog {
-      padding: 16px;
+      padding: 12px;
     }
-    .controls {
-      grid-template-columns: 1fr;
+    .current {
+      font-size: 26px;
     }
-    .badge {
-      font-size: 0.69rem;
+    .power {
+      padding: 0 12px 0 10px;
     }
-    .row .end {
-      white-space: normal;
-      text-align: right;
+    .power span {
+      display: none;
     }
   }
 `;
+
+/** Inline stroke icons shared by every card in this package. */
+const paths = {
+    oven: w `<rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 8h18"></path><rect x="7" y="11" width="10" height="6" rx="1"></rect><path d="M7 5.5h.01M11 5.5h.01"></path>`,
+    dishwasher: w `<rect x="4" y="2" width="16" height="20" rx="2"></rect><path d="M4 7h16"></path><circle cx="12" cy="14" r="4"></circle><path d="M8 4.5h.01M11 4.5h.01"></path>`,
+    coffee: w `<path d="M17 8h1a4 4 0 1 1 0 8h-1"></path><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path><path d="M6 2v2M10 2v2M14 2v2"></path>`,
+    cooling: w `<rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M5 10h14M9 5v2M9 13v3"></path>`,
+    washer: w `<rect x="3" y="2" width="18" height="20" rx="2"></rect><path d="M3 6h18"></path><circle cx="12" cy="14" r="5"></circle><path d="M7 4h.01"></path>`,
+    dryer: w `<rect x="3" y="2" width="18" height="20" rx="2"></rect><path d="M3 6h18"></path><circle cx="12" cy="14" r="5"></circle><path d="M10 12.5c1 .5 1 2.5 2 3M14 12.5c-1 .5-1 2.5-2 3"></path>`,
+    unknown: w `<path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path>`,
+    kitchen: w `<path d="M7 2v8a2 2 0 0 0 4 0V2M9 10v12"></path><path d="M17 2c-1.7 1.5-2.5 3.5-2.5 6s1 3.5 2.5 3.5V22"></path>`,
+    cog: w `<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>`,
+    power: w `<path d="M12 2v10"></path><path d="M18.4 6.6a9 9 0 1 1-12.8 0"></path>`,
+    start: w `<path d="M7 4v16l13-8Z"></path>`,
+    pause: w `<path d="M8 5v14M16 5v14"></path>`,
+    resume: w `<path d="M7 4v16l13-8Z"></path>`,
+    abort: w `<rect x="6" y="6" width="12" height="12" rx="1.5"></rect>`,
+    close: w `<path d="M18 6 6 18M6 6l12 12"></path>`,
+    chevron: w `<path d="m6 9 6 6 6-6"></path>`,
+    next: w `<path d="m9 6 6 6-6 6"></path>`,
+    minus: w `<path d="M5 12h14"></path>`,
+    plus: w `<path d="M12 5v14M5 12h14"></path>`,
+    warning: w `<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path>`,
+    check: w `<path d="M20 6 9 17l-5-5"></path>`,
+    spinner: w `<path d="M21 12a9 9 0 1 1-6.2-8.56"></path>`,
+    offline: w `<path d="M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.4 5M5 12.9a10 10 0 0 1 3.4-2M19 12.9a10 10 0 0 0-2.7-1.8M8.5 16.4a5 5 0 0 1 7 0M12 20h.01M2 2l20 20"></path>`,
+    clock: w `<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>`,
+};
+// No whitespace inside <svg>: it would leak into a button's textContent.
+function icon(name, extra = "") {
+    // prettier-ignore
+    return b `<svg class="i ${extra}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
+}
 
 const labels = {
     off: "Off",
@@ -1699,14 +2035,15 @@ const kindNames = {
     unknown: "Appliance",
 };
 const icons = {
-    oven: "mdi:stove",
-    dishwasher: "mdi:dishwasher",
-    coffee: "mdi:coffee-maker",
-    cooling: "mdi:fridge-outline",
-    washer: "mdi:washing-machine",
-    dryer: "mdi:tumble-dryer",
-    unknown: "mdi:home-outline",
+    oven: "oven",
+    dishwasher: "dishwasher",
+    coffee: "coffee",
+    cooling: "cooling",
+    washer: "washer",
+    dryer: "dryer",
+    unknown: "unknown",
 };
+const WRITABLE = ["button", "select", "number", "switch"];
 function duration(seconds, hass) {
     if (seconds === undefined || !Number.isFinite(seconds))
         return localize(hass, "Time unknown");
@@ -1767,6 +2104,7 @@ class ApplianceCard extends i {
             this.closeDialogs();
             this.pending = undefined;
             this.detailId = undefined;
+            this.configureId = undefined;
             this.error = "";
             this.notice = "";
             this.epoch++;
@@ -1940,7 +2278,9 @@ class ApplianceCard extends i {
     }
     async perform(device, action, confirmed) {
         this.busy = true;
+        this.inFlight = action.entityId;
         this.error = "";
+        this.notice = "";
         this.requestUpdate();
         try {
             if (!this.registry.snapshot ||
@@ -1955,6 +2295,7 @@ class ApplianceCard extends i {
         }
         finally {
             this.busy = false;
+            this.inFlight = undefined;
             this.requestUpdate();
         }
     }
@@ -1994,6 +2335,74 @@ class ApplianceCard extends i {
             refreshRegistries(this.ha);
         this.requestUpdate();
     }
+    async openConfigure(device) {
+        this.configureId = device.id;
+        this.requestUpdate();
+        await this.updateComplete;
+        this.shadowRoot
+            ?.querySelector("#configure")
+            ?.showModal();
+    }
+    closeOnBackdrop(e) {
+        if (e.target !== e.currentTarget)
+            return;
+        const dialog = e.currentTarget;
+        const r = dialog.getBoundingClientRect();
+        if (e.clientX < r.left ||
+            e.clientX > r.right ||
+            e.clientY < r.top ||
+            e.clientY > r.bottom)
+            dialog.close();
+    }
+    tone(device, status = this.status(device)) {
+        if (status.online === "offline" || status.operation === "offline")
+            return "offline";
+        switch (status.operation) {
+            case "running":
+            case "delayed":
+            case "aborting":
+                return "active";
+            case "paused":
+            case "action_required":
+                return "attention";
+            case "error":
+                return "error";
+            case "finished":
+                return "done";
+            case "ready":
+                return "ready";
+            case "unknown":
+                return this.kind(device) === "cooling" && status.online === "online"
+                    ? "ready"
+                    : "idle";
+            default:
+                return "idle";
+        }
+    }
+    clock(epoch) {
+        try {
+            return new Intl.DateTimeFormat(formattingLocale(this.ha), {
+                hour: "numeric",
+                minute: "2-digit",
+            }).format(epoch);
+        }
+        catch {
+            return new Date(epoch).toLocaleTimeString();
+        }
+    }
+    isReading(entity) {
+        const domain = entity.entityId.split(".")[0];
+        if (!WRITABLE.includes(domain))
+            return true;
+        return (domain === "select" &&
+            !Array.isArray(this.ha?.states[entity.entityId]?.attributes.options));
+    }
+    tile(entity) {
+        return b `<div class="tile" data-reading=${entity.entityId}>
+      <span class="label">${this.entityName(entity)}</span
+      ><strong class="value">${this.reading(entity)}</strong>
+    </div>`;
+    }
     control(device, entity) {
         const state = this.ha.states[entity.entityId];
         const domain = entity.entityId.split(".")[0];
@@ -2022,39 +2431,104 @@ class ApplianceCard extends i {
             : policy.reason
                 ? this.m(policy.reason)
                 : undefined;
+        const name = this.entityName(entity);
+        const pending = this.inFlight === entity.entityId;
+        const hint = !policy.allowed && reason
+            ? b `<small class="hint">${reason}</small>`
+            : A;
         const act = (value) => void this.requestAction(device, { entityId: entity.entityId, value });
-        if (domain === "select" && Array.isArray(state?.attributes.options))
-            return b `<label class="control"
-        ><span>${this.entityName(entity)}</span
-        ><select
-          data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          .value=${state.state}
-          ?disabled=${disabled}
-          title=${reason ?? ""}
-          @change=${(e) => {
+        if (domain === "select" && Array.isArray(state?.attributes.options)) {
+            const options = state.attributes.options;
+            const program = ["selected_program", "active_program"].includes(entity.role);
+            // Short option sets are everyday choices: show them as chips.
+            if (!program && options.length > 0 && options.length <= 5)
+                return b `<div class="control${pending ? " pending" : ""}">
+          <span class="label">${name}</span>
+          <div
+            class="chips"
+            role="group"
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            data-entity=${entity.entityId}
+            title=${reason ?? ""}
+          >
+            ${options.map((option) => b `<button
+                  class="chip"
+                  data-value=${option}
+                  aria-pressed=${option === state.state ? "true" : "false"}
+                  ?disabled=${disabled}
+                  @click=${() => {
+                    if (option !== state.state)
+                        act(option);
+                }}
+                >
+                  ${stateLabel(this.ha, state, option)}
+                </button>`)}
+          </div>
+          ${hint}
+        </div>`;
+            return b `<label class="control${pending ? " pending" : ""}"
+        ><span class="label">${name}</span
+        ><span class="select-wrap"
+          ><select
+            data-entity=${entity.entityId}
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            .value=${state.state}
+            ?disabled=${disabled}
+            title=${reason ?? ""}
+            @change=${(e) => {
                 act(e.target.value);
                 e.target.value = state.state;
             }}
-        >
-          ${!state.attributes.options.includes(state.state) ? b `<option value=${state.state}>${this.reading(entity)}</option>` : A}${state.attributes.options.map((option) => b `<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, ["selected_program", "active_program"].includes(entity.role))}</option>`)}</select
-        >${!policy.allowed && reason ? b `<small class="muted">${reason}</small>` : A}</label
+          >
+            ${!options.includes(state.state) ? b `<option value=${state.state}>${this.reading(entity)}</option>` : A}${options.map((option) => b `<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, program)}</option>`)}</select
+          >${icon("chevron", "caret")}</span
+        >${hint}</label
       >`;
-        if (domain === "number")
-            return b `<label class="control"
-        ><span
-          >${this.entityName(entity)}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
-        ><input
-          data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          type="number"
-          .value=${!unavailable ? state.state : ""}
-          min=${state?.attributes.min ?? ""}
-          max=${state?.attributes.max ?? ""}
-          step=${state?.attributes.step ?? "any"}
-          ?disabled=${disabled}
-          title=${reason ?? ""}
-          @change=${(e) => {
+        }
+        if (domain === "number") {
+            const unit = state?.attributes.unit_of_measurement;
+            const min = Number(state?.attributes.min);
+            const max = Number(state?.attributes.max);
+            const current = unavailable ? NaN : Number(state.state);
+            const step = (direction) => {
+                const increment = Number(state?.attributes.step) || 1;
+                let next = Number.isFinite(current)
+                    ? current + direction * increment
+                    : direction < 0
+                        ? max
+                        : min;
+                if (Number.isFinite(min))
+                    next = Math.max(min, next);
+                if (Number.isFinite(max))
+                    next = Math.min(max, next);
+                // Keep the service value numeric; strip binary float noise only.
+                act(Math.round(next * 1e6) / 1e6);
+            };
+            return b `<div class="control${pending ? " pending" : ""}">
+        <span class="label">${name}${unit ? ` · ${unit}` : ""}</span>
+        <div class="stepper">
+          <button
+            class="step"
+            aria-label=${this.t("Decrease {name}", { name })}
+            ?disabled=${disabled || (Number.isFinite(current) && current <= min)}
+            @click=${() => step(-1)}
+          >
+            ${icon("minus")}</button
+          ><input
+            data-entity=${entity.entityId}
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            type="number"
+            inputmode="numeric"
+            .value=${!unavailable ? state.state : ""}
+            min=${state?.attributes.min ?? ""}
+            max=${state?.attributes.max ?? ""}
+            step=${state?.attributes.step ?? "any"}
+            ?disabled=${disabled}
+            title=${reason ?? ""}
+            @change=${(e) => {
                 const input = e.target;
                 if (input.value !== "" && input.reportValidity())
                     act(Number(input.value));
@@ -2062,47 +2536,67 @@ class ApplianceCard extends i {
                     this.error = "Enter a valid value within the appliance limits.";
                 this.requestUpdate();
             }}
-        />${!policy.allowed && reason ? b `<small class="muted">${reason}</small>` : A}</label
-      >`;
-        if (domain === "switch")
-            return b `<label class="control switch"
-        ><span>${this.entityName(entity)}</span
-        ><input
+          /><button
+            class="step"
+            aria-label=${this.t("Increase {name}", { name })}
+            ?disabled=${disabled || (Number.isFinite(current) && current >= max)}
+            @click=${() => step(1)}
+          >
+            ${icon("plus")}
+          </button>
+        </div>
+        ${hint}
+      </div>`;
+        }
+        if (domain === "switch") {
+            const on = state?.state === "on";
+            return b `<div class="control">
+        <button
+          class="toggle${on ? " on" : ""}${pending ? " pending" : ""}"
+          role="switch"
+          aria-checked=${on ? "true" : "false"}
+          aria-busy=${pending ? "true" : "false"}
           data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          type="checkbox"
-          .checked=${state?.state === "on"}
           ?disabled=${disabled}
           title=${reason ?? ""}
-          @change=${(e) => {
-                act(e.target.checked);
-                e.target.checked = state?.state === "on";
-            }}
-        />${!policy.allowed && reason ? b `<small class="muted">${reason}</small>` : A}</label
-      >`;
+          @click=${() => act(!on)}
+        >
+          <span class="toggle-text">${name}</span
+          ><span class="knob" aria-hidden="true"></span>
+        </button>
+        ${hint}
+      </div>`;
+        }
         if (domain === "button")
-            return b `<button
-        data-entity=${entity.entityId}
-        ?disabled=${disabled}
-        title=${reason ?? ""}
-        @click=${() => act()}
-      >
-        ${this.entityName(entity)}
-      </button>`;
-        return b `<div class="reading" data-reading=${entity.entityId}>
-      <span>${this.entityName(entity)}</span
-      ><strong>${this.reading(entity)}</strong>
-    </div>`;
+            return b `<div class="control">
+        <button
+          class="pill${pending ? " pending" : ""}"
+          data-entity=${entity.entityId}
+          aria-busy=${pending ? "true" : "false"}
+          ?disabled=${disabled}
+          title=${reason ?? ""}
+          @click=${() => act()}
+        >
+          ${name}
+        </button>
+        ${hint}
+      </div>`;
+        return this.tile(entity);
     }
-    group(device, title, entities, section) {
-        return entities.length
-            ? b `<section data-section=${section ?? ""}>
-          <h3>${title}</h3>
-          <div class="controls">
-            ${entities.map((entity) => this.control(device, entity))}
-          </div>
-        </section>`
-            : A;
+    group(device, title, entities, section, module) {
+        if (!entities.length)
+            return A;
+        const readings = entities.filter((e) => this.isReading(e));
+        const controls = entities.filter((e) => !this.isReading(e));
+        return b `<section
+      class="group"
+      data-section=${section ?? ""}
+      data-module=${module ?? A}
+    >
+      <h3>${title}</h3>
+      ${readings.length ? b `<div class="tiles">${readings.map((e) => this.tile(e))}</div>` : A}
+      ${controls.length ? b `<div class="controls">${controls.map((e) => this.control(device, e))}</div>` : A}
+    </section>`;
     }
     transport(device, status) {
         const roles = status.operation === "running"
@@ -2115,19 +2609,25 @@ class ApplianceCard extends i {
                         ? ["start"]
                         : [];
         const entities = device.entities.filter((e) => roles.includes(e.role));
+        if (!entities.length)
+            return A;
         return b `<div class="transport">
         ${entities.map((entity) => {
             const policy = actionPolicy(device, this.ha.states, {
                 entityId: entity.entityId,
             });
+            const pending = this.inFlight === entity.entityId;
             return b `<button
             data-role=${entity.role}
-            class=${entity.role === "abort" ? "danger" : entity.role === "start" ? "primary" : ""}
+            class="action ${entity.role === "abort" ? "danger" : entity.role === "start" || entity.role === "resume" ? "primary" : ""}"
+            aria-busy=${pending ? "true" : "false"}
             ?disabled=${this.busy || !policy.allowed}
             title=${this.m(policy.reason ?? "")}
             @click=${() => this.requestAction(device, { entityId: entity.entityId })}
           >
-            ${this.t({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" }[entity.role] ?? "Action")}
+            ${pending ? icon("spinner", "spin") : icon(entity.role)}<span
+              >${this.t({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" }[entity.role] ?? "Action")}</span
+            >
           </button>`;
         })}
       </div>
@@ -2142,18 +2642,42 @@ class ApplianceCard extends i {
     }
     attention(device, status) {
         return status.attention.length
-            ? b `<section>
+            ? b `<section class="group">
           <h3>${this.t("Needs attention")}</h3>
           <ul class="attention">
-            ${status.attention.map((item) => b `<li class=${item.severity}>${this.attentionMessage(device, item)}</li>`)}
+            ${status.attention.map((item) => b `<li class="row ${item.severity}">
+                  <span class="circ"
+                    >${icon(item.severity === "unknown" ? "offline" : "warning")}</span
+                  ><span class="text"
+                    ><strong
+                      >${this.attentionMessage(device, item)}</strong
+                    ></span
+                  >
+                </li>`)}
           </ul>
         </section>`
             : A;
     }
     feedback() {
-        return b `${this.error ? b `<p class="feedback" role="alert">${this.m(this.error)}</p>` : A}${this.notice ? b `<p class="note" role="status">${this.m(this.notice)}</p>` : A}`;
+        return b `${this.busy
+            ? b `<div class="feedback pending" role="status">
+            <span class="circ">${icon("spinner", "spin")}</span
+            ><span class="feedback-title">${this.t("Sending…")}</span>
+          </div>`
+            : A}${this.error
+            ? b `<div class="feedback failed" role="alert">
+            <span class="circ">${icon("warning")}</span
+            ><span class="feedback-title">${this.m(this.error)}</span>
+          </div>`
+            : A}${this.notice
+            ? b `<div class="feedback sent" role="status">
+            <span class="circ">${icon("check")}</span
+            ><span class="feedback-title">${this.m(this.notice)}</span>
+          </div>`
+            : A}`;
     }
-    deviceBody(device) {
+    /** Role lookups shared by the everyday body and the configure view. */
+    parts(device) {
         const kind = this.kind(device);
         const status = this.status(device);
         const roles = (...values) => device.entities.filter((e) => values.includes(e.role));
@@ -2167,111 +2691,224 @@ class ApplianceCard extends i {
             ? device.entities.filter((e) => moduleOf(e)).map((e) => e.entityId)
             : []);
         const options = roles("option").filter((e) => !moduleCandidates.has(e.entityId));
+        return { kind, status, roles, moduleEntries, moduleCandidates, options };
+    }
+    hero(device, status) {
+        const kind = this.kind(device);
+        const op = status.operation;
+        const roles = (...values) => device.entities.filter((e) => values.includes(e.role));
+        const program = status.program && !["unknown", "unavailable"].includes(status.program)
+            ? this.programLabel(device, status.program)
+            : undefined;
+        const kindName = this.t(kindNames[kind]);
+        let line = this.statusLabel(device);
+        let headline = line;
+        const context = [];
+        if (kind === "cooling") {
+            const zones = roles("cooling_setpoint", "target_temperature");
+            const zone = zones.find((e) => ["unavailable", "unknown", undefined].every((v) => this.ha?.states[e.entityId]?.state !== v)) ??
+                zones[0] ??
+                roles("current_temperature")[0];
+            if (zone && status.online === "online") {
+                headline = this.reading(zone);
+                context.push(this.entityName(zone));
+            }
+            else
+                line = kindName;
+        }
+        else if (op === "error" || op === "action_required") {
+            line = kindName;
+            if (program)
+                context.push(program);
+        }
+        else if (op === "delayed") {
+            headline = duration(status.delaySeconds, this.ha);
+            if (program)
+                line += ` · ${program}`;
+            context.push(this.t("Until start"));
+        }
+        else if (["running", "paused", "aborting"].includes(op)) {
+            headline = duration(status.remainingSeconds, this.ha);
+            if (program)
+                line += ` · ${program}`;
+            context.push(op === "paused" ? this.t("Paused · remaining") : this.t("Remaining"));
+            if (status.phase)
+                context.push(this.phaseLabel(device, status.phase));
+            if (op === "running" && status.estimatedFinish)
+                context.push(this.t("Done around {time}", {
+                    time: this.clock(status.estimatedFinish),
+                }));
+        }
+        else if (op === "offline" || op === "unknown") {
+            line = kindName;
+        }
+        else {
+            if (program)
+                headline = program;
+            else
+                line = kindName;
+            if (op === "finished" && status.finishedAt)
+                context.push(this.t("Finished {time} ago", {
+                    time: duration((Date.now() - Date.parse(status.finishedAt)) / 1000, this.ha),
+                }));
+        }
+        if (status.online !== "online" && status.lastReported)
+            context.push(this.t("Last reported: {time}", {
+                time: new Date(status.lastReported).toLocaleString(formattingLocale(this.ha)),
+            }));
+        const showProgress = kind !== "cooling" &&
+            !["ready", "off", "finished"].includes(op) &&
+            status.progress !== undefined;
+        return b `<div class="hero tone-${this.tone(device, status)}" data-hero>
+      <div class="hero-main">
+        <span class="circ big">${icon(icons[kind])}</span>
+        <div class="hero-text">
+          <div class="status">${line}</div>
+          <div class="current">${headline}</div>
+          ${context.length ? b `<div class="context">${context.join(" · ")}</div>` : A}
+        </div>
+      </div>
+      ${showProgress ? b `<progress max="100" value=${status.progress} aria-label=${this.t("Programme progress")}></progress>` : A}
+    </div>`;
+    }
+    deviceBody(device) {
+        const { kind, status, roles, moduleEntries, options } = this.parts(device);
         const picker = ["ready", "off", "finished"].includes(status.operation);
         return b `
-      ${status.operation === "error" || status.operation === "action_required" ? b `<p class="feedback" role="alert">${this.t(labels[status.operation])}</p>` : A}
+      ${this.hero(device, status)}
+      ${status.operation === "error" || status.operation === "action_required" ? b `<div class="feedback failed" role="alert"><span class="circ">${icon("warning")}</span><span class="feedback-title">${this.t(labels[status.operation])}</span></div>` : A}
       ${kind !== "cooling"
             ? b `${picker
                 ? this.group(device, kind === "coffee"
                     ? this.t("Choose your drink")
                     : this.t("Programme"), roles("selected_program"), "programme")
-                : b `<section class="surface">
-                    <div class="progress-head">
-                      <div>
-                        <strong
-                          >${status.operation === "delayed" ? duration(status.delaySeconds, this.ha) : duration(status.remainingSeconds, this.ha)}</strong
-                        ><br /><span
-                          >${status.operation === "delayed" ? this.t("Until start") : status.operation === "paused" ? this.t("Paused · remaining") : this.t("Remaining")}</span
-                        >
-                      </div>
-                      <span
-                        >${status.program ? this.programLabel(device, status.program) : this.t(labels[status.operation])}</span
-                      >
-                    </div>
-                    ${status.progress !== undefined ? b `<progress max="100" value=${status.progress} aria-label=${this.t("Programme progress")}></progress>` : A}${status.phase ? b `<div class="phase">${this.phaseLabel(device, status.phase)}</div>` : A}
-                  </section>`}${status.operation === "finished" && status.finishedAt ? b `<p class="note">${this.t("Finished {time} ago", { time: duration((Date.now() - Date.parse(status.finishedAt)) / 1000, this.ha) })}</p>` : A}${this.transport(device, status)}`
+                : A}${this.transport(device, status)}`
             : A}
       ${kind === "oven"
-            ? b `${this.group(device, this.t("Oven"), roles("target_temperature", "current_temperature", "duration"), "oven")}${["microwave", "steam"].map((which) => moduleEntries(which).length
-                ? b `<section data-module=${which}>
-                    <h3>
-                      ${which === "microwave" ? this.t("Microwave") : this.t("Steam")}
-                    </h3>
-                    <div class="controls">
-                      ${moduleEntries(which).map((e) => this.control(device, e))}
-                    </div>
-                  </section>`
-                : A)}`
+            ? b `${this.group(device, this.t("Oven"), roles("target_temperature", "current_temperature", "duration"), "oven")}${["microwave", "steam"].map((which) => this.group(device, which === "microwave" ? this.t("Microwave") : this.t("Steam"), moduleEntries(which), undefined, which))}`
             : A}
       ${kind === "cooling" ? b `${this.group(device, this.t("Temperature zones"), roles("cooling_setpoint", "target_temperature", "current_temperature"), "cooling")}${this.group(device, this.t("Doors"), roles("door"))}${this.group(device, this.t("Cooling modes"), roles("super_mode", "vacation"), "cooling-modes")}` : A}
       ${kind === "coffee" ? this.group(device, this.t("Your coffee"), options, "coffee") : kind === "dishwasher" ? this.group(device, this.t("Wash options"), options, "dishwasher") : kind !== "oven" && kind !== "cooling" ? this.group(device, this.t("Programme options"), options) : A}
       ${kind !== "cooling" ? this.group(device, this.t("Door & temperature"), roles("door", ...(kind !== "oven" ? ["current_temperature"] : []))) : A}
       ${status.busy ? this.group(device, this.t("Programme timing"), roles("elapsed")) : A}
       ${this.attention(device, status)}
-      ${roles("attention").filter((e) => !moduleCandidates.has(e.entityId))
-            .length
-            ? b `<details>
-              <summary>${this.t("Consumables & care")}</summary>
-              ${roles("attention")
-                .filter((e) => !moduleCandidates.has(e.entityId))
-                .map((e) => this.control(device, e))}
-            </details>`
-            : A}
-      <details>
-        <summary>${this.t("Settings")}</summary>
-        <div class="controls">
-          ${roles("power", "child_lock", "remote_control", "start_delay").map((e) => this.control(device, e))}${kind === "oven" || kind === "cooling" ? options.map((e) => this.control(device, e)) : A}${kind !== "oven" && kind !== "cooling" ? roles("target_temperature", "duration").map((e) => this.control(device, e)) : A}
-        </div>
-        ${!roles("remote_start").length ? b `<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : roles("remote_start").map((e) => b `<div class="reading"><span>${this.t("Remote start")}</span><strong>${this.reading(e)}</strong></div>`)}
-      </details>
-      ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length
-            ? b `<details>
-              <summary>
-                ${this.t("Other")} ·
-                ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length}
-              </summary>
-              <div class="controls">
-                ${roles("other")
-                .filter((e) => !moduleCandidates.has(e.entityId))
-                .map((e) => this.control(device, e))}
-              </div>
-            </details>`
-            : A}
-      ${device.disabledCount ? b `<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : A}
-      ${status.online !== "online" && status.lastReported ? b `<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(formattingLocale(this.ha)) })}</p>` : A}
     `;
     }
-    heading(device) {
-        const kind = this.kind(device);
-        return b `<header>
-      <div class="icon"><ha-icon icon=${icons[kind]}></ha-icon></div>
-      <div class="heading">
-        <div class="eyebrow">${this.t(kindNames[kind])}</div>
-        <h2>
-          ${!this.isOverview ? (this.config?.title ?? device.name) : device.name}
-        </h2>
-        <div class="status">${this.statusLabel(device)}</div>
-      </div>
-      ${device.entities
-            .filter((e) => e.role === "power")
-            .slice(0, 1)
-            .map((e) => b `<span class="badge">${this.reading(e)}</span>`)}
-    </header>`;
+    /** The power entity the header toggles; the rest stay in the configure view. */
+    headerPower(device) {
+        const power = device.entities.filter((e) => e.role === "power");
+        const domain = (e) => e.entityId.split(".")[0];
+        return (power.find((e) => domain(e) === "switch") ??
+            power.find((e) => domain(e) === "select" &&
+                Array.isArray(this.ha?.states[e.entityId]?.attributes.options)) ??
+            power.find((e) => domain(e) === "sensor"));
+    }
+    powerToggle(device) {
+        const entity = this.headerPower(device);
+        if (!entity)
+            return A;
+        const state = this.ha.states[entity.entityId];
+        const domain = entity.entityId.split(".")[0];
+        const value = (state?.state ?? "").toLowerCase().split(".").pop() ?? "";
+        const on = value === "on";
+        const label = this.reading(entity);
+        let target;
+        if (domain === "switch")
+            target = !on;
+        else if (domain === "select") {
+            const options = (state?.attributes.options ?? []);
+            const find = (key) => options.find((o) => o.toLowerCase().split(".").pop() === key);
+            target = on ? (find("standby") ?? find("off")) : find("on");
+        }
+        const unavailable = !state || ["unavailable", "unknown"].includes(state.state);
+        if (target === undefined)
+            return b `<span
+        class="power${on ? " on" : ""}"
+        data-power=${entity.entityId}
+        aria-label=${`${this.t("Power")}: ${label}`}
+        >${icon("power")}<span>${label}</span></span
+      >`;
+        const policy = actionPolicy(device, this.ha.states, {
+            entityId: entity.entityId,
+            value: target,
+        });
+        const pending = this.inFlight === entity.entityId;
+        const reason = unavailable
+            ? this.t("Unavailable")
+            : policy.reason
+                ? this.m(policy.reason)
+                : this.t("Power");
+        return b `<button
+      class="power${on ? " on" : ""}"
+      data-power=${entity.entityId}
+      aria-pressed=${on ? "true" : "false"}
+      aria-busy=${pending ? "true" : "false"}
+      aria-label=${this.t("Power")}
+      title=${reason}
+      ?disabled=${this.busy || unavailable || !policy.allowed}
+      @click=${() => this.requestAction(device, {
+            entityId: entity.entityId,
+            value: target,
+        })}
+    >
+      ${pending ? icon("spinner", "spin") : icon("power")}<span>${label}</span>
+    </button>`;
+    }
+    headerActions(device) {
+        return b `${this.powerToggle(device)}<button
+        class="icon-btn"
+        data-configure
+        aria-label=${this.t("Appliance settings")}
+        title=${this.t("Appliance settings")}
+        @click=${() => this.openConfigure(device)}
+      >
+        ${icon("cog")}
+      </button>`;
+    }
+    configureBody(device) {
+        const { kind, roles, moduleCandidates, options } = this.parts(device);
+        const header = this.headerPower(device);
+        const settings = [
+            ...roles("power").filter((e) => e.entityId !== header?.entityId),
+            ...roles("child_lock", "remote_control", "start_delay"),
+            ...(kind === "oven" || kind === "cooling" ? options : []),
+            ...(kind !== "oven" && kind !== "cooling"
+                ? roles("target_temperature", "duration")
+                : []),
+        ];
+        const care = roles("attention").filter((e) => !moduleCandidates.has(e.entityId));
+        const other = roles("other").filter((e) => !moduleCandidates.has(e.entityId));
+        return b `<section class="group" data-section="settings">
+        <h3>${this.t("Appliance")}</h3>
+        ${settings.length ? b `<div class="controls">${settings.map((e) => this.control(device, e))}</div>` : A}
+        <div class="tiles">
+          ${!roles("remote_start").length ? A : roles("remote_start").map((e) => b `<div class="tile"><span class="label">${this.t("Remote start")}</span><strong class="value">${this.reading(e)}</strong></div>`)}
+        </div>
+        ${!roles("remote_start").length ? b `<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : A}
+      </section>
+      ${this.group(device, this.t("Consumables & care"), care, "care")}
+      ${other.length ? this.group(device, `${this.t("Other")} · ${other.length}`, other, "other") : A}
+      ${device.disabledCount ? b `<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : A}`;
+    }
+    topLine(device) {
+        return b `<div class="top">
+      <h2 class="title">${this.config?.title ?? device.name}</h2>
+      ${this.headerActions(device)}
+    </div>`;
     }
     compact(device) {
         const status = this.status(device);
         return b `<button
-      class="compact"
+      class="compact tone-${this.tone(device, status)}"
       @click=${() => this.openDetails(device)}
     >
-      <span class="icon"
-        ><ha-icon icon=${icons[this.kind(device)]}></ha-icon></span
-      ><span class="heading"
+      <span class="circ big">${icon(icons[this.kind(device)])}</span
+      ><span class="text"
         ><strong>${this.config?.title ?? device.name}</strong
-        ><span class="status"
+        ><span class="sub"
           >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds, this.ha)}` : ""}</span
         ></span
-      ><span aria-hidden="true">›</span>
+      >${icon("next", "chev")}
     </button>`;
     }
     overview(devices) {
@@ -2285,32 +2922,38 @@ class ApplianceCard extends i {
         const unobserved = devices.filter((d) => d.kind === "cooling"
             ? this.status(d).online !== "online"
             : ["offline", "unknown"].includes(this.status(d).operation));
-        return b `<header>
-        <div class="icon">
-          <ha-icon icon="mdi:silverware-fork-knife"></ha-icon>
+        const flagged = new Set(alerts.map((a) => a.device.id)).size;
+        const count = (value) => new Intl.NumberFormat(formattingLocale(this.ha)).format(value);
+        return b `<div class="top">
+        <h2 class="title">${this.config?.title ?? this.t("Kitchen")}</h2>
+      </div>
+      <div class="tiles summary">
+        <div class="tile tone-active">
+          <span class="value">${count(busy.length)}</span
+          ><span class="label">${this.t("Running")}</span>
         </div>
-        <div class="heading">
-          <div class="eyebrow">Home Connect Local</div>
-          <h2>${this.config?.title ?? this.t("Kitchen")}</h2>
+        <div class="tile ${flagged ? "tone-attention flagged" : "tone-done"}">
+          <span class="value">${count(flagged)}</span
+          ><span class="label">${this.t("Needs attention")}</span>
         </div>
-        <span class="badge"
-          >${this.t("{count} appliances", { count: devices.length })}</span
-        >
-      </header>
-      <section>
+        <div class="tile tone-idle">
+          <span class="value">${count(devices.length)}</span
+          ><span class="label">${this.t("Appliances")}</span>
+        </div>
+      </div>
+      <section class="group">
         <h3>${this.t("In progress")}</h3>
         ${busy.length
             ? busy.map(({ device, status }) => b `<button
-                    class="row"
+                    class="row tone-${this.tone(device, status)}"
                     data-busy=${device.id}
                     @click=${() => this.openDetails(device)}
                   >
-                    <span class="icon"
-                      ><ha-icon icon=${icons[device.kind]}></ha-icon></span
-                    ><span class="heading"
+                    <span class="circ">${icon(icons[this.kind(device)])}</span
+                    ><span class="text"
                       ><strong>${device.name}</strong
-                      ><small
-                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</small
+                      ><span class="sub"
+                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</span
                       ></span
                     ><span class="end"
                       >${status.operation === "delayed" ? this.t("Starts in {time}", { time: duration(status.delaySeconds, this.ha) }) : duration(status.remainingSeconds, this.ha)}</span
@@ -2320,7 +2963,7 @@ class ApplianceCard extends i {
                 ${unobserved.length ? this.t("No running programmes reported. Some appliance states are unavailable.") : this.t("Nothing is running.")}
               </p>`}
       </section>
-      <section>
+      <section class="group">
         <h3>${this.t("Needs attention")}</h3>
         ${alerts.length
             ? b `<ul class="attention">
@@ -2329,12 +2972,14 @@ class ApplianceCard extends i {
                         class="row"
                         @click=${() => this.openDetails(device)}
                       >
-                        <span
+                        <span class="circ"
+                          >${icon(item.severity === "unknown" ? "offline" : "warning")}</span
+                        ><span class="text"
                           ><strong>${device.name}</strong
-                          ><small
-                            >${this.attentionMessage(device, item)}</small
+                          ><span class="sub"
+                            >${this.attentionMessage(device, item)}</span
                           ></span
-                        >
+                        >${icon("next", "chev")}
                       </button>
                     </li>`)}
               </ul>`
@@ -2342,14 +2987,23 @@ class ApplianceCard extends i {
                 ${unobserved.length ? this.t("Some appliance states are unavailable.") : this.t("All clear.")}
               </p>`}${unobserved.filter((d) => !alerts.some((a) => a.device.id === d.id && a.item.severity === "unknown")).map((device) => b `<p class="note">${device.name}: ${this.statusLabel(device)}</p>`)}
       </section>
-      <details>
-        <summary>${this.t("All appliances")}</summary>
-        ${devices.map((device) => b `<button class="row" @click=${() => this.openDetails(device)}>
-              <span class="heading"
-                ><strong>${device.name}</strong
-                ><small>${this.statusLabel(device)}</small></span
-              ><span>›</span>
-            </button>`)}
+      <details class="panel">
+        <summary>
+          <span class="panel-title">${this.t("All appliances")}</span
+          >${icon("chevron", "chevron")}
+        </summary>
+        <div class="rows">
+          ${devices.map((device) => b `<button
+                class="row tone-${this.tone(device)}"
+                @click=${() => this.openDetails(device)}
+              >
+                <span class="circ">${icon(icons[this.kind(device)])}</span
+                ><span class="text"
+                  ><strong>${device.name}</strong
+                  ><span class="sub">${this.statusLabel(device)}</span></span
+                >${icon("next", "chev")}
+              </button>`)}
+        </div>
       </details>
       ${devices.some((d) => d.disabledCount) ? b `<p class="note" data-disabled-count><a href="/config/entities">${this.t("{count} disabled entities", { count: devices.reduce((sum, d) => sum + d.disabledCount, 0) })}</a> ${this.t("Across these appliances.")}</p>` : A}`;
     }
@@ -2359,14 +3013,22 @@ class ApplianceCard extends i {
         const { devices, error } = this.selection();
         const individual = devices.length === 1 ? devices[0] : undefined;
         const detail = devices.find((d) => d.id === this.detailId);
+        const configure = devices.find((d) => d.id === this.configureId) ??
+            (!this.isOverview ? individual : undefined);
         return b `<ha-card
         >${this.registry.disconnected
-            ? b `<p role="status">
-                ${this.t("Disconnected from Home Assistant.")}
-              </p>`
+            ? b `<div class="feedback" role="status">
+                <span class="circ">${icon("offline")}</span
+                ><span class="feedback-title"
+                  >${this.t("Disconnected from Home Assistant.")}</span
+                >
+              </div>`
             : this.registry.error
-                ? b `<p class="feedback" role="alert">${this.registry.error}</p>
-                  <button @click=${this.retry}>
+                ? b `<div class="feedback failed" role="alert">
+                    <span class="circ">${icon("warning")}</span
+                    ><span class="feedback-title">${this.registry.error}</span>
+                  </div>
+                  <button class="pill" @click=${this.retry}>
                     ${this.t("Retry discovery")}
                   </button>`
                 : !this.registry.snapshot
@@ -2374,52 +3036,63 @@ class ApplianceCard extends i {
                     ${this.t("Finding your appliances…")}
                   </p>`
                     : error
-                        ? b `<p class="feedback" role="alert">${this.m(error)}</p>`
+                        ? b `<div class="feedback failed" role="alert">
+                      <span class="circ">${icon("warning")}</span
+                      ><span class="feedback-title">${this.m(error)}</span>
+                    </div>`
                         : this.isOverview
                             ? this.overview(devices)
                             : individual
                                 ? this.config.expand
-                                    ? b `${this.heading(individual)}${this.deviceBody(individual)}`
+                                    ? b `${this.topLine(individual)}${this.deviceBody(individual)}`
                                     : this.compact(individual)
                                 : b `<p class="empty">
                           ${this.t("No matching Home Connect Local appliance.")}
                         </p>`}${this.feedback()}</ha-card
       >
-      <dialog
-        id="details"
-        @click=${(e) => {
-            if (e.target === e.currentTarget) {
-                const r = e.currentTarget.getBoundingClientRect();
-                if (e.clientX < r.left ||
-                    e.clientX > r.right ||
-                    e.clientY < r.top ||
-                    e.clientY > r.bottom)
-                    e.currentTarget.close();
-            }
-        }}
-      >
-        <div class="dialog-head">
-          <h2>${detail?.name ?? this.t("Appliance")}</h2>
-          <button
-            class="icon-button"
+      <dialog id="details" @click=${this.closeOnBackdrop}>
+        <div class="top">
+          <h2 class="title">${detail?.name ?? this.t("Appliance")}</h2>
+          ${detail ? this.headerActions(detail) : A}<button
+            class="icon-btn"
             aria-label=${this.t("Close details")}
             @click=${() => this.shadowRoot?.querySelector("#details")?.close()}
           >
-            ✕
+            ${icon("close")}
           </button>
         </div>
         ${detail ? this.deviceBody(detail) : A}${this.feedback()}
       </dialog>
+      <dialog id="configure" @click=${this.closeOnBackdrop}>
+        <div class="top">
+          <h2 class="title">
+            ${this.t("Settings")}${configure ? b `<span class="subtitle">${configure.name}</span>` : A}
+          </h2>
+          <button
+            class="icon-btn"
+            data-close-configure
+            aria-label=${this.t("Close settings")}
+            @click=${() => this.shadowRoot?.querySelector("#configure")?.close()}
+          >
+            ${icon("close")}
+          </button>
+        </div>
+        ${configure ? this.configureBody(configure) : A}${this.feedback()}
+      </dialog>
       <dialog id="confirmation" @cancel=${this.cancelConfirm}>
-        <h2>${this.t("Confirm appliance command")}</h2>
-        <p>${this.confirmationLabel()}</p>
+        <div class="confirm-head">
+          <span class="circ big">${icon("warning")}</span>
+          <h2>${this.t("Confirm appliance command")}</h2>
+        </div>
+        <p class="confirm-what">${this.confirmationLabel()}</p>
         <p class="note">
           ${this.t("This may start the appliance. Check that it is ready for remote operation.")}
         </p>
         ${this.pending?.reason ? b `<p class="note">${this.m(this.pending.reason)}</p>` : A}
         <div class="dialog-actions">
-          <button @click=${this.cancelConfirm}>${this.t("Cancel")}</button
-          ><button class="primary" data-confirm @click=${this.confirm}>
+          <button class="pill" @click=${this.cancelConfirm}>
+            ${this.t("Cancel")}</button
+          ><button class="pill primary" data-confirm @click=${this.confirm}>
             ${this.t("Confirm")}
           </button>
         </div>

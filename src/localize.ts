@@ -306,6 +306,14 @@ const nb = {
   "Oven used heating mode": "Oppvarmingsmodus",
   "Pyrolysis level": "Pyrolysenivå",
   "Oven fast pre heat": "Hurtigoppvarming",
+  Power: "Strøm",
+  Appliances: "Apparater",
+  "Appliance settings": "Apparatinnstillinger",
+  "Close settings": "Lukk innstillinger",
+  "Sending…": "Sender …",
+  "Done around {time}": "Ferdig rundt {time}",
+  "Decrease {name}": "Reduser {name}",
+  "Increase {name}": "Øk {name}",
 } as const;
 export type TranslationKey = keyof typeof nb;
 type LanguageSource = Pick<HomeAssistant, "language" | "locale"> | undefined;

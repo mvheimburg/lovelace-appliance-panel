@@ -7,7 +7,49 @@ includes oven, dishwasher, coffee-machine, refrigerator and kitchen overview car
 No companion integration is required. Cloud Home Connect and staged cooking presets
 are outside this release.
 
-![Appliance cards with simulated Home Connect Local data](docs/appliance-panel.png)
+![Kitchen overview, running oven and dishwasher in the dark Bubble appearance](docs/appliance-panel-dark.png)
+
+![The same cards in the light default appearance](docs/appliance-panel-light.png)
+
+![Coffee machine and fridge freezer](docs/appliance-panel-more.png)
+
+Screenshots use simulated Home Connect Local data.
+
+## What each card shows
+
+Since 0.2.0 the cards share the visual language of our other dashboard cards:
+a small title line, a status **hero**, reading tiles and pill controls.
+
+- **Title line**: the appliance name, then the **power** button and the
+  **settings** cog (top right). Power toggles the exposed power switch, or
+  switches a power selector between its on and standby/off options. It shows
+  progress while the command is in flight, is disabled when the state is
+  unavailable, and always reflects Home Assistant's state after a failure. A
+  read-only power sensor is shown as a status pill.
+- **Hero**: a round icon tinted by status, the status line (for example
+  _Running · Hot air_), a large headline (time remaining, time until a delayed
+  start, the selected programme, or the fridge temperature) and context such as
+  the phase and the estimated finish time. A progress bar appears while a
+  programme runs.
+- **Everyday controls**: programme picker, Start/Pause/Resume/Stop, oven
+  temperature and duration steppers, microwave and steam modules, wash and
+  coffee options, cooling zones and modes. Short option lists are chips;
+  switches are toggle pills; numbers are − / + steppers with an editable value.
+- **Needs attention**: salt, rinse aid, water tank, doors, errors and offline
+  states as tinted rows.
+- **Settings (cog)**: a dialog with the controls that are not everyday tasks:
+  child lock, remote-control level, delayed start, additional power controls,
+  oven/refrigerator programme options, other appliances' temperature and
+  duration, remote-start permission, the full consumables & care readings,
+  unrecognised **Other** entities and disabled-entity hints. The values and
+  service calls are the same as before; only where they are shown changed.
+
+![Settings dialog for the dishwasher](docs/appliance-panel-settings.png)
+
+The kitchen overview shows summary tiles (running, needing attention,
+appliances), one row per running appliance with its remaining time, attention
+rows, and **All appliances**. Selecting a row opens the appliance with the same
+power and settings buttons.
 
 ## Choose a card
 
@@ -101,11 +143,11 @@ that they cannot be verified; the appliance still enforces its own permissions.
 All actions recheck availability, lifecycle, options and numeric limits when sent.
 A confirmation becomes invalid if its appliance or registry changes.
 
-Settings include delayed start when exposed. Power, child lock and other
-programme options live in **Settings**. Numeric controls retain the integration's
-units. Home Connect Local currently converts numeric writes to integers, so the
-card rejects fractional writes rather than silently truncating them. Unknown
-button/select controls use conservative programme-start guards.
+Power is in the title line. Child lock, delayed start (when exposed) and other
+rarely used controls live behind the **settings** cog. Numeric controls retain
+the integration's units. Home Connect Local currently converts numeric writes to
+integers, so the card rejects fractional writes rather than silently truncating
+them. Unknown button/select controls use conservative programme-start guards.
 
 The kitchen overview surfaces care problems and open doors, as well as offline
 or unknown appliances. A healthy water tank showing `full` is distinct from a
@@ -125,9 +167,12 @@ it cannot prove that a device has been physically removed.
 | `confirm_start` | `true` | Confirm commands that could start an appliance |
 | `oven_modules` | `auto` | `auto`, or a list containing `microwave` and/or `steam` |
 
-The Bubble appearance inherits shared `--bubble-*` theme variables for backgrounds,
-accent, radii, icons, sub-buttons, borders and shadows. It does not require Bubble
-Card. Error and attention colours remain distinct.
+Colours come from Home Assistant theme variables (`--success-color`,
+`--warning-color`, `--orange-color`, `--error-color`, `--primary-color`,
+`--disabled-text-color`), so the cards follow light and dark themes. The Bubble
+appearance inherits shared `--bubble-*` theme variables for backgrounds, accent,
+radii, icons, borders and shadows. It does not require Bubble Card. Error and
+attention colours remain distinct.
 
 ## Install
 
@@ -149,6 +194,7 @@ npm test
 npm run lint
 npm run typecheck
 npm run build
+npm run screenshots   # regenerates docs/*.png from dist/ with simulated data
 ```
 
 `dist/` is committed. CI runs Chromium tests and verifies a rebuild produces no

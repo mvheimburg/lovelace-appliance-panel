@@ -13,6 +13,7 @@ import { discoverAppliances, applianceStatus, selectAppliances } from "./model";
 import { actionPolicy, executeAction } from "./actions";
 import { watchRegistries, refreshRegistries } from "./registry";
 import { styles } from "./styles";
+import { icon, type IconName } from "./icons";
 import type {
   HomeAssistant,
   ApplianceConfig,
@@ -46,15 +47,19 @@ const kindNames: Record<ApplianceKind, TranslationKey> = {
   dryer: "Dryer",
   unknown: "Appliance",
 };
-const icons: Record<ApplianceKind, string> = {
-  oven: "mdi:stove",
-  dishwasher: "mdi:dishwasher",
-  coffee: "mdi:coffee-maker",
-  cooling: "mdi:fridge-outline",
-  washer: "mdi:washing-machine",
-  dryer: "mdi:tumble-dryer",
-  unknown: "mdi:home-outline",
+const icons: Record<ApplianceKind, IconName> = {
+  oven: "oven",
+  dishwasher: "dishwasher",
+  coffee: "coffee",
+  cooling: "cooling",
+  washer: "washer",
+  dryer: "dryer",
+  unknown: "unknown",
 };
+/** Presentation tone; the colour comes from HA theme variables in styles.ts. */
+type Tone =
+  "active" | "ready" | "done" | "attention" | "error" | "offline" | "idle";
+const WRITABLE = ["button", "select", "number", "switch"];
 export function duration(seconds?: number, hass?: HomeAssistant): string {
   if (seconds === undefined || !Number.isFinite(seconds))
     return localize(hass, "Time unknown");
@@ -93,6 +98,9 @@ export class ApplianceCard extends LitElement {
   private timer?: ReturnType<typeof setInterval>;
   private epoch = 0;
   private detailId?: string;
+  private configureId?: string;
+  /** Entity whose command is in flight, so its control can show progress. */
+  private inFlight?: string;
   private pending?: {
     deviceId: string;
     action: ApplianceAction;
@@ -129,6 +137,7 @@ export class ApplianceCard extends LitElement {
       this.closeDialogs();
       this.pending = undefined;
       this.detailId = undefined;
+      this.configureId = undefined;
       this.error = "";
       this.notice = "";
       this.epoch++;
@@ -320,7 +329,9 @@ export class ApplianceCard extends LitElement {
     confirmed: boolean,
   ) {
     this.busy = true;
+    this.inFlight = action.entityId;
     this.error = "";
+    this.notice = "";
     this.requestUpdate();
     try {
       if (
@@ -337,6 +348,7 @@ export class ApplianceCard extends LitElement {
       this.error = error instanceof Error ? error.message : String(error);
     } finally {
       this.busy = false;
+      this.inFlight = undefined;
       this.requestUpdate();
     }
   }
@@ -378,6 +390,75 @@ export class ApplianceCard extends LitElement {
     if (this.ha) refreshRegistries(this.ha);
     this.requestUpdate();
   }
+  private async openConfigure(device: Appliance) {
+    this.configureId = device.id;
+    this.requestUpdate();
+    await this.updateComplete;
+    this.shadowRoot
+      ?.querySelector<HTMLDialogElement>("#configure")
+      ?.showModal();
+  }
+  private closeOnBackdrop(e: MouseEvent) {
+    if (e.target !== e.currentTarget) return;
+    const dialog = e.currentTarget as HTMLDialogElement;
+    const r = dialog.getBoundingClientRect();
+    if (
+      e.clientX < r.left ||
+      e.clientX > r.right ||
+      e.clientY < r.top ||
+      e.clientY > r.bottom
+    )
+      dialog.close();
+  }
+  private tone(device: Appliance, status = this.status(device)): Tone {
+    if (status.online === "offline" || status.operation === "offline")
+      return "offline";
+    switch (status.operation) {
+      case "running":
+      case "delayed":
+      case "aborting":
+        return "active";
+      case "paused":
+      case "action_required":
+        return "attention";
+      case "error":
+        return "error";
+      case "finished":
+        return "done";
+      case "ready":
+        return "ready";
+      case "unknown":
+        return this.kind(device) === "cooling" && status.online === "online"
+          ? "ready"
+          : "idle";
+      default:
+        return "idle";
+    }
+  }
+  private clock(epoch: number) {
+    try {
+      return new Intl.DateTimeFormat(formattingLocale(this.ha), {
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(epoch);
+    } catch {
+      return new Date(epoch).toLocaleTimeString();
+    }
+  }
+  private isReading(entity: ApplianceEntity) {
+    const domain = entity.entityId.split(".")[0];
+    if (!WRITABLE.includes(domain)) return true;
+    return (
+      domain === "select" &&
+      !Array.isArray(this.ha?.states[entity.entityId]?.attributes.options)
+    );
+  }
+  private tile(entity: ApplianceEntity) {
+    return html`<div class="tile" data-reading=${entity.entityId}>
+      <span class="label">${this.entityName(entity)}</span
+      ><strong class="value">${this.reading(entity)}</strong>
+    </div>`;
+  }
   private control(device: Appliance, entity: ApplianceEntity): TemplateResult {
     const state = this.ha!.states[entity.entityId];
     const domain = entity.entityId.split(".")[0];
@@ -410,93 +491,181 @@ export class ApplianceCard extends LitElement {
       : policy.reason
         ? this.m(policy.reason)
         : undefined;
+    const name = this.entityName(entity);
+    const pending = this.inFlight === entity.entityId;
+    const hint =
+      !policy.allowed && reason
+        ? html`<small class="hint">${reason}</small>`
+        : nothing;
     const act = (value?: string | number | boolean) =>
       void this.requestAction(device, { entityId: entity.entityId, value });
-    if (domain === "select" && Array.isArray(state?.attributes.options))
-      return html`<label class="control"
-        ><span>${this.entityName(entity)}</span
-        ><select
+    if (domain === "select" && Array.isArray(state?.attributes.options)) {
+      const options = state.attributes.options as string[];
+      const program = ["selected_program", "active_program"].includes(
+        entity.role,
+      );
+      // Short option sets are everyday choices: show them as chips.
+      if (!program && options.length > 0 && options.length <= 5)
+        return html`<div class="control${pending ? " pending" : ""}">
+          <span class="label">${name}</span>
+          <div
+            class="chips"
+            role="group"
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            data-entity=${entity.entityId}
+            title=${reason ?? ""}
+          >
+            ${options.map(
+              (option) =>
+                html`<button
+                  class="chip"
+                  data-value=${option}
+                  aria-pressed=${option === state.state ? "true" : "false"}
+                  ?disabled=${disabled}
+                  @click=${() => {
+                    if (option !== state.state) act(option);
+                  }}
+                >
+                  ${stateLabel(this.ha, state, option)}
+                </button>`,
+            )}
+          </div>
+          ${hint}
+        </div>`;
+      return html`<label class="control${pending ? " pending" : ""}"
+        ><span class="label">${name}</span
+        ><span class="select-wrap"
+          ><select
+            data-entity=${entity.entityId}
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            .value=${state.state}
+            ?disabled=${disabled}
+            title=${reason ?? ""}
+            @change=${(e: Event) => {
+              act((e.target as HTMLSelectElement).value);
+              (e.target as HTMLSelectElement).value = state.state;
+            }}
+          >
+            ${!options.includes(state.state) ? html`<option value=${state.state}>${this.reading(entity)}</option>` : nothing}${options.map((option: string) => html`<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, program)}</option>`)}</select
+          >${icon("chevron", "caret")}</span
+        >${hint}</label
+      >`;
+    }
+    if (domain === "number") {
+      const unit = state?.attributes.unit_of_measurement;
+      const min = Number(state?.attributes.min);
+      const max = Number(state?.attributes.max);
+      const current = unavailable ? NaN : Number(state.state);
+      const step = (direction: number) => {
+        const increment = Number(state?.attributes.step) || 1;
+        let next = Number.isFinite(current)
+          ? current + direction * increment
+          : direction < 0
+            ? max
+            : min;
+        if (Number.isFinite(min)) next = Math.max(min, next);
+        if (Number.isFinite(max)) next = Math.min(max, next);
+        // Keep the service value numeric; strip binary float noise only.
+        act(Math.round(next * 1e6) / 1e6);
+      };
+      return html`<div class="control${pending ? " pending" : ""}">
+        <span class="label">${name}${unit ? ` · ${unit}` : ""}</span>
+        <div class="stepper">
+          <button
+            class="step"
+            aria-label=${this.t("Decrease {name}", { name })}
+            ?disabled=${disabled || (Number.isFinite(current) && current <= min)}
+            @click=${() => step(-1)}
+          >
+            ${icon("minus")}</button
+          ><input
+            data-entity=${entity.entityId}
+            aria-label=${name}
+            aria-busy=${pending ? "true" : "false"}
+            type="number"
+            inputmode="numeric"
+            .value=${!unavailable ? state.state : ""}
+            min=${state?.attributes.min ?? ""}
+            max=${state?.attributes.max ?? ""}
+            step=${state?.attributes.step ?? "any"}
+            ?disabled=${disabled}
+            title=${reason ?? ""}
+            @change=${(e: Event) => {
+              const input = e.target as HTMLInputElement;
+              if (input.value !== "" && input.reportValidity())
+                act(Number(input.value));
+              else
+                this.error = "Enter a valid value within the appliance limits.";
+              this.requestUpdate();
+            }}
+          /><button
+            class="step"
+            aria-label=${this.t("Increase {name}", { name })}
+            ?disabled=${disabled || (Number.isFinite(current) && current >= max)}
+            @click=${() => step(1)}
+          >
+            ${icon("plus")}
+          </button>
+        </div>
+        ${hint}
+      </div>`;
+    }
+    if (domain === "switch") {
+      const on = state?.state === "on";
+      return html`<div class="control">
+        <button
+          class="toggle${on ? " on" : ""}${pending ? " pending" : ""}"
+          role="switch"
+          aria-checked=${on ? "true" : "false"}
+          aria-busy=${pending ? "true" : "false"}
           data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          .value=${state.state}
           ?disabled=${disabled}
           title=${reason ?? ""}
-          @change=${(e: Event) => {
-            act((e.target as HTMLSelectElement).value);
-            (e.target as HTMLSelectElement).value = state.state;
-          }}
+          @click=${() => act(!on)}
         >
-          ${!state.attributes.options.includes(state.state) ? html`<option value=${state.state}>${this.reading(entity)}</option>` : nothing}${state.attributes.options.map((option: string) => html`<option value=${option} ?selected=${option === state.state}>${stateLabel(this.ha, state, option, ["selected_program", "active_program"].includes(entity.role))}</option>`)}</select
-        >${!policy.allowed && reason ? html`<small class="muted">${reason}</small>` : nothing}</label
-      >`;
-    if (domain === "number")
-      return html`<label class="control"
-        ><span
-          >${this.entityName(entity)}${state?.attributes.unit_of_measurement ? ` · ${state.attributes.unit_of_measurement}` : ""}</span
-        ><input
-          data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          type="number"
-          .value=${!unavailable ? state.state : ""}
-          min=${state?.attributes.min ?? ""}
-          max=${state?.attributes.max ?? ""}
-          step=${state?.attributes.step ?? "any"}
-          ?disabled=${disabled}
-          title=${reason ?? ""}
-          @change=${(e: Event) => {
-            const input = e.target as HTMLInputElement;
-            if (input.value !== "" && input.reportValidity())
-              act(Number(input.value));
-            else
-              this.error = "Enter a valid value within the appliance limits.";
-            this.requestUpdate();
-          }}
-        />${!policy.allowed && reason ? html`<small class="muted">${reason}</small>` : nothing}</label
-      >`;
-    if (domain === "switch")
-      return html`<label class="control switch"
-        ><span>${this.entityName(entity)}</span
-        ><input
-          data-entity=${entity.entityId}
-          aria-label=${this.entityName(entity)}
-          type="checkbox"
-          .checked=${state?.state === "on"}
-          ?disabled=${disabled}
-          title=${reason ?? ""}
-          @change=${(e: Event) => {
-            act((e.target as HTMLInputElement).checked);
-            (e.target as HTMLInputElement).checked = state?.state === "on";
-          }}
-        />${!policy.allowed && reason ? html`<small class="muted">${reason}</small>` : nothing}</label
-      >`;
+          <span class="toggle-text">${name}</span
+          ><span class="knob" aria-hidden="true"></span>
+        </button>
+        ${hint}
+      </div>`;
+    }
     if (domain === "button")
-      return html`<button
-        data-entity=${entity.entityId}
-        ?disabled=${disabled}
-        title=${reason ?? ""}
-        @click=${() => act()}
-      >
-        ${this.entityName(entity)}
-      </button>`;
-    return html`<div class="reading" data-reading=${entity.entityId}>
-      <span>${this.entityName(entity)}</span
-      ><strong>${this.reading(entity)}</strong>
-    </div>`;
+      return html`<div class="control">
+        <button
+          class="pill${pending ? " pending" : ""}"
+          data-entity=${entity.entityId}
+          aria-busy=${pending ? "true" : "false"}
+          ?disabled=${disabled}
+          title=${reason ?? ""}
+          @click=${() => act()}
+        >
+          ${name}
+        </button>
+        ${hint}
+      </div>`;
+    return this.tile(entity);
   }
   private group(
     device: Appliance,
     title: string,
     entities: ApplianceEntity[],
     section?: string,
+    module?: string,
   ) {
-    return entities.length
-      ? html`<section data-section=${section ?? ""}>
-          <h3>${title}</h3>
-          <div class="controls">
-            ${entities.map((entity) => this.control(device, entity))}
-          </div>
-        </section>`
-      : nothing;
+    if (!entities.length) return nothing;
+    const readings = entities.filter((e) => this.isReading(e));
+    const controls = entities.filter((e) => !this.isReading(e));
+    return html`<section
+      class="group"
+      data-section=${section ?? ""}
+      data-module=${module ?? nothing}
+    >
+      <h3>${title}</h3>
+      ${readings.length ? html`<div class="tiles">${readings.map((e) => this.tile(e))}</div>` : nothing}
+      ${controls.length ? html`<div class="controls">${controls.map((e) => this.control(device, e))}</div>` : nothing}
+    </section>`;
   }
   private transport(device: Appliance, status: ApplianceStatus) {
     const roles: Role[] =
@@ -512,19 +681,24 @@ export class ApplianceCard extends LitElement {
               ? ["start"]
               : [];
     const entities = device.entities.filter((e) => roles.includes(e.role));
+    if (!entities.length) return nothing;
     return html`<div class="transport">
         ${entities.map((entity) => {
           const policy = actionPolicy(device, this.ha!.states, {
             entityId: entity.entityId,
           });
+          const pending = this.inFlight === entity.entityId;
           return html`<button
             data-role=${entity.role}
-            class=${entity.role === "abort" ? "danger" : entity.role === "start" ? "primary" : ""}
+            class="action ${entity.role === "abort" ? "danger" : entity.role === "start" || entity.role === "resume" ? "primary" : ""}"
+            aria-busy=${pending ? "true" : "false"}
             ?disabled=${this.busy || !policy.allowed}
             title=${this.m(policy.reason ?? "")}
             @click=${() => this.requestAction(device, { entityId: entity.entityId })}
           >
-            ${this.t(({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" } as Partial<Record<Role, TranslationKey>>)[entity.role] ?? "Action")}
+            ${pending ? icon("spinner", "spin") : icon(entity.role as IconName)}<span
+              >${this.t(({ start: "Start", pause: "Pause", resume: "Resume", abort: "Stop" } as Partial<Record<Role, TranslationKey>>)[entity.role] ?? "Action")}</span
+            >
           </button>`;
         })}
       </div>
@@ -539,18 +713,51 @@ export class ApplianceCard extends LitElement {
   }
   private attention(device: Appliance, status: ApplianceStatus) {
     return status.attention.length
-      ? html`<section>
+      ? html`<section class="group">
           <h3>${this.t("Needs attention")}</h3>
           <ul class="attention">
-            ${status.attention.map((item) => html`<li class=${item.severity}>${this.attentionMessage(device, item)}</li>`)}
+            ${status.attention.map(
+              (item) =>
+                html`<li class="row ${item.severity}">
+                  <span class="circ"
+                    >${icon(item.severity === "unknown" ? "offline" : "warning")}</span
+                  ><span class="text"
+                    ><strong
+                      >${this.attentionMessage(device, item)}</strong
+                    ></span
+                  >
+                </li>`,
+            )}
           </ul>
         </section>`
       : nothing;
   }
   private feedback() {
-    return html`${this.error ? html`<p class="feedback" role="alert">${this.m(this.error)}</p>` : nothing}${this.notice ? html`<p class="note" role="status">${this.m(this.notice)}</p>` : nothing}`;
+    return html`${
+      this.busy
+        ? html`<div class="feedback pending" role="status">
+            <span class="circ">${icon("spinner", "spin")}</span
+            ><span class="feedback-title">${this.t("Sending…")}</span>
+          </div>`
+        : nothing
+    }${
+      this.error
+        ? html`<div class="feedback failed" role="alert">
+            <span class="circ">${icon("warning")}</span
+            ><span class="feedback-title">${this.m(this.error)}</span>
+          </div>`
+        : nothing
+    }${
+      this.notice
+        ? html`<div class="feedback sent" role="status">
+            <span class="circ">${icon("check")}</span
+            ><span class="feedback-title">${this.m(this.notice)}</span>
+          </div>`
+        : nothing
+    }`;
   }
-  private deviceBody(device: Appliance) {
+  /** Role lookups shared by the everyday body and the configure view. */
+  private parts(device: Appliance) {
     const kind = this.kind(device);
     const status = this.status(device);
     const roles = (...values: Role[]) =>
@@ -570,9 +777,100 @@ export class ApplianceCard extends LitElement {
     const options = roles("option").filter(
       (e) => !moduleCandidates.has(e.entityId),
     );
+    return { kind, status, roles, moduleEntries, moduleCandidates, options };
+  }
+  private hero(device: Appliance, status: ApplianceStatus) {
+    const kind = this.kind(device);
+    const op = status.operation;
+    const roles = (...values: Role[]) =>
+      device.entities.filter((e) => values.includes(e.role));
+    const program =
+      status.program && !["unknown", "unavailable"].includes(status.program)
+        ? this.programLabel(device, status.program)
+        : undefined;
+    const kindName = this.t(kindNames[kind]);
+    let line = this.statusLabel(device);
+    let headline = line;
+    const context: string[] = [];
+    if (kind === "cooling") {
+      const zones = roles("cooling_setpoint", "target_temperature");
+      const zone =
+        zones.find((e) =>
+          ["unavailable", "unknown", undefined].every(
+            (v) => this.ha?.states[e.entityId]?.state !== v,
+          ),
+        ) ??
+        zones[0] ??
+        roles("current_temperature")[0];
+      if (zone && status.online === "online") {
+        headline = this.reading(zone);
+        context.push(this.entityName(zone));
+      } else line = kindName;
+    } else if (op === "error" || op === "action_required") {
+      line = kindName;
+      if (program) context.push(program);
+    } else if (op === "delayed") {
+      headline = duration(status.delaySeconds, this.ha);
+      if (program) line += ` · ${program}`;
+      context.push(this.t("Until start"));
+    } else if (["running", "paused", "aborting"].includes(op)) {
+      headline = duration(status.remainingSeconds, this.ha);
+      if (program) line += ` · ${program}`;
+      context.push(
+        op === "paused" ? this.t("Paused · remaining") : this.t("Remaining"),
+      );
+      if (status.phase) context.push(this.phaseLabel(device, status.phase));
+      if (op === "running" && status.estimatedFinish)
+        context.push(
+          this.t("Done around {time}", {
+            time: this.clock(status.estimatedFinish),
+          }),
+        );
+    } else if (op === "offline" || op === "unknown") {
+      line = kindName;
+    } else {
+      if (program) headline = program;
+      else line = kindName;
+      if (op === "finished" && status.finishedAt)
+        context.push(
+          this.t("Finished {time} ago", {
+            time: duration(
+              (Date.now() - Date.parse(status.finishedAt)) / 1000,
+              this.ha,
+            ),
+          }),
+        );
+    }
+    if (status.online !== "online" && status.lastReported)
+      context.push(
+        this.t("Last reported: {time}", {
+          time: new Date(status.lastReported).toLocaleString(
+            formattingLocale(this.ha),
+          ),
+        }),
+      );
+    const showProgress =
+      kind !== "cooling" &&
+      !["ready", "off", "finished"].includes(op) &&
+      status.progress !== undefined;
+    return html`<div class="hero tone-${this.tone(device, status)}" data-hero>
+      <div class="hero-main">
+        <span class="circ big">${icon(icons[kind])}</span>
+        <div class="hero-text">
+          <div class="status">${line}</div>
+          <div class="current">${headline}</div>
+          ${context.length ? html`<div class="context">${context.join(" · ")}</div>` : nothing}
+        </div>
+      </div>
+      ${showProgress ? html`<progress max="100" value=${status.progress!} aria-label=${this.t("Programme progress")}></progress>` : nothing}
+    </div>`;
+  }
+  private deviceBody(device: Appliance) {
+    const { kind, status, roles, moduleEntries, options } = this.parts(device);
     const picker = ["ready", "off", "finished"].includes(status.operation);
     return html`
-      ${status.operation === "error" || status.operation === "action_required" ? html`<p class="feedback" role="alert">${this.t(labels[status.operation])}</p>` : nothing}
+      ${this.hero(device, status)}
+      ${status.operation === "error" || status.operation === "action_required" ? html`<div class="feedback failed" role="alert"><span class="circ">${icon("warning")}</span><span class="feedback-title">${this.t(labels[status.operation])}</span></div>` : nothing}
       ${
         kind !== "cooling"
           ? html`${
@@ -585,22 +883,8 @@ export class ApplianceCard extends LitElement {
                     roles("selected_program"),
                     "programme",
                   )
-                : html`<section class="surface">
-                    <div class="progress-head">
-                      <div>
-                        <strong
-                          >${status.operation === "delayed" ? duration(status.delaySeconds, this.ha) : duration(status.remainingSeconds, this.ha)}</strong
-                        ><br /><span
-                          >${status.operation === "delayed" ? this.t("Until start") : status.operation === "paused" ? this.t("Paused · remaining") : this.t("Remaining")}</span
-                        >
-                      </div>
-                      <span
-                        >${status.program ? this.programLabel(device, status.program) : this.t(labels[status.operation])}</span
-                      >
-                    </div>
-                    ${status.progress !== undefined ? html`<progress max="100" value=${status.progress} aria-label=${this.t("Programme progress")}></progress>` : nothing}${status.phase ? html`<div class="phase">${this.phaseLabel(device, status.phase)}</div>` : nothing}
-                  </section>`
-            }${status.operation === "finished" && status.finishedAt ? html`<p class="note">${this.t("Finished {time} ago", { time: duration((Date.now() - Date.parse(status.finishedAt)) / 1000, this.ha) })}</p>` : nothing}${this.transport(device, status)}`
+                : nothing
+            }${this.transport(device, status)}`
           : nothing
       }
       ${
@@ -608,16 +892,13 @@ export class ApplianceCard extends LitElement {
           ? html`${this.group(device, this.t("Oven"), roles("target_temperature", "current_temperature", "duration"), "oven")}${(
               ["microwave", "steam"] as const
             ).map((which) =>
-              moduleEntries(which).length
-                ? html`<section data-module=${which}>
-                    <h3>
-                      ${which === "microwave" ? this.t("Microwave") : this.t("Steam")}
-                    </h3>
-                    <div class="controls">
-                      ${moduleEntries(which).map((e) => this.control(device, e))}
-                    </div>
-                  </section>`
-                : nothing,
+              this.group(
+                device,
+                which === "microwave" ? this.t("Microwave") : this.t("Steam"),
+                moduleEntries(which),
+                undefined,
+                which,
+              ),
             )}`
           : nothing
       }
@@ -626,74 +907,133 @@ export class ApplianceCard extends LitElement {
       ${kind !== "cooling" ? this.group(device, this.t("Door & temperature"), roles("door", ...(kind !== "oven" ? ["current_temperature" as Role] : []))) : nothing}
       ${status.busy ? this.group(device, this.t("Programme timing"), roles("elapsed")) : nothing}
       ${this.attention(device, status)}
-      ${
-        roles("attention").filter((e) => !moduleCandidates.has(e.entityId))
-          .length
-          ? html`<details>
-              <summary>${this.t("Consumables & care")}</summary>
-              ${roles("attention")
-                .filter((e) => !moduleCandidates.has(e.entityId))
-                .map((e) => this.control(device, e))}
-            </details>`
-          : nothing
-      }
-      <details>
-        <summary>${this.t("Settings")}</summary>
-        <div class="controls">
-          ${roles("power", "child_lock", "remote_control", "start_delay").map((e) => this.control(device, e))}${kind === "oven" || kind === "cooling" ? options.map((e) => this.control(device, e)) : nothing}${kind !== "oven" && kind !== "cooling" ? roles("target_temperature", "duration").map((e) => this.control(device, e)) : nothing}
-        </div>
-        ${!roles("remote_start").length ? html`<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : roles("remote_start").map((e) => html`<div class="reading"><span>${this.t("Remote start")}</span><strong>${this.reading(e)}</strong></div>`)}
-      </details>
-      ${
-        roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length
-          ? html`<details>
-              <summary>
-                ${this.t("Other")} ·
-                ${roles("other").filter((e) => !moduleCandidates.has(e.entityId)).length}
-              </summary>
-              <div class="controls">
-                ${roles("other")
-                  .filter((e) => !moduleCandidates.has(e.entityId))
-                  .map((e) => this.control(device, e))}
-              </div>
-            </details>`
-          : nothing
-      }
-      ${device.disabledCount ? html`<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : nothing}
-      ${status.online !== "online" && status.lastReported ? html`<p class="note">${this.t("Last reported: {time}", { time: new Date(status.lastReported).toLocaleString(formattingLocale(this.ha)) })}</p>` : nothing}
     `;
   }
-  private heading(device: Appliance) {
-    const kind = this.kind(device);
-    return html`<header>
-      <div class="icon"><ha-icon icon=${icons[kind]}></ha-icon></div>
-      <div class="heading">
-        <div class="eyebrow">${this.t(kindNames[kind])}</div>
-        <h2>
-          ${!this.isOverview ? (this.config?.title ?? device.name) : device.name}
-        </h2>
-        <div class="status">${this.statusLabel(device)}</div>
-      </div>
-      ${device.entities
-        .filter((e) => e.role === "power")
-        .slice(0, 1)
-        .map((e) => html`<span class="badge">${this.reading(e)}</span>`)}
-    </header>`;
+  /** The power entity the header toggles; the rest stay in the configure view. */
+  private headerPower(device: Appliance) {
+    const power = device.entities.filter((e) => e.role === "power");
+    const domain = (e: ApplianceEntity) => e.entityId.split(".")[0];
+    return (
+      power.find((e) => domain(e) === "switch") ??
+      power.find(
+        (e) =>
+          domain(e) === "select" &&
+          Array.isArray(this.ha?.states[e.entityId]?.attributes.options),
+      ) ??
+      power.find((e) => domain(e) === "sensor")
+    );
+  }
+  private powerToggle(device: Appliance) {
+    const entity = this.headerPower(device);
+    if (!entity) return nothing;
+    const state = this.ha!.states[entity.entityId];
+    const domain = entity.entityId.split(".")[0];
+    const value = (state?.state ?? "").toLowerCase().split(".").pop() ?? "";
+    const on = value === "on";
+    const label = this.reading(entity);
+    let target: string | boolean | undefined;
+    if (domain === "switch") target = !on;
+    else if (domain === "select") {
+      const options = (state?.attributes.options ?? []) as string[];
+      const find = (key: string) =>
+        options.find((o) => o.toLowerCase().split(".").pop() === key);
+      target = on ? (find("standby") ?? find("off")) : find("on");
+    }
+    const unavailable =
+      !state || ["unavailable", "unknown"].includes(state.state);
+    if (target === undefined)
+      return html`<span
+        class="power${on ? " on" : ""}"
+        data-power=${entity.entityId}
+        aria-label=${`${this.t("Power")}: ${label}`}
+        >${icon("power")}<span>${label}</span></span
+      >`;
+    const policy = actionPolicy(device, this.ha!.states, {
+      entityId: entity.entityId,
+      value: target,
+    });
+    const pending = this.inFlight === entity.entityId;
+    const reason = unavailable
+      ? this.t("Unavailable")
+      : policy.reason
+        ? this.m(policy.reason)
+        : this.t("Power");
+    return html`<button
+      class="power${on ? " on" : ""}"
+      data-power=${entity.entityId}
+      aria-pressed=${on ? "true" : "false"}
+      aria-busy=${pending ? "true" : "false"}
+      aria-label=${this.t("Power")}
+      title=${reason}
+      ?disabled=${this.busy || unavailable || !policy.allowed}
+      @click=${() =>
+        this.requestAction(device, {
+          entityId: entity.entityId,
+          value: target,
+        })}
+    >
+      ${pending ? icon("spinner", "spin") : icon("power")}<span>${label}</span>
+    </button>`;
+  }
+  private headerActions(device: Appliance) {
+    return html`${this.powerToggle(device)}<button
+        class="icon-btn"
+        data-configure
+        aria-label=${this.t("Appliance settings")}
+        title=${this.t("Appliance settings")}
+        @click=${() => this.openConfigure(device)}
+      >
+        ${icon("cog")}
+      </button>`;
+  }
+  private configureBody(device: Appliance) {
+    const { kind, roles, moduleCandidates, options } = this.parts(device);
+    const header = this.headerPower(device);
+    const settings = [
+      ...roles("power").filter((e) => e.entityId !== header?.entityId),
+      ...roles("child_lock", "remote_control", "start_delay"),
+      ...(kind === "oven" || kind === "cooling" ? options : []),
+      ...(kind !== "oven" && kind !== "cooling"
+        ? roles("target_temperature", "duration")
+        : []),
+    ];
+    const care = roles("attention").filter(
+      (e) => !moduleCandidates.has(e.entityId),
+    );
+    const other = roles("other").filter(
+      (e) => !moduleCandidates.has(e.entityId),
+    );
+    return html`<section class="group" data-section="settings">
+        <h3>${this.t("Appliance")}</h3>
+        ${settings.length ? html`<div class="controls">${settings.map((e) => this.control(device, e))}</div>` : nothing}
+        <div class="tiles">
+          ${!roles("remote_start").length ? nothing : roles("remote_start").map((e) => html`<div class="tile"><span class="label">${this.t("Remote start")}</span><strong class="value">${this.reading(e)}</strong></div>`)}
+        </div>
+        ${!roles("remote_start").length ? html`<p class="permission">${this.t("Remote-start permission is not exposed. The appliance must permit remote operation.")}</p>` : nothing}
+      </section>
+      ${this.group(device, this.t("Consumables & care"), care, "care")}
+      ${other.length ? this.group(device, `${this.t("Other")} · ${other.length}`, other, "other") : nothing}
+      ${device.disabledCount ? html`<p class="note"><a href="/config/entities">${this.t(device.disabledCount === 1 ? "{count} disabled entity" : "{count} disabled entities", { count: device.disabledCount })}</a> · ${this.t("Enable needed capabilities in Home Assistant.")}</p>` : nothing}`;
+  }
+  private topLine(device: Appliance) {
+    return html`<div class="top">
+      <h2 class="title">${this.config?.title ?? device.name}</h2>
+      ${this.headerActions(device)}
+    </div>`;
   }
   private compact(device: Appliance) {
     const status = this.status(device);
     return html`<button
-      class="compact"
+      class="compact tone-${this.tone(device, status)}"
       @click=${() => this.openDetails(device)}
     >
-      <span class="icon"
-        ><ha-icon icon=${icons[this.kind(device)]}></ha-icon></span
-      ><span class="heading"
+      <span class="circ big">${icon(icons[this.kind(device)])}</span
+      ><span class="text"
         ><strong>${this.config?.title ?? device.name}</strong
-        ><span class="status"
+        ><span class="sub"
           >${this.statusLabel(device)}${status.busy ? ` · ${duration(status.remainingSeconds, this.ha)}` : ""}</span
         ></span
-      ><span aria-hidden="true">›</span>
+      >${icon("next", "chev")}
     </button>`;
   }
   private overview(devices: Appliance[]) {
@@ -714,35 +1054,42 @@ export class ApplianceCard extends LitElement {
         ? this.status(d).online !== "online"
         : ["offline", "unknown"].includes(this.status(d).operation),
     );
-    return html`<header>
-        <div class="icon">
-          <ha-icon icon="mdi:silverware-fork-knife"></ha-icon>
+    const flagged = new Set(alerts.map((a) => a.device.id)).size;
+    const count = (value: number) =>
+      new Intl.NumberFormat(formattingLocale(this.ha)).format(value);
+    return html`<div class="top">
+        <h2 class="title">${this.config?.title ?? this.t("Kitchen")}</h2>
+      </div>
+      <div class="tiles summary">
+        <div class="tile tone-active">
+          <span class="value">${count(busy.length)}</span
+          ><span class="label">${this.t("Running")}</span>
         </div>
-        <div class="heading">
-          <div class="eyebrow">Home Connect Local</div>
-          <h2>${this.config?.title ?? this.t("Kitchen")}</h2>
+        <div class="tile ${flagged ? "tone-attention flagged" : "tone-done"}">
+          <span class="value">${count(flagged)}</span
+          ><span class="label">${this.t("Needs attention")}</span>
         </div>
-        <span class="badge"
-          >${this.t("{count} appliances", { count: devices.length })}</span
-        >
-      </header>
-      <section>
+        <div class="tile tone-idle">
+          <span class="value">${count(devices.length)}</span
+          ><span class="label">${this.t("Appliances")}</span>
+        </div>
+      </div>
+      <section class="group">
         <h3>${this.t("In progress")}</h3>
         ${
           busy.length
             ? busy.map(
                 ({ device, status }) =>
                   html`<button
-                    class="row"
+                    class="row tone-${this.tone(device, status)}"
                     data-busy=${device.id}
                     @click=${() => this.openDetails(device)}
                   >
-                    <span class="icon"
-                      ><ha-icon icon=${icons[device.kind]}></ha-icon></span
-                    ><span class="heading"
+                    <span class="circ">${icon(icons[this.kind(device)])}</span
+                    ><span class="text"
                       ><strong>${device.name}</strong
-                      ><small
-                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</small
+                      ><span class="sub"
+                        >${this.t(labels[status.operation])}${status.program ? ` · ${this.programLabel(device, status.program)}` : ""}</span
                       ></span
                     ><span class="end"
                       >${status.operation === "delayed" ? this.t("Starts in {time}", { time: duration(status.delaySeconds, this.ha) }) : duration(status.remainingSeconds, this.ha)}</span
@@ -754,7 +1101,7 @@ export class ApplianceCard extends LitElement {
               </p>`
         }
       </section>
-      <section>
+      <section class="group">
         <h3>${this.t("Needs attention")}</h3>
         ${
           alerts.length
@@ -766,12 +1113,14 @@ export class ApplianceCard extends LitElement {
                         class="row"
                         @click=${() => this.openDetails(device)}
                       >
-                        <span
+                        <span class="circ"
+                          >${icon(item.severity === "unknown" ? "offline" : "warning")}</span
+                        ><span class="text"
                           ><strong>${device.name}</strong
-                          ><small
-                            >${this.attentionMessage(device, item)}</small
+                          ><span class="sub"
+                            >${this.attentionMessage(device, item)}</span
                           ></span
-                        >
+                        >${icon("next", "chev")}
                       </button>
                     </li>`,
                 )}
@@ -781,17 +1130,26 @@ export class ApplianceCard extends LitElement {
               </p>`
         }${unobserved.filter((d) => !alerts.some((a) => a.device.id === d.id && a.item.severity === "unknown")).map((device) => html`<p class="note">${device.name}: ${this.statusLabel(device)}</p>`)}
       </section>
-      <details>
-        <summary>${this.t("All appliances")}</summary>
-        ${devices.map(
-          (device) =>
-            html`<button class="row" @click=${() => this.openDetails(device)}>
-              <span class="heading"
-                ><strong>${device.name}</strong
-                ><small>${this.statusLabel(device)}</small></span
-              ><span>›</span>
-            </button>`,
-        )}
+      <details class="panel">
+        <summary>
+          <span class="panel-title">${this.t("All appliances")}</span
+          >${icon("chevron", "chevron")}
+        </summary>
+        <div class="rows">
+          ${devices.map(
+            (device) =>
+              html`<button
+                class="row tone-${this.tone(device)}"
+                @click=${() => this.openDetails(device)}
+              >
+                <span class="circ">${icon(icons[this.kind(device)])}</span
+                ><span class="text"
+                  ><strong>${device.name}</strong
+                  ><span class="sub">${this.statusLabel(device)}</span></span
+                >${icon("next", "chev")}
+              </button>`,
+          )}
+        </div>
       </details>
       ${devices.some((d) => d.disabledCount) ? html`<p class="note" data-disabled-count><a href="/config/entities">${this.t("{count} disabled entities", { count: devices.reduce((sum, d) => sum + d.disabledCount, 0) })}</a> ${this.t("Across these appliances.")}</p>` : nothing}`;
   }
@@ -800,15 +1158,24 @@ export class ApplianceCard extends LitElement {
     const { devices, error } = this.selection();
     const individual = devices.length === 1 ? devices[0] : undefined;
     const detail = devices.find((d) => d.id === this.detailId);
+    const configure =
+      devices.find((d) => d.id === this.configureId) ??
+      (!this.isOverview ? individual : undefined);
     return html`<ha-card
         >${
           this.registry.disconnected
-            ? html`<p role="status">
-                ${this.t("Disconnected from Home Assistant.")}
-              </p>`
+            ? html`<div class="feedback" role="status">
+                <span class="circ">${icon("offline")}</span
+                ><span class="feedback-title"
+                  >${this.t("Disconnected from Home Assistant.")}</span
+                >
+              </div>`
             : this.registry.error
-              ? html`<p class="feedback" role="alert">${this.registry.error}</p>
-                  <button @click=${this.retry}>
+              ? html`<div class="feedback failed" role="alert">
+                    <span class="circ">${icon("warning")}</span
+                    ><span class="feedback-title">${this.registry.error}</span>
+                  </div>
+                  <button class="pill" @click=${this.retry}>
                     ${this.t("Retry discovery")}
                   </button>`
               : !this.registry.snapshot
@@ -816,57 +1183,64 @@ export class ApplianceCard extends LitElement {
                     ${this.t("Finding your appliances…")}
                   </p>`
                 : error
-                  ? html`<p class="feedback" role="alert">${this.m(error)}</p>`
+                  ? html`<div class="feedback failed" role="alert">
+                      <span class="circ">${icon("warning")}</span
+                      ><span class="feedback-title">${this.m(error)}</span>
+                    </div>`
                   : this.isOverview
                     ? this.overview(devices)
                     : individual
                       ? this.config.expand
-                        ? html`${this.heading(individual)}${this.deviceBody(individual)}`
+                        ? html`${this.topLine(individual)}${this.deviceBody(individual)}`
                         : this.compact(individual)
                       : html`<p class="empty">
                           ${this.t("No matching Home Connect Local appliance.")}
                         </p>`
         }${this.feedback()}</ha-card
       >
-      <dialog
-        id="details"
-        @click=${(e: MouseEvent) => {
-          if (e.target === e.currentTarget) {
-            const r = (
-              e.currentTarget as HTMLDialogElement
-            ).getBoundingClientRect();
-            if (
-              e.clientX < r.left ||
-              e.clientX > r.right ||
-              e.clientY < r.top ||
-              e.clientY > r.bottom
-            )
-              (e.currentTarget as HTMLDialogElement).close();
-          }
-        }}
-      >
-        <div class="dialog-head">
-          <h2>${detail?.name ?? this.t("Appliance")}</h2>
-          <button
-            class="icon-button"
+      <dialog id="details" @click=${this.closeOnBackdrop}>
+        <div class="top">
+          <h2 class="title">${detail?.name ?? this.t("Appliance")}</h2>
+          ${detail ? this.headerActions(detail) : nothing}<button
+            class="icon-btn"
             aria-label=${this.t("Close details")}
             @click=${() => this.shadowRoot?.querySelector<HTMLDialogElement>("#details")?.close()}
           >
-            ✕
+            ${icon("close")}
           </button>
         </div>
         ${detail ? this.deviceBody(detail) : nothing}${this.feedback()}
       </dialog>
+      <dialog id="configure" @click=${this.closeOnBackdrop}>
+        <div class="top">
+          <h2 class="title">
+            ${this.t("Settings")}${configure ? html`<span class="subtitle">${configure.name}</span>` : nothing}
+          </h2>
+          <button
+            class="icon-btn"
+            data-close-configure
+            aria-label=${this.t("Close settings")}
+            @click=${() => this.shadowRoot?.querySelector<HTMLDialogElement>("#configure")?.close()}
+          >
+            ${icon("close")}
+          </button>
+        </div>
+        ${configure ? this.configureBody(configure) : nothing}${this.feedback()}
+      </dialog>
       <dialog id="confirmation" @cancel=${this.cancelConfirm}>
-        <h2>${this.t("Confirm appliance command")}</h2>
-        <p>${this.confirmationLabel()}</p>
+        <div class="confirm-head">
+          <span class="circ big">${icon("warning")}</span>
+          <h2>${this.t("Confirm appliance command")}</h2>
+        </div>
+        <p class="confirm-what">${this.confirmationLabel()}</p>
         <p class="note">
           ${this.t("This may start the appliance. Check that it is ready for remote operation.")}
         </p>
         ${this.pending?.reason ? html`<p class="note">${this.m(this.pending.reason)}</p>` : nothing}
         <div class="dialog-actions">
-          <button @click=${this.cancelConfirm}>${this.t("Cancel")}</button
-          ><button class="primary" data-confirm @click=${this.confirm}>
+          <button class="pill" @click=${this.cancelConfirm}>
+            ${this.t("Cancel")}</button
+          ><button class="pill primary" data-confirm @click=${this.confirm}>
             ${this.t("Confirm")}
           </button>
         </div>

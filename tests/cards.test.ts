@@ -116,7 +116,7 @@ test("coffee and dishwasher have their own controls and no oven section", async 
 });
 test("healthy cooling appliances are shown as cooling, not as unknown or unavailable", async () => {
   const { root } = await mount("refrigerator-card", { device: "fridge" });
-  expect(root.querySelector("header .status")?.textContent).toContain(
+  expect(root.querySelector("[data-hero] .status")?.textContent).toContain(
     "Cooling",
   );
   const overview = await mount("kitchen-panel-card", { device: undefined });
@@ -280,4 +280,162 @@ test("microwave or steam in a device prefix cannot turn ordinary controls into m
       '[data-module="microwave"] [data-entity="number.kitchen_microwave_steam_oven_number_microwave_power"]',
     ),
   ).not.toBeNull();
+});
+async function withEntities(
+  type: string,
+  device: string,
+  entities: [string, string, string, Record<string, unknown>?][],
+) {
+  const env = await mount(type, { device });
+  const ids = entities.map(([domain, key, state, attributes]) =>
+    env.add(device, domain, key, state, attributes),
+  );
+  env.connection.emit("entity_registry_updated");
+  env.card.hass = { ...env.hass };
+  await settle();
+  return { ...env, ids };
+}
+test("configure button opens and closes the settings dialog holding the rarely used controls", async () => {
+  const { root, ids } = await withEntities("oven-card", "oven", [
+    ["switch", "switch_child_lock", "off"],
+  ]);
+  const [childLock] = ids;
+  const dialog = root.querySelector<HTMLDialogElement>("#configure")!;
+  expect(root.querySelector(`ha-card [data-entity="${childLock}"]`)).toBeNull();
+  expect(dialog.querySelector(`[data-entity="${childLock}"]`)).not.toBeNull();
+  const cog = root.querySelector<HTMLButtonElement>(".top [data-configure]")!;
+  expect(cog.getAttribute("aria-label")).toBe("Appliance settings");
+  cog.click();
+  await settle();
+  expect(dialog.open).toBe(true);
+  root.querySelector<HTMLButtonElement>("[data-close-configure]")!.click();
+  await settle();
+  expect(dialog.open).toBe(false);
+});
+test("child lock in the configure dialog sends the same switch service", async () => {
+  const { root, calls, ids } = await withEntities("dishwasher-card", "dish", [
+    ["switch", "switch_child_lock", "off"],
+  ]);
+  root.querySelector<HTMLButtonElement>("[data-configure]")!.click();
+  await settle();
+  root
+    .querySelector<HTMLButtonElement>(`#configure [data-entity="${ids[0]}"]`)!
+    .click();
+  await settle();
+  expect(calls).toEqual([["switch", "turn_on", { entity_id: ids[0] }]]);
+});
+test("header power switch toggles, shows pending and keeps HA state after a rejected request", async () => {
+  const { root, card, hass, ids } = await withEntities("oven-card", "oven", [
+    ["switch", "switch_power_state", "on"],
+  ]);
+  const power = () =>
+    root.querySelector<HTMLButtonElement>(`.top [data-power="${ids[0]}"]`)!;
+  expect(power().getAttribute("aria-pressed")).toBe("true");
+  expect(root.querySelector(`#configure [data-entity="${ids[0]}"]`)).toBeNull();
+  let release!: () => void;
+  const sent: unknown[][] = [];
+  card.hass = {
+    ...hass,
+    callService: (...args: unknown[]) => {
+      sent.push(args);
+      return new Promise<void>((resolve) => (release = resolve));
+    },
+  };
+  await settle();
+  power().click();
+  await settle();
+  expect(sent).toEqual([["switch", "turn_off", { entity_id: ids[0] }]]);
+  expect(power().getAttribute("aria-busy")).toBe("true");
+  expect(power().disabled).toBe(true);
+  power().click();
+  await settle();
+  expect(sent).toHaveLength(1);
+  release();
+  await settle();
+  expect(power().getAttribute("aria-busy")).toBe("false");
+  card.hass = {
+    ...hass,
+    callService: async () => {
+      throw new Error("Appliance refused power");
+    },
+  };
+  await settle();
+  power().click();
+  await settle();
+  expect(root.querySelector('ha-card [role="alert"]')?.textContent).toContain(
+    "Appliance refused power",
+  );
+  expect(power().getAttribute("aria-pressed")).toBe("true");
+});
+test("header power select switches between the exposed on and standby options", async () => {
+  const on = "BSH.Common.EnumType.PowerState.On";
+  const standby = "BSH.Common.EnumType.PowerState.Standby";
+  const { root, calls, ids } = await withEntities(
+    "coffee-machine-card",
+    "coffee",
+    [["select", "select_power_state", on, { options: [on, standby] }]],
+  );
+  const power = root.querySelector<HTMLButtonElement>(
+    `.top [data-power="${ids[0]}"]`,
+  )!;
+  expect(power.getAttribute("aria-pressed")).toBe("true");
+  power.click();
+  await settle();
+  expect(calls).toEqual([
+    ["select", "select_option", { entity_id: ids[0], option: standby }],
+  ]);
+});
+test("unavailable power disables the header toggle", async () => {
+  const { root, ids } = await withEntities("oven-card", "oven", [
+    ["switch", "switch_power_state", "unavailable"],
+  ]);
+  expect(
+    root.querySelector<HTMLButtonElement>(`[data-power="${ids[0]}"]`)!.disabled,
+  ).toBe(true);
+});
+test("overview details carry power and configure for the opened appliance", async () => {
+  const env = await mount("kitchen-panel-card", { device: undefined });
+  const id = env.add("dish", "switch", "switch_child_lock", "off");
+  env.connection.emit("entity_registry_updated");
+  env.card.hass = { ...env.hass };
+  await settle();
+  const { root } = env;
+  expect(root.querySelector("ha-card [data-configure]")).toBeNull();
+  const row = Array.from(
+    root.querySelectorAll<HTMLButtonElement>(".panel .row"),
+  ).find((r) => r.textContent?.includes("Dishwasher"))!;
+  row.click();
+  await settle();
+  root.querySelector<HTMLButtonElement>("#details [data-configure]")!.click();
+  await settle();
+  const dialog = root.querySelector<HTMLDialogElement>("#configure")!;
+  expect(dialog.open).toBe(true);
+  expect(dialog.querySelector(`[data-entity="${id}"]`)).not.toBeNull();
+});
+test("number stepper sends the next step within limits", async () => {
+  const { root, calls } = await mount();
+  root
+    .querySelector<HTMLButtonElement>(
+      '[aria-label="Increase Oven setpoint temperature"]',
+    )!
+    .click();
+  await settle();
+  expect(calls).toEqual([
+    [
+      "number",
+      "set_value",
+      { entity_id: "number.oven_number_oven_setpoint_temperature", value: 185 },
+    ],
+  ]);
+});
+test("running oven hero shows the remaining time, programme and progress", async () => {
+  const { card, root, hass } = await mount();
+  hass.states["sensor.oven_sensor_operation_state"].state = "run";
+  card.hass = { ...hass };
+  await settle();
+  const hero = root.querySelector("[data-hero]")!;
+  expect(hero.classList.contains("tone-active")).toBe(true);
+  expect(hero.querySelector(".current")?.textContent).toBe("15 min");
+  expect(hero.querySelector(".status")?.textContent).toContain("hot_air");
+  expect(hero.querySelector("progress")).not.toBeNull();
 });
