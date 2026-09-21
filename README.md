@@ -47,8 +47,10 @@ a small title line, a status **hero**, reading tiles and pill controls.
 ![Settings dialog for the dishwasher](docs/appliance-panel-settings.png)
 
 The kitchen overview shows summary tiles (running, needing attention,
-appliances), one row per running appliance with its remaining time, attention
-rows, and **All appliances**. Selecting a row opens the appliance with the same
+appliances), one row per running appliance with its remaining time, one
+attention row per appliance listing all its issues (for example *Door: Open ·
+Rinse aid: Nearly empty*, coloured by the most serious; from 0.2.1), and **All
+appliances**. Selecting a row opens the appliance with the same
 power and settings buttons.
 
 ## Choose a card

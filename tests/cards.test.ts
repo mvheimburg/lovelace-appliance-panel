@@ -80,6 +80,16 @@ test("kitchen shows busy appliances and care attention without declaring offline
   expect(root.textContent).toContain("Water tank");
   expect(root.textContent?.toLowerCase()).toContain("offline");
 });
+test("kitchen groups several issues on one appliance into a single row", async () => {
+  const { root } = await mount("kitchen-panel-card", {
+    device: undefined,
+    area: "Kitchen",
+  });
+  const rows = root.querySelectorAll('[data-attention="dish"]');
+  expect(rows).toHaveLength(1);
+  const text = rows[0].textContent?.replace(/\s+/g, " ") ?? "";
+  expect(text).toMatch(/Salt.*·.*Rinse/i);
+});
 test("reconnect invalidates an open confirmation and never automatically sends commands", async () => {
   const { root, connection, calls } = await mount();
   root.querySelector<HTMLButtonElement>('[data-role="start"]')!.click();

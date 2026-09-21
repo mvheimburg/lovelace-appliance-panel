@@ -2919,6 +2919,15 @@ class ApplianceCard extends i {
             (b.status.estimatedFinish ?? Infinity) ||
             a.device.name.localeCompare(b.device.name));
         const alerts = devices.flatMap((device) => this.status(device).attention.map((item) => ({ device, item })));
+        // One row per appliance: its issues joined, coloured by the most serious.
+        const rank = { error: 0, warning: 1, unknown: 2 };
+        const grouped = devices
+            .map((device) => ({ device, items: this.status(device).attention }))
+            .filter((group) => group.items.length)
+            .map((group) => ({
+            ...group,
+            severity: group.items.reduce((worst, item) => rank[item.severity] < rank[worst] ? item.severity : worst, "unknown"),
+        }));
         const unobserved = devices.filter((d) => d.kind === "cooling"
             ? this.status(d).online !== "online"
             : ["offline", "unknown"].includes(this.status(d).operation));
@@ -2967,17 +2976,19 @@ class ApplianceCard extends i {
         <h3>${this.t("Needs attention")}</h3>
         ${alerts.length
             ? b `<ul class="attention">
-                ${alerts.map(({ device, item }) => b `<li class=${item.severity}>
+                ${grouped.map(({ device, items, severity }) => b `<li class=${severity} data-attention=${device.id}>
                       <button
                         class="row"
                         @click=${() => this.openDetails(device)}
                       >
                         <span class="circ"
-                          >${icon(item.severity === "unknown" ? "offline" : "warning")}</span
+                          >${icon(severity === "unknown" ? "offline" : "warning")}</span
                         ><span class="text"
                           ><strong>${device.name}</strong
                           ><span class="sub"
-                            >${this.attentionMessage(device, item)}</span
+                            >${items
+                .map((item) => this.attentionMessage(device, item))
+                .join(" · ")}</span
                           ></span
                         >${icon("next", "chev")}
                       </button>

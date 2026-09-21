@@ -111,6 +111,7 @@ export function fixture() {
   add("oven", "sensor", "sensor_oven_water_tank", "full");
   add("dish", "switch", "switch_vario_speed_plus", "off");
   add("dish", "sensor", "sensor_salt", "low");
+  add("dish", "sensor", "sensor_rinse_aid", "nearly_empty");
   add("coffee", "select", "select_bean_amount", "normal", {
     options: ["mild", "normal", "strong"],
   });
