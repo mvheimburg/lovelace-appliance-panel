@@ -452,6 +452,12 @@ const nb = {
     "Could not load history": "Kunne ikke hente historikk",
     Now: "Nå",
     Setpoint: "Innstilt",
+    "Oven target": "Ovn, ønsket",
+    "Meat probe target": "Steketermometer, ønsket",
+    "Fridge target": "Kjøleskap, ønsket",
+    "Freezer target": "Fryser, ønsket",
+    "Chiller target": "Kjølesone, ønsket",
+    target: "ønsket",
 };
 function language(hass) {
     const code = (hass?.language ?? hass?.locale?.language ?? "en")
@@ -2346,7 +2352,6 @@ function hasHistory(entity, state) {
     return (["unavailable", "unknown"].includes(state.state) ||
         numeric(state.state) !== undefined);
 }
-/** The zone an entity measures or controls, to pair a reading with its setpoint. */
 function zone(entity) {
     // The unique key, not the entity ID: that starts with the device's name.
     const key = (semanticKey(entity.registry) || entity.entityId.split(".")[1]).toLowerCase();
@@ -2392,15 +2397,21 @@ function historySources(device, tapped, states) {
             color: color(),
             setpoint: false,
         });
-    const lone = readings.length === 1 && setpoints.length === 1
-        ? sources[0]?.color
+    // One setpoint left over for one reading left over (a fridge setpoint and
+    // an ambient reading without a zone in its key): they belong together.
+    const zones = new Set(setpoints.map(zone));
+    const spareReadings = readings.filter((e) => !zone(e) || !zones.has(zone(e)));
+    const spareSetpoints = setpoints.filter((e) => !colors.has(zone(e)));
+    const spare = spareReadings.length === 1 && spareSetpoints.length === 1
+        ? sources.find((s) => s.entityId === spareReadings[0].entityId)?.color
         : undefined;
     for (const e of setpoints) {
-        const matched = colors.get(zone(e)) ?? lone;
+        const z = zone(e);
         sources.push({
             entityId: e.entityId,
-            color: matched ?? color(),
+            color: colors.get(z) ?? spare ?? color(),
             setpoint: true,
+            zone: z,
         });
     }
     // A reading's own entity first, then the rest in card order.
@@ -3091,6 +3102,24 @@ class ApplianceCard extends i$1 {
             composed: true,
         }));
     }
+    /**
+     * A setpoint's legend label says it is a target. A user's own name is kept;
+     * a known zone gets the card's label; otherwise the name gets a suffix.
+     */
+    seriesName(entity, series) {
+        const name = this.entityName(entity);
+        if (!series.setpoint || entity.registry.name)
+            return name;
+        const zones = {
+            oven: "Oven target",
+            meatprobe: "Meat probe target",
+            fridge: "Fridge target",
+            freezer: "Freezer target",
+            chiller: "Chiller target",
+        };
+        const key = series.zone ? zones[series.zone] : undefined;
+        return key ? this.t(key) : `${name} · ${this.t("target")}`;
+    }
     historyDialog() {
         const locale = formattingLocale(this.ha);
         const format = this.ha?.locale?.time_format;
@@ -3206,7 +3235,7 @@ class ApplianceCard extends i$1 {
                 ? s.points[s.points.length - 1]?.[1]
                 : valueAt(s, at);
             const e = entity(s.entityId);
-            const name = e ? this.entityName(e) : s.entityId;
+            const name = e ? this.seriesName(e, s) : s.entityId;
             return b `<button
             class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}`}
             data-series=${s.entityId}

@@ -579,6 +579,23 @@ export class ApplianceCard extends LitElement {
       }),
     );
   }
+  /**
+   * A setpoint's legend label says it is a target. A user's own name is kept;
+   * a known zone gets the card's label; otherwise the name gets a suffix.
+   */
+  private seriesName(entity: ApplianceEntity, series: Series): string {
+    const name = this.entityName(entity);
+    if (!series.setpoint || entity.registry.name) return name;
+    const zones: Record<string, TranslationKey> = {
+      oven: "Oven target",
+      meatprobe: "Meat probe target",
+      fridge: "Fridge target",
+      freezer: "Freezer target",
+      chiller: "Chiller target",
+    };
+    const key = series.zone ? zones[series.zone] : undefined;
+    return key ? this.t(key) : `${name} · ${this.t("target")}`;
+  }
   private historyDialog() {
     const locale = formattingLocale(this.ha);
     const format = this.ha?.locale?.time_format;
@@ -713,7 +730,7 @@ export class ApplianceCard extends LitElement {
               ? s.points[s.points.length - 1]?.[1]
               : valueAt(s, at);
           const e = entity(s.entityId);
-          const name = e ? this.entityName(e) : s.entityId;
+          const name = e ? this.seriesName(e, s) : s.entityId;
           return html`<button
             class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}`}
             data-series=${s.entityId}

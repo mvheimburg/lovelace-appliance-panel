@@ -57,7 +57,9 @@ card's own style from Home Assistant's recorder:
 - **What is drawn**: the appliance's current temperatures (oven, meat probe,
   fridge/freezer zones) together with their setpoints — the oven's target
   temperature, the fridge/freezer setpoints — drawn **dashed** in the colour of
-  the zone they control. A setpoint holds its value until it is changed, so it
+  the zone they control and labelled as targets (_Oven target_, _Fridge
+  target_, _Freezer target_; Bokmål _Ovn, ønsket_, _Kjøleskap, ønsket_,
+  _Fryser, ønsket_). A setpoint you renamed in Home Assistant keeps your name. A setpoint holds its value until it is changed, so it
   is drawn as steps. When the tapped reading is something else (for example a
   humidity sensor or a care countdown with a unit), it is added with its own
   **right-hand scale** in its unit.

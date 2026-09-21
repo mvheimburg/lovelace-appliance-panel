@@ -323,6 +323,12 @@ const nb = {
   "Could not load history": "Kunne ikke hente historikk",
   Now: "Nå",
   Setpoint: "Innstilt",
+  "Oven target": "Ovn, ønsket",
+  "Meat probe target": "Steketermometer, ønsket",
+  "Fridge target": "Kjøleskap, ønsket",
+  "Freezer target": "Fryser, ønsket",
+  "Chiller target": "Kjølesone, ønsket",
+  target: "ønsket",
 } as const;
 export type TranslationKey = keyof typeof nb;
 type LanguageSource = Pick<HomeAssistant, "language" | "locale"> | undefined;

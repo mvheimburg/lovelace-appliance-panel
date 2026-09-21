@@ -16,6 +16,8 @@ export interface Source {
   color: number;
   /** Setpoints are drawn dashed. */
   setpoint: boolean;
+  /** The zone a setpoint controls, for its "… target" label. */
+  zone?: Zone;
 }
 export interface Series extends Source {
   unit: string;
@@ -78,7 +80,8 @@ export function hasHistory(
 }
 
 /** The zone an entity measures or controls, to pair a reading with its setpoint. */
-function zone(entity: ApplianceEntity): string {
+export type Zone = "meatprobe" | "freezer" | "chiller" | "fridge" | "oven" | "";
+function zone(entity: ApplianceEntity): Zone {
   // The unique key, not the entity ID: that starts with the device's name.
   const key = (
     semanticKey(entity.registry) || entity.entityId.split(".")[1]
@@ -132,16 +135,22 @@ export function historySources(
       color: color(),
       setpoint: false,
     });
-  const lone =
-    readings.length === 1 && setpoints.length === 1
-      ? sources[0]?.color
+  // One setpoint left over for one reading left over (a fridge setpoint and
+  // an ambient reading without a zone in its key): they belong together.
+  const zones = new Set(setpoints.map(zone));
+  const spareReadings = readings.filter((e) => !zone(e) || !zones.has(zone(e)));
+  const spareSetpoints = setpoints.filter((e) => !colors.has(zone(e)));
+  const spare =
+    spareReadings.length === 1 && spareSetpoints.length === 1
+      ? sources.find((s) => s.entityId === spareReadings[0].entityId)?.color
       : undefined;
   for (const e of setpoints) {
-    const matched = colors.get(zone(e)) ?? lone;
+    const z = zone(e);
     sources.push({
       entityId: e.entityId,
-      color: matched ?? color(),
+      color: colors.get(z) ?? spare ?? color(),
       setpoint: true,
+      zone: z,
     });
   }
   // A reading's own entity first, then the rest in card order.

@@ -74,6 +74,12 @@ async function mount(
     }),
     "Humidity",
   );
+  // An ambient reading carries no zone in its key; it pairs with the one
+  // setpoint left over (the fridge's).
+  named(
+    env.add("fridge", "sensor", "sensor_temperature_ambient", "4.6", measured),
+    "Fridge temperature",
+  );
   const rows: Record<string, unknown[]> = {
     [OVEN]: [
       { s: "20", lu: s(now - 20 * HOUR) },
@@ -147,7 +153,7 @@ test("a measured oven temperature opens its history with the probe and the dashe
   expect(legend(root)).toEqual([
     "Oven temperature 186 °C",
     "Meat probe 54 °C",
-    "Target temperature 180 °C",
+    "Oven target 180 °C",
   ]);
   expect(root.querySelector("#history-title")!.textContent).toContain(
     "Combination oven",
@@ -191,7 +197,7 @@ test("reads values under the pointer, changes range and opens a reading's detail
   expect(legend(root)).toEqual([
     "Oven temperature 20 °C",
     "Meat probe 40 °C",
-    "Target temperature 200 °C",
+    "Oven target 200 °C",
   ]);
   expect(root.querySelector(".history-when")!.textContent!.trim()).not.toBe(
     "Now",
@@ -220,14 +226,15 @@ test("reads values under the pointer, changes range and opens a reading's detail
   expect(root.querySelector<HTMLDialogElement>("#history")!.open).toBe(false);
 });
 
-test("a reading in another unit gets the right-hand scale; zones keep their colours", async () => {
+test("a reading in another unit gets the right-hand scale; setpoints share their zone's colour", async () => {
   const { root } = await mount("refrigerator-card", "fridge");
   await open(root, "sensor.fridge_sensor_humidity");
   expect(legend(root)).toEqual([
     "Freezer temperature -17.5 °C",
+    "Fridge temperature 4.6 °C",
     "Humidity 61 %",
-    "Fridge temperature 4 °C",
-    "Freezer -18 °C",
+    "Fridge target 4 °C",
+    "Freezer target -18 °C",
   ]);
   expect(
     Array.from(root.querySelectorAll(".history-chart .unit")).map(
@@ -238,12 +245,30 @@ test("a reading in another unit gets the right-hand scale; zones keep their colo
     root
       .querySelector(`.history-chart [data-entity="${id}"]`)!
       .getAttribute("class");
-  expect(cls("number.fridge_number_setpoint_freezer")).toBe(
-    "line series-0 dashed",
-  );
   expect(cls("sensor.fridge_sensor_temperature_memory_freezer")).toBe(
     "line series-0",
   );
+  expect(cls("number.fridge_number_setpoint_freezer")).toBe(
+    "line series-0 dashed",
+  );
+  expect(cls("sensor.fridge_sensor_temperature_ambient")).toBe("line series-1");
+  expect(cls("number.fridge_number_fridge_temperature")).toBe(
+    "line series-1 dashed",
+  );
+});
+
+test("a setpoint the user renamed keeps its name; Bokmål target labels", async () => {
+  const { root, snapshot } = await mount("refrigerator-card", "fridge", {
+    language: "nb",
+  });
+  snapshot.entities.find(
+    (e) => e.entity_id === "number.fridge_number_setpoint_freezer",
+  )!.name = "Dypfryser";
+  await open(root, "sensor.fridge_sensor_temperature_ambient");
+  expect(legend(root).slice(-2)).toEqual([
+    "Kjøleskap, ønsket 4 °C",
+    "Dypfryser −18 °C",
+  ]);
 });
 
 test("timers, labels, doors and controls do not open a history", async () => {
