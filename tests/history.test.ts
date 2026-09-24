@@ -177,7 +177,7 @@ test("a measured oven temperature opens its history with the probe and the dashe
   expect(
     root
       .querySelector(`[data-series="${TARGET}"]`)!
-      .classList.contains("setpoint"),
+      .classList.contains("kind-step"),
   ).toBe(true);
   // The unavailable spell splits the oven line in two.
   expect(oven.getAttribute("d")!.match(/M/g)).toHaveLength(2);
@@ -306,7 +306,7 @@ test("explains a failed history request in Bokmål", async () => {
   root.querySelector<HTMLButtonElement>(`[data-reading="${OVEN}"]`)!.click();
   await vi.waitFor(() =>
     expect(
-      root.querySelector("#history [role=alert]")?.textContent?.trim(),
+      root.querySelector("#history [role=alert] span")?.textContent?.trim(),
     ).toBe("Kunne ikke hente historikk: Recorder is off"),
   );
   expect(
@@ -386,12 +386,12 @@ test("a door opens its appliance's history with the door as a lane of open spell
     "Fridge door state Closed",
   ]);
   const lane = root.querySelector(
-    `.history-chart .lane[data-entity="${DOOR}"]`,
+    `.history-chart .history-lane[data-entity="${DOOR}"]`,
   )!;
   expect(lane).not.toBeNull();
   // Two reported spells, split by the unavailable one; one of them open.
   expect(lane.querySelectorAll(".lane-track")).toHaveLength(4);
-  expect(lane.querySelectorAll(".lane-open")).toHaveLength(1);
+  expect(lane.querySelectorAll(".lane-on")).toHaveLength(1);
   // A door is not a line and brings no scale of its own.
   expect(
     root.querySelector(`.history-chart path[data-entity="${DOOR}"]`),
@@ -422,7 +422,7 @@ test("a temperature's history shows the doors too", async () => {
   await open(root, "sensor.fridge_sensor_temperature_memory_freezer");
   expect(last(legend(root))).toBe("Fridge door state Closed");
   expect(
-    root.querySelector(`.history-chart .lane[data-entity="${DOOR}"]`),
+    root.querySelector(`.history-chart .history-lane[data-entity="${DOOR}"]`),
   ).not.toBeNull();
 });
 
@@ -439,6 +439,27 @@ test("an appliance with only a door draws just its lane; Bokmål door states", a
   await open(root, door);
   expect(legend(root)).toEqual([expect.stringMatching(/ Åpen$/)]);
   expect(root.querySelector(".history-chart .unit")).toBeNull();
-  expect(root.querySelectorAll(".history-chart .lane")).toHaveLength(1);
+  expect(root.querySelectorAll(".history-chart .history-lane")).toHaveLength(1);
   expect(root.querySelector(".history-chart path.line")).toBeNull();
+});
+
+test("opens Home Assistant's details instead when the card is set to", async () => {
+  const { card, root, history } = await mount();
+  (
+    card as unknown as { setConfig(c: Record<string, unknown>): void }
+  ).setConfig({
+    type: "custom:oven-card",
+    device: "oven",
+    history: "more-info",
+  });
+  await settle();
+  const info: string[] = [];
+  card.addEventListener("hass-more-info", (e) =>
+    info.push((e as CustomEvent).detail.entityId),
+  );
+  root.querySelector<HTMLButtonElement>(`[data-reading="${OVEN}"]`)!.click();
+  await settle();
+  expect(info).toEqual([OVEN]);
+  expect(history).not.toHaveBeenCalled();
+  expect(root.querySelector<HTMLDialogElement>("#history")!.open).toBe(false);
 });

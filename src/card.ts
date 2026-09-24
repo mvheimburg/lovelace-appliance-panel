@@ -15,18 +15,26 @@ import { actionPolicy, executeAction } from "./actions";
 import { watchRegistries, refreshRegistries } from "./registry";
 import { styles } from "./styles";
 import { icon, type IconName } from "./icons";
-import { chart, timeAt, units } from "./chart";
 import {
-  RANGES,
-  hasHistory,
-  historySources,
-  loadHistory,
+  HistoryController,
+  historyConnection,
+  historyDialog,
+  historyFormat,
+  historyMode,
+  historyStrings,
+  historyStyles,
+  lineChart,
+  lineChartTimeAt,
+  loadSeries,
+  openHistoryDialog,
+  openHomeAssistantHistory,
   stateAt,
+  units,
   valueAt,
-  type Range,
   type Series,
   type Source,
-} from "./history";
+} from "lovelace-card-history";
+import { hasHistory, historySources } from "./history";
 import type {
   HomeAssistant,
   ApplianceConfig,
@@ -97,7 +105,7 @@ function moduleOf(entity: ApplianceEntity): "microwave" | "steam" | undefined {
       : undefined;
 }
 export class ApplianceCard extends LitElement {
-  static styles = styles;
+  static styles = [historyStyles, styles];
   private t(key: TranslationKey, values: Record<string, string | number> = {}) {
     return localize(this.ha, key, values);
   }
@@ -124,17 +132,17 @@ export class ApplianceCard extends LitElement {
   private busy = false;
   private error = "";
   private notice = "";
-  /** History dialog: what it draws, the range, loaded series, hovered time. */
+  /** What the history dialog draws, and its state (shared history view). */
   private historyFor?: { deviceId: string; sources: Source[] };
-  private range: Range = 24;
-  private series?: Series[];
-  private window?: [number, number];
-  private historyLoading = false;
-  private historyError = "";
-  private hover?: number;
-  private historyTicket = 0;
-  private plotWidth = 600;
-  private resize?: ResizeObserver;
+  private history = new HistoryController<Series[]>(this, (range, end) =>
+    loadSeries(
+      historyConnection(this.ha!),
+      this.historyFor?.sources ?? [],
+      this.ha!.states,
+      range,
+      { now: end },
+    ),
+  );
   set hass(value: HomeAssistant) {
     const replaced = this.ha?.connection !== value.connection;
     this.ha = value;
@@ -187,22 +195,6 @@ export class ApplianceCard extends LitElement {
     clearInterval(this.timer);
     this.closeDialogs();
     this.invalidate();
-    this.resize?.disconnect();
-    this.resize = undefined;
-  }
-  protected updated() {
-    const plot = this.shadowRoot?.querySelector(".history-plot");
-    if (!plot || this.resize) return;
-    this.resize = new ResizeObserver(([entry]) => {
-      const width = Math.round(entry.contentRect.width);
-      // Redraw next frame, outside the observer's own layout pass.
-      if (width > 0 && Math.abs(width - this.plotWidth) > 4)
-        requestAnimationFrame(() => {
-          this.plotWidth = width;
-          this.requestUpdate();
-        });
-    });
-    this.resize.observe(plot);
   }
   private get isOverview() {
     return this.config?.type.replace("custom:", "") === "kitchen-panel-card";
@@ -228,10 +220,8 @@ export class ApplianceCard extends LitElement {
   }
   /** Drop loaded history and ignore replies still in flight. */
   private resetHistory() {
-    this.historyTicket++;
-    this.historyFor = this.series = this.window = this.hover = undefined;
-    this.historyLoading = false;
-    this.historyError = "";
+    this.historyFor = undefined;
+    this.history?.reset();
   }
   private closeDialogs() {
     this.shadowRoot?.querySelectorAll("dialog").forEach((d) => d.close());
@@ -511,7 +501,8 @@ export class ApplianceCard extends LitElement {
         data-history
         aria-haspopup="dialog"
         title=${this.t("Show history")}
-        @click=${() => void this.openHistory(device, entity)}
+        @click=${(e: Event) =>
+          void this.openHistory(device, entity, e.currentTarget as HTMLElement)}
       >
         <span class="label">${this.entityName(entity)}</span
         ><strong class="value">${this.reading(entity)}</strong
@@ -522,54 +513,34 @@ export class ApplianceCard extends LitElement {
       ><strong class="value">${this.reading(entity)}</strong>
     </div>`;
   }
-  private async openHistory(device: Appliance, entity: ApplianceEntity) {
+  /**
+   * Show a reading's history: in the card (the appliance's readings, setpoints
+   * and doors), or Home Assistant's own view when the card is set to.
+   */
+  private async openHistory(
+    device: Appliance,
+    entity: ApplianceEntity,
+    trigger: HTMLElement,
+  ) {
     if (!this.ha) return;
-    this.resetHistory();
-    this.historyFor = {
-      deviceId: device.id,
-      sources: historySources(device, entity, this.ha.states),
-    };
-    this.requestUpdate();
-    await this.updateComplete;
-    const dialog =
-      this.shadowRoot?.querySelector<HTMLDialogElement>("#history");
-    if (dialog && !dialog.open) dialog.showModal();
-    void this.loadHistory();
-  }
-  private async loadHistory(range: Range = this.range) {
-    const target = this.historyFor;
-    if (!this.ha || !target) return;
-    const ticket = ++this.historyTicket;
-    this.range = range;
-    this.historyLoading = true;
-    this.historyError = "";
-    this.hover = undefined;
-    this.requestUpdate();
-    const end = Date.now();
-    try {
-      const series = await loadHistory(
-        this.ha.connection,
-        target.sources,
-        this.ha.states,
-        range,
-        end,
-      );
-      if (ticket !== this.historyTicket) return;
-      this.series = series;
-      this.window = [end - range * 3_600_000, end];
-    } catch (error) {
-      if (ticket !== this.historyTicket) return;
-      this.series = this.window = undefined;
-      this.historyError = `${this.t("Could not load history")}: ${
-        error instanceof Error
-          ? error.message
-          : typeof error === "object" && error && "message" in error
-            ? String(error.message)
-            : String(error)
-      }`;
-    }
-    this.historyLoading = false;
-    this.requestUpdate();
+    const sources = historySources(device, entity, this.ha.states);
+    if (
+      openHomeAssistantHistory(
+        this,
+        historyMode(this.config?.history),
+        sources.map((s) => s.entityId),
+        this.history.range,
+      )
+    )
+      return;
+    this.historyFor = { deviceId: device.id, sources };
+    await openHistoryDialog(
+      this.history,
+      this.shadowRoot,
+      this,
+      historyStrings(this.ha).failed,
+      trigger,
+    );
   }
   private moreInfo(entityId: string) {
     this.dispatchEvent(
@@ -586,7 +557,7 @@ export class ApplianceCard extends LitElement {
    */
   private seriesName(entity: ApplianceEntity, series: Series): string {
     const name = this.entityName(entity);
-    if (!series.setpoint || entity.registry.name) return name;
+    if (series.kind !== "step" || entity.registry.name) return name;
     const zones: Record<string, TranslationKey> = {
       oven: "Oven target",
       meatprobe: "Meat probe target",
@@ -594,7 +565,7 @@ export class ApplianceCard extends LitElement {
       freezer: "Freezer target",
       chiller: "Chiller target",
     };
-    const key = series.zone ? zones[series.zone] : undefined;
+    const key = series.tag ? zones[series.tag] : undefined;
     return key ? this.t(key) : `${name} · ${this.t("target")}`;
   }
   /** A door's state in the legend: Home Assistant's label, else Open/Closed. */
@@ -609,167 +580,67 @@ export class ApplianceCard extends LitElement {
     return stateLabel(this.ha, state, value);
   }
   private historyDialog() {
-    const locale = formattingLocale(this.ha);
-    const format = this.ha?.locale?.time_format;
-    const hour12 = format === "12" ? true : format === "24" ? false : undefined;
-    const time = (ms: number, withDay: boolean) => {
-      try {
-        return new Intl.DateTimeFormat(
-          locale,
-          withDay
-            ? { weekday: "short", day: "numeric" }
-            : { hour: "2-digit", minute: "2-digit", hour12 },
-        ).format(ms);
-      } catch {
-        return new Date(ms).toLocaleTimeString();
-      }
-    };
-    const span = (hours: number) =>
-      new Intl.NumberFormat(locale, {
-        style: "unit",
-        unit: hours < 48 ? "hour" : "day",
-        unitDisplay: "short",
-      }).format(hours < 48 ? hours : hours / 24);
-    const number = (value: number, digits: number) =>
-      new Intl.NumberFormat(locale, {
-        minimumFractionDigits: digits,
-        maximumFractionDigits: digits,
-      }).format(value);
-    const reading = (value: number) =>
-      new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value);
+    const t = historyStrings(this.ha);
+    const f = historyFormat(this.ha);
     const target = this.historyFor;
     const device = target
       ? this.selection().devices.find((d) => d.id === target.deviceId)
       : undefined;
     const entity = (id: string) =>
       device?.entities.find((e) => e.entityId === id);
-    const series = this.series;
-    const window = this.window;
-    const at = this.hover;
-    const twoScales = !!series && units(series)[1] !== undefined;
-    const close = () =>
-      this.shadowRoot?.querySelector<HTMLDialogElement>("#history")?.close();
-    return html`<dialog
-      id="history"
-      aria-labelledby="history-title"
-      @click=${this.closeOnBackdrop}
-      @close=${() => {
-        this.historyTicket++;
-        this.historyLoading = false;
-        this.hover = undefined;
-      }}
-    >
-      <div class="top">
-        <h2 class="title" id="history-title">
-          ${this.t("History")}${device ? html`<span class="subtitle">${this.config?.title && !this.isOverview ? this.config.title : device.name}</span>` : nothing}
-        </h2>
-        <button
-          class="icon-btn"
-          data-close-history
-          aria-label=${this.t("Close history")}
-          title=${this.t("Close history")}
-          @click=${close}
-        >
-          ${icon("close")}
-        </button>
-      </div>
-      <div
-        class="history-ranges"
-        role="group"
-        aria-label=${this.t("History ranges")}
-      >
-        ${RANGES.map(
-          (hours) =>
-            html`<button
-              class="history-range"
-              data-range=${hours}
-              aria-pressed=${String(this.range === hours)}
-              @click=${() => void this.loadHistory(hours)}
-            >
-              ${span(hours)}
-            </button>`,
-        )}
-      </div>
-      <div
-        class="history-plot"
-        aria-busy=${String(this.historyLoading)}
-        @pointermove=${(e: PointerEvent) => {
-          const svg = (e.currentTarget as HTMLElement).querySelector("svg");
-          if (!svg || !window) return;
-          this.hover = timeAt(e, svg, window[0], window[1], twoScales);
-          this.requestUpdate();
-        }}
-        @pointerleave=${() => {
-          this.hover = undefined;
-          this.requestUpdate();
-        }}
-      >
-        ${
-          this.historyError
-            ? html`<div class="feedback failed" role="alert">
-                <span class="circ">${icon("warning")}</span
-                ><span class="feedback-title">${this.historyError}</span>
-              </div>`
-            : !series || !window
-              ? html`<p class="history-note" role="status">
-                  ${this.t("Loading history…")}
-                </p>`
-              : series.every((s) => s.points.every(([, v]) => v === undefined))
-                ? html`<p class="history-note">
-                    ${this.t("No history for this period.")}
-                  </p>`
-                : chart(
-                    series,
-                    window[0],
-                    window[1],
-                    at,
-                    {
-                      number,
-                      time,
-                      label: `${this.t("History")}${device ? `: ${device.name}` : ""}`,
-                    },
-                    Math.max(280, this.plotWidth),
-                  )
-        }
-      </div>
-      <p class="history-when" aria-live="polite">
-        ${at === undefined ? this.t("Now") : time(at, false)}
-      </p>
-      <div class="history-legend">
-        ${(series ?? []).map((s) => {
+    const subtitle =
+      this.config?.title && !this.isOverview ? this.config.title : device?.name;
+    const label = `${t.history}${device ? `: ${device.name}` : ""}`;
+    return historyDialog<Series[]>(this.history, {
+      strings: t,
+      format: f,
+      subtitle,
+      isEmpty: (series) =>
+        series.every((s) => s.points.every(([, v]) => v === undefined)),
+      chart: (series, [start, end], hover, width) =>
+        lineChart(
+          series,
+          start,
+          end,
+          hover,
+          { number: f.number, time: f.time, label },
+          { width },
+        ),
+      timeAt: (e, svg, [start, end], series) =>
+        lineChartTimeAt(e, svg, start, end, units(series)[1] !== undefined),
+      legend: (series, at) =>
+        series.map((s) => {
+          const e = entity(s.entityId);
+          const name = e ? this.seriesName(e, s) : s.entityId;
+          if (s.kind === "lane") {
+            const door =
+              at === undefined
+                ? s.states[s.states.length - 1]?.[1]
+                : stateAt(s, at);
+            return {
+              entityId: s.entityId,
+              name,
+              color: s.color,
+              kind: "lane" as const,
+              value:
+                door === undefined ? "—" : this.doorLabel(s.entityId, door),
+            };
+          }
           const value =
             at === undefined
               ? s.points[s.points.length - 1]?.[1]
               : valueAt(s, at);
-          const door =
-            at === undefined
-              ? s.states?.[s.states.length - 1]?.[1]
-              : stateAt(s, at);
-          const e = entity(s.entityId);
-          const name = e ? this.seriesName(e, s) : s.entityId;
-          const shown = s.door
-            ? door === undefined
-              ? "—"
-              : this.doorLabel(s.entityId, door)
-            : value === undefined
-              ? "—"
-              : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`;
-          return html`<button
-            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}${s.door ? " door" : ""}`}
-            data-series=${s.entityId}
-            title=${s.setpoint ? this.t("Setpoint") : ""}
-            @click=${() => {
-              close();
-              this.moreInfo(s.entityId);
-            }}
-          >
-            <span class="swatch" aria-hidden="true"></span>
-            <span class="label">${name}</span>
-            <strong>${shown}</strong>
-          </button>`;
-        })}
-      </div>
-    </dialog>`;
+          return {
+            entityId: s.entityId,
+            name,
+            color: s.color,
+            kind: s.kind,
+            title: s.kind === "step" ? this.t("Setpoint") : undefined,
+            value: value === undefined ? "—" : f.reading(value, s.unit),
+          };
+        }),
+      select: (id) => this.moreInfo(id),
+    });
   }
   private control(device: Appliance, entity: ApplianceEntity): TemplateResult {
     const state = this.ha!.states[entity.entityId];

@@ -1,4 +1,5 @@
 import { colorSchemeSelector } from "./color-schemes";
+import { historyModeOptions, historyStrings } from "lovelace-card-history";
 import { localize, type TranslationKey } from "./localize";
 import { LitElement, css, html, nothing } from "lit";
 import { CARD_KINDS } from "./config";
@@ -277,6 +278,14 @@ class ApplianceEditor extends LitElement {
           @change=${this.change}
         >
           ${option("default", this.t("Default"), String(this.raw.appearance ?? "default"))}${option("bubble", this.t("Bubble"), String(this.raw.appearance ?? "default"))}
+        </select></label
+      >
+      <label
+        >${historyStrings(this.hass).mode}<select
+          name="history"
+          @change=${this.change}
+        >
+          ${historyModeOptions(this.hass).map((o) => option(o.value, o.label, String(this.raw.history ?? "card")))}
         </select></label
       >
       ${this.checkbox("expand", this.t("Expand appliance details"), this.raw.expand !== false)}

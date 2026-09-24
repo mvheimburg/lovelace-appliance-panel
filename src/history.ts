@@ -1,52 +1,17 @@
+import {
+  PALETTE,
+  isTemperature,
+  numeric,
+  type Source,
+} from "lovelace-card-history";
 import type {
   Appliance,
   ApplianceEntity,
-  HassConnection,
   HassEntity,
   HassStates,
   Role,
 } from "./types";
 import { semanticKey } from "./roles";
-
-/** Time (ms) and value; `undefined` breaks the line (unavailable). */
-export type Point = [number, number | undefined];
-export interface Source {
-  entityId: string;
-  /** Palette slot: a setpoint shares its zone's reading colour. */
-  color: number;
-  /** Setpoints are drawn dashed. */
-  setpoint: boolean;
-  /** The zone a setpoint controls, for its "… target" label. */
-  zone?: Zone;
-  /** A door: drawn as a lane of its open spells, not a line. */
-  door?: boolean;
-}
-export interface Series extends Source {
-  unit: string;
-  /** For a door, 1 while open and 0 while shut. */
-  points: Point[];
-  /** A door's own states at the same times, for the legend's readout. */
-  states?: Array<[number, string | undefined]>;
-}
-export const RANGES = [6, 24, 168] as const;
-export type Range = (typeof RANGES)[number];
-/** Number of palette slots in styles.ts (.series-0 … .series-4). */
-export const PALETTE = 5;
-
-/** Home Assistant's compressed, minimal history row. */
-interface Row {
-  s: string;
-  lu?: number;
-  lc?: number;
-}
-
-export const isTemperature = (unit: string) => ["°C", "°F", "K"].includes(unit);
-
-function numeric(state: string): number | undefined {
-  if (["unavailable", "unknown", ""].includes(state)) return undefined;
-  const value = Number(state);
-  return Number.isFinite(value) ? value : undefined;
-}
 
 /** Roles whose value is a countdown, timer or label, not a measurement. */
 const NOT_A_MEASUREMENT: Role[] = [
@@ -61,15 +26,6 @@ const NOT_A_MEASUREMENT: Role[] = [
   "power",
   "connection",
 ];
-
-/** States that mean a door is open; anything else reported means shut. */
-const OPEN = ["on", "open", "ajar"];
-
-/** 1 while a door is open, 0 while shut, `undefined` while unreported. */
-export function doorOpen(state: string): number | undefined {
-  if (["unavailable", "unknown", ""].includes(state)) return undefined;
-  return OPEN.includes(state.toLowerCase()) ? 1 : 0;
-}
 
 /**
  * A reading tile opens the history when it is a numeric sensor measurement or
@@ -152,7 +108,7 @@ export function historySources(
   const color = () => next++ % PALETTE;
   for (const e of readings) {
     const c = color();
-    sources.push({ entityId: e.entityId, color: c, setpoint: false });
+    sources.push({ entityId: e.entityId, color: c });
     const z = zone(e);
     if (z && !colors.has(z)) colors.set(z, c);
   }
@@ -161,11 +117,7 @@ export function historySources(
     !temperature &&
     !readings.some((e) => e.entityId === tapped.entityId)
   )
-    sources.push({
-      entityId: tapped.entityId,
-      color: color(),
-      setpoint: false,
-    });
+    sources.push({ entityId: tapped.entityId, color: color() });
   // One setpoint left over for one reading left over (a fridge setpoint and
   // an ambient reading without a zone in its key): they belong together.
   const zones = new Set(setpoints.map(zone));
@@ -180,105 +132,18 @@ export function historySources(
     sources.push({
       entityId: e.entityId,
       color: colors.get(z) ?? spare ?? color(),
-      setpoint: true,
-      zone: z,
+      kind: "step",
+      tag: z,
     });
   }
   // A reading's own entity first, then the rest in card order.
   if (temperature && !sources.some((s) => s.entityId === tapped.entityId))
-    sources.unshift({
-      entityId: tapped.entityId,
-      color: color(),
-      setpoint: false,
-    });
+    sources.unshift({ entityId: tapped.entityId, color: color() });
   for (const e of doors)
     sources.push({
       entityId: e.entityId,
       color: color(),
-      setpoint: false,
-      door: true,
+      kind: "lane",
     });
   return sources;
-}
-
-/**
- * The history of each source over the last `hours`, from Home Assistant's
- * recorder, ending with the current state.
- */
-export async function loadHistory(
-  connection: HassConnection,
-  sources: Source[],
-  states: HassStates,
-  hours: number,
-  now = Date.now(),
-): Promise<Series[]> {
-  const start = now - hours * 3_600_000;
-  const reply = sources.length
-    ? await connection.sendMessagePromise<Record<string, Row[]>>({
-        type: "history/history_during_period",
-        start_time: new Date(start).toISOString(),
-        entity_ids: [...new Set(sources.map((s) => s.entityId))],
-        minimal_response: true,
-        no_attributes: true,
-        significant_changes_only: false,
-      } as { type: string })
-    : {};
-  return sources.map((source) => {
-    const current = states[source.entityId];
-    const rows: Array<[number, string]> = (reply?.[source.entityId] ?? []).map(
-      (row) => [Math.max(start, (row.lu ?? row.lc ?? 0) * 1000), row.s],
-    );
-    if (current) rows.push([now, current.state]);
-    if (source.door)
-      return {
-        ...source,
-        unit: "",
-        points: rows.map(([t, s]) => [t, doorOpen(s)]),
-        states: rows.map(([t, s]) => [
-          t,
-          doorOpen(s) === undefined ? undefined : s,
-        ]),
-      };
-    return {
-      ...source,
-      unit: String(current?.attributes.unit_of_measurement ?? ""),
-      points: rows.map(([t, s]) => [t, numeric(s)]),
-    };
-  });
-}
-
-/** The value in force at `time`: the last point at or before it. */
-export function valueAt(series: Series, time: number): number | undefined {
-  let value: number | undefined;
-  for (const [t, v] of series.points) {
-    if (t > time) break;
-    value = v;
-  }
-  return value;
-}
-
-/** A door's own state at `time`, `undefined` while it was unreported. */
-export function stateAt(series: Series, time: number): string | undefined {
-  let value: string | undefined;
-  for (const [t, v] of series.states ?? []) {
-    if (t > time) break;
-    value = v;
-  }
-  return value;
-}
-
-/** Round-number ticks covering [min, max], about `count` of them. */
-export function ticks(min: number, max: number, count = 4): number[] {
-  const raw = (max - min) / count || 1;
-  const power = 10 ** Math.floor(Math.log10(raw));
-  const step =
-    [1, 2, 2.5, 5, 10].map((m) => m * power).find((s) => s >= raw) ??
-    10 * power;
-  const out: number[] = [];
-  // From the step at or below min up to the first step at or above max.
-  for (let v = Math.floor(min / step) * step; ; v += step) {
-    out.push(Number(v.toFixed(6)));
-    if (v >= max - 1e-9) break;
-  }
-  return out;
 }

@@ -22,6 +22,19 @@ export const styles = css`
     --ap-pill: var(--secondary-background-color, #f3f2ee);
     --ap-radius: 20px;
     --ap-tile: 16px;
+    /* The shared history view in the card's colours. */
+    --history-series-0: var(--ap-accent);
+    --history-series-1: var(--ap-offline);
+    --history-series-2: var(--ap-ok);
+    --history-series-3: var(--purple-color, #8e44ad);
+    --history-series-4: var(--ap-warn);
+    --history-text: var(--ap-text);
+    --history-muted: var(--ap-muted);
+    --history-surface: var(--ap-surface);
+    --history-pill: var(--ap-pill);
+    --history-accent: var(--ap-accent);
+    --history-tile: var(--ap-tile);
+    --history-radius: 24px;
     --ap-circle: 50%;
   }
   :host([appearance="bubble"]) {
@@ -714,131 +727,6 @@ export const styles = css`
     height: 16px;
     color: var(--ap-muted);
     opacity: 0.7;
-  }
-  /* History: one chart per appliance, the main unit left, another right. */
-  .series-0 {
-    --series: var(--ap-accent);
-  }
-  .series-1 {
-    --series: var(--ap-offline);
-  }
-  .series-2 {
-    --series: var(--ap-ok);
-  }
-  .series-3 {
-    --series: var(--purple-color, #8e44ad);
-  }
-  .series-4 {
-    --series: var(--ap-warn);
-  }
-  #history {
-    width: min(640px, calc(100vw - 24px));
-  }
-  .history-ranges {
-    display: flex;
-    gap: 6px;
-  }
-  .history-range {
-    min-height: 44px;
-    padding: 0 16px;
-    border-radius: 22px;
-    font-size: 14px;
-    font-weight: 600;
-    background: color-mix(in srgb, var(--ap-text) 7%, transparent);
-  }
-  .history-range[aria-pressed="true"] {
-    color: color-mix(in srgb, var(--ap-accent) 65%, var(--ap-text));
-    background: color-mix(in srgb, var(--ap-accent) 24%, transparent);
-    box-shadow: inset 0 0 0 1.5px
-      color-mix(in srgb, var(--ap-accent) 60%, transparent);
-  }
-  .history-plot {
-    min-height: 120px;
-    touch-action: pan-y;
-  }
-  .history-chart {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  .history-chart .grid {
-    stroke: color-mix(in srgb, var(--ap-muted) 22%, transparent);
-  }
-  .history-chart .axis {
-    fill: var(--ap-muted);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-  }
-  .history-chart .line {
-    fill: none;
-    stroke: var(--series);
-    stroke-width: 2;
-    stroke-linejoin: round;
-  }
-  .history-chart .dashed {
-    stroke-dasharray: 5 4;
-  }
-  .history-chart .lane-track {
-    fill: color-mix(in srgb, var(--series) 16%, transparent);
-  }
-  .history-chart .lane-open {
-    fill: var(--series);
-  }
-  .history-chart .cursor {
-    stroke: var(--ap-muted);
-    stroke-dasharray: 3 3;
-  }
-  .history-note {
-    margin: 40px 0;
-    text-align: center;
-    font-size: 14px;
-    color: var(--ap-muted);
-  }
-  .history-when {
-    margin: -6px 8px 0;
-    font-size: 12.5px;
-    color: var(--ap-muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .history-legend {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
-    gap: 6px;
-  }
-  .history-item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 2px 10px;
-    min-height: 44px;
-    padding: 8px 14px;
-    border-radius: var(--ap-tile);
-    background: var(--ap-pill);
-    text-align: left;
-  }
-  .history-item .swatch {
-    grid-row: span 2;
-    width: 16px;
-    height: 0;
-    border-top: 3px solid var(--series);
-  }
-  .history-item.setpoint .swatch {
-    border-top-style: dashed;
-  }
-  .history-item.door .swatch {
-    height: 10px;
-    border-top: 0;
-    border-radius: 2px;
-    background: var(--series);
-  }
-  .history-item .label {
-    font-size: 0.78rem;
-    color: var(--ap-muted);
-    overflow-wrap: anywhere;
-  }
-  .history-item strong {
-    font-size: 1rem;
-    font-variant-numeric: tabular-nums;
   }
   @media (max-width: 400px) {
     ha-card {

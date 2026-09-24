@@ -75,7 +75,16 @@ card's own style from Home Assistant's recorder:
 - **Legend**: each entry opens Home Assistant's more-info dialog for that entity.
 - **Gaps**: spells when a reading was unavailable (for example a meat probe that
   is not plugged in) are left as gaps rather than bridged.
-- A failed request is explained in the dialog; nothing on the card changes.
+- A failed request is explained in the dialog, with **Try again**; nothing on
+  the card changes. Closing the dialog returns focus to the tile you tapped.
+- **Translucent fill** under each reading's line (0.6.0).
+- **History view** (0.6.0, card editor): where a reading opens its history.
+  **In the card** (default) is the chart described here; **Home Assistant's
+  details** opens the standard more-info dialog with its own graph; **Home
+  Assistant's History page** opens `/history` with the appliance's related
+  readings. The history view is shared with our other cards through
+  [lovelace-card-history](https://github.com/mvheimburg/lovelace-card-history),
+  which this card bundles.
 
 A tile opens the history when it is a numeric **sensor** with a unit or state
 class, or a door. These stay plain, by design, to keep the card lean: programme remaining

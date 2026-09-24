@@ -1,6 +1,6 @@
 {
   "name": "lovelace-appliance-panel",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Home Connect Local appliance cards for Home Assistant",
   "type": "module",
   "scripts": {
@@ -25,5 +25,8 @@
     "typescript-eslint": "^8.57.0",
     "vite": "^7.1.0",
     "vitest": "^5.0.1"
+  },
+  "dependencies": {
+    "lovelace-card-history": "github:mvheimburg/lovelace-card-history#v0.1.1"
   }
 }

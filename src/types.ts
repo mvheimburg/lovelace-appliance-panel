@@ -157,6 +157,8 @@ export interface ApplianceConfig {
   color_scheme?: ColorScheme;
   expand: boolean;
   confirm_start: boolean;
+  /** Where a reading's history opens: the card's own view (default) or Home Assistant's. */
+  history?: "card" | "more-info" | "panel";
   [key: string]: unknown;
 }
 export interface ApplianceAction {
