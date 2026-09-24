@@ -304,3 +304,10 @@ their current appearance. Scheme names and the editor label support English and
 Norwegian Bokmål; YAML values remain unchanged in either language. Static
 card-picker metadata remains English because it has no Home Assistant language
 context.
+
+The shared history library is bundled into the card; no additional Lovelace
+resource is needed. Its versioned source package is included in `vendor/`, so a
+standalone checkout can install and build without sibling repositories. History
+range and legend buttons support keyboard navigation. Focus the history time
+slider and use the arrow keys to inspect readings without a pointer; closing
+the dialog returns focus to the reading that opened it.
