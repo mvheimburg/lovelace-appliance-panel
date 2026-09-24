@@ -778,6 +778,12 @@ export const styles = css`
   .history-chart .dashed {
     stroke-dasharray: 5 4;
   }
+  .history-chart .lane-track {
+    fill: color-mix(in srgb, var(--series) 16%, transparent);
+  }
+  .history-chart .lane-open {
+    fill: var(--series);
+  }
   .history-chart .cursor {
     stroke: var(--ap-muted);
     stroke-dasharray: 3 3;
@@ -818,6 +824,12 @@ export const styles = css`
   }
   .history-item.setpoint .swatch {
     border-top-style: dashed;
+  }
+  .history-item.door .swatch {
+    height: 10px;
+    border-top: 0;
+    border-radius: 2px;
+    background: var(--series);
   }
   .history-item .label {
     font-size: 0.78rem;

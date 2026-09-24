@@ -16,7 +16,7 @@ const t$2=globalThis,e$3=t$2.ShadowRoot&&(void 0===t$2.ShadyCSS||t$2.ShadyCSS.na
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const t$1=globalThis,i$2=t=>t,s$1=t$1.trustedTypes,e$1=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r$1=`<${n}>`,l$1=document,c=()=>l$1.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),w=x(2),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l$1.createTreeWalker(l$1,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$1?e$1.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m$1:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p$1):void 0!==u[3]&&(c=p$1):c===p$1?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p$1:'"'===u[3]?$:g):c===$||c===g?c=p$1:c===_||c===m$1?c=v:(c=p$1,n=void 0);const x=c===p$1&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r$1:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H$1}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l$1).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l$1,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l$1.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$2(t).nextSibling;i$2(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}let H$1 = class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}};class I extends H$1{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H$1{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H$1{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t$1.litHtmlPolyfillSupport;B?.(S,k),(t$1.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
+const t$1=globalThis,i$2=t=>t,s$1=t$1.trustedTypes,e$1=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,h="$lit$",o$1=`lit$${Math.random().toFixed(9).slice(2)}$`,n="?"+o$1,r$1=`<${n}>`,l$1=document,c=()=>l$1.createComment(""),a=t=>null===t||"object"!=typeof t&&"function"!=typeof t,u=Array.isArray,d=t=>u(t)||"function"==typeof t?.[Symbol.iterator],f="[ \t\n\f\r]",v=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${f}(?:([^\\s"'>=/]+)(${f}*=${f}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),b=x(1),w=x(2),E=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),C=new WeakMap,P=l$1.createTreeWalker(l$1,129);function V(t,i){if(!u(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$1?e$1.createHTML(i):i}const N=(t,i)=>{const s=t.length-1,e=[];let n,l=2===i?"<svg>":3===i?"<math>":"",c=v;for(let i=0;i<s;i++){const s=t[i];let a,u,d=-1,f=0;for(;f<s.length&&(c.lastIndex=f,u=c.exec(s),null!==u);)f=c.lastIndex,c===v?"!--"===u[1]?c=_:void 0!==u[1]?c=m$1:void 0!==u[2]?(y.test(u[2])&&(n=RegExp("</"+u[2],"g")),c=p$1):void 0!==u[3]&&(c=p$1):c===p$1?">"===u[0]?(c=n??v,d=-1):void 0===u[1]?d=-2:(d=c.lastIndex-u[2].length,a=u[1],c=void 0===u[3]?p$1:'"'===u[3]?$:g):c===$||c===g?c=p$1:c===_||c===m$1?c=v:(c=p$1,n=void 0);const x=c===p$1&&t[i+1].startsWith("/>")?" ":"";l+=c===v?s+r$1:d>=0?(e.push(a),s.slice(0,d)+h+s.slice(d)+o$1+x):s+o$1+(-2===d?i:x);}return [V(t,l+(t[s]||"<?>")+(2===i?"</svg>":3===i?"</math>":"")),e]};class S{constructor({strings:t,_$litType$:i},e){let r;this.parts=[];let l=0,a=0;const u=t.length-1,d=this.parts,[f,v]=N(t,i);if(this.el=S.createElement(f,e),P.currentNode=this.el.content,2===i||3===i){const t=this.el.content.firstChild;t.replaceWith(...t.childNodes);}for(;null!==(r=P.nextNode())&&d.length<u;){if(1===r.nodeType){if(r.hasAttributes())for(const t of r.getAttributeNames())if(t.endsWith(h)){const i=v[a++],s=r.getAttribute(t).split(o$1),e=/([.?@])?(.*)/.exec(i);d.push({type:1,index:l,name:e[2],strings:s,ctor:"."===e[1]?I:"?"===e[1]?L:"@"===e[1]?z:H}),r.removeAttribute(t);}else t.startsWith(o$1)&&(d.push({type:6,index:l}),r.removeAttribute(t));if(y.test(r.tagName)){const t=r.textContent.split(o$1),i=t.length-1;if(i>0){r.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)r.append(t[s],c()),P.nextNode(),d.push({type:2,index:++l});r.append(t[i],c());}}}else if(8===r.nodeType)if(r.data===n)d.push({type:2,index:l});else {let t=-1;for(;-1!==(t=r.data.indexOf(o$1,t+1));)d.push({type:7,index:l}),t+=o$1.length-1;}l++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function M(t,i,s=t,e){if(i===E)return i;let h=void 0!==e?s._$Co?.[e]:s._$Cl;const o=a(i)?void 0:i._$litDirective$;return h?.constructor!==o&&(h?._$AO?.(false),void 0===o?h=void 0:(h=new o(t),h._$AT(t,s,e)),void 0!==e?(s._$Co??=[])[e]=h:s._$Cl=h),void 0!==h&&(i=M(t,h._$AS(t,i.values),h,e)),i}class R{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:i},parts:s}=this._$AD,e=(t?.creationScope??l$1).importNode(i,true);P.currentNode=e;let h=P.nextNode(),o=0,n=0,r=s[0];for(;void 0!==r;){if(o===r.index){let i;2===r.type?i=new k(h,h.nextSibling,this,t):1===r.type?i=new r.ctor(h,r.name,r.strings,this,t):6===r.type&&(i=new Z(h,this,t)),this._$AV.push(i),r=s[++n];}o!==r?.index&&(h=P.nextNode(),o++);}return P.currentNode=l$1,e}p(t){let i=0;for(const s of this._$AV) void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(t,i,s,e){this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cv=e?.isConnected??true;}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t?.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=M(this,t,i),a(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==E&&this._(t):void 0!==t._$litType$?this.$(t):void 0!==t.nodeType?this.T(t):d(t)?this.k(t):this._(t);}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t));}_(t){this._$AH!==A&&a(this._$AH)?this._$AA.nextSibling.data=t:this.T(l$1.createTextNode(t)),this._$AH=t;}$(t){const{values:i,_$litType$:s}=t,e="number"==typeof s?this._$AC(t):(void 0===s.el&&(s.el=S.createElement(V(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===e)this._$AH.p(i);else {const t=new R(e,this),s=t.u(this.options);t.p(i),this.T(s),this._$AH=t;}}_$AC(t){let i=C.get(t.strings);return void 0===i&&C.set(t.strings,i=new S(t)),i}k(t){u(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const h of t)e===i.length?i.push(s=new k(this.O(c()),this.O(c()),this,this.options)):s=i[e],s._$AI(h),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,s){for(this._$AP?.(false,true,s);t!==this._$AB;){const s=i$2(t).nextSibling;i$2(t).remove(),t=s;}}setConnected(t){ void 0===this._$AM&&(this._$Cv=t,this._$AP?.(t));}}class H{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,i,s,e,h){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=h,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}_$AI(t,i=this,s,e){const h=this.strings;let o=false;if(void 0===h)t=M(this,t,i,0),o=!a(t)||t!==this._$AH&&t!==E,o&&(this._$AH=t);else {const e=t;let n,r;for(t=h[0],n=0;n<h.length-1;n++)r=M(this,e[s+n],i,n),r===E&&(r=this._$AH[n]),o||=!a(r)||r!==this._$AH[n],r===A?t=A:t!==A&&(t+=(r??"")+h[n+1]),this._$AH[n]=r;}o&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"");}}class I extends H{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}class L extends H{constructor(){super(...arguments),this.type=4;}j(t){this.element.toggleAttribute(this.name,!!t&&t!==A);}}class z extends H{constructor(t,i,s,e,h){super(t,i,s,e,h),this.type=5;}_$AI(t,i=this){if((t=M(this,t,i,0)??A)===E)return;const s=this._$AH,e=t===A&&s!==A||t.capture!==s.capture||t.once!==s.once||t.passive!==s.passive,h=t!==A&&(s===A||e);e&&this.element.removeEventListener(this.name,this,s),h&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){M(this,t);}}const B=t$1.litHtmlPolyfillSupport;B?.(S,k),(t$1.litHtmlVersions??=[]).push("3.3.3");const D=(t,i,s)=>{const e=s?.renderBefore??i;let h=e._$litPart$;if(void 0===h){const t=s?.renderBefore??null;e._$litPart$=h=new k(i.insertBefore(c(),t),t,void 0,s??{});}return h._$AI(t),h};
 
 /**
  * @license
@@ -2208,6 +2208,12 @@ const styles = i$4 `
   .history-chart .dashed {
     stroke-dasharray: 5 4;
   }
+  .history-chart .lane-track {
+    fill: color-mix(in srgb, var(--series) 16%, transparent);
+  }
+  .history-chart .lane-open {
+    fill: var(--series);
+  }
   .history-chart .cursor {
     stroke: var(--ap-muted);
     stroke-dasharray: 3 3;
@@ -2248,6 +2254,12 @@ const styles = i$4 `
   }
   .history-item.setpoint .swatch {
     border-top-style: dashed;
+  }
+  .history-item.door .swatch {
+    height: 10px;
+    border-top: 0;
+    border-radius: 2px;
+    background: var(--series);
   }
   .history-item .label {
     font-size: 0.78rem;
@@ -2335,11 +2347,23 @@ const NOT_A_MEASUREMENT = [
     "power",
     "connection",
 ];
+/** States that mean a door is open; anything else reported means shut. */
+const OPEN = ["on", "open", "ajar"];
+/** 1 while a door is open, 0 while shut, `undefined` while unreported. */
+function doorOpen(state) {
+    if (["unavailable", "unknown", ""].includes(state))
+        return undefined;
+    return OPEN.includes(state.toLowerCase()) ? 1 : 0;
+}
 /**
- * A reading tile opens the history when it is a numeric sensor measurement.
- * Programme timing, progress, labels, on/off states and timestamps do not.
+ * A reading tile opens the history when it is a numeric sensor measurement or
+ * a door. Programme timing, progress, labels, other on/off states and
+ * timestamps do not.
  */
 function hasHistory(entity, state) {
+    if (entity.role === "door")
+        return (!!state &&
+            ["binary_sensor.", "sensor."].some((d) => entity.entityId.startsWith(d)));
     if (!entity.entityId.startsWith("sensor.") || !state)
         return false;
     if (NOT_A_MEASUREMENT.includes(entity.role))
@@ -2369,8 +2393,8 @@ function zone(entity) {
 }
 /**
  * The readings drawn together for one appliance: its current temperatures,
- * the matching setpoints (dashed, in the reading's colour) and the reading
- * that was tapped when it is something else.
+ * the matching setpoints (dashed, in the reading's colour), the reading that
+ * was tapped when it is something else, and its doors as lanes below.
  */
 function historySources(device, tapped, states) {
     const unit = (e) => String(states[e.entityId]?.attributes.unit_of_measurement ?? "");
@@ -2379,7 +2403,11 @@ function historySources(device, tapped, states) {
     const setpoints = device.entities.filter((e) => ["cooling_setpoint", "target_temperature"].includes(e.role) &&
         e.entityId.startsWith("number.") &&
         !!states[e.entityId]);
-    const temperature = tapped.role === "current_temperature" || isTemperature(unit(tapped));
+    const doors = device.entities.filter((e) => e.role === "door" &&
+        (e.entityId === tapped.entityId || hasHistory(e, states[e.entityId])));
+    const door = tapped.role === "door";
+    const temperature = !door &&
+        (tapped.role === "current_temperature" || isTemperature(unit(tapped)));
     const sources = [];
     const colors = new Map();
     let next = 0;
@@ -2391,7 +2419,9 @@ function historySources(device, tapped, states) {
         if (z && !colors.has(z))
             colors.set(z, c);
     }
-    if (!temperature && !readings.some((e) => e.entityId === tapped.entityId))
+    if (!door &&
+        !temperature &&
+        !readings.some((e) => e.entityId === tapped.entityId))
         sources.push({
             entityId: tapped.entityId,
             color: color(),
@@ -2421,6 +2451,13 @@ function historySources(device, tapped, states) {
             color: color(),
             setpoint: false,
         });
+    for (const e of doors)
+        sources.push({
+            entityId: e.entityId,
+            color: color(),
+            setpoint: false,
+            door: true,
+        });
     return sources;
 }
 /**
@@ -2441,16 +2478,23 @@ async function loadHistory(connection, sources, states, hours, now = Date.now())
         : {};
     return sources.map((source) => {
         const current = states[source.entityId];
-        const points = (reply?.[source.entityId] ?? []).map((row) => [
-            Math.max(start, (row.lu ?? row.lc ?? 0) * 1000),
-            numeric(row.s),
-        ]);
+        const rows = (reply?.[source.entityId] ?? []).map((row) => [Math.max(start, (row.lu ?? row.lc ?? 0) * 1000), row.s]);
         if (current)
-            points.push([now, numeric(current.state)]);
+            rows.push([now, current.state]);
+        if (source.door)
+            return {
+                ...source,
+                unit: "",
+                points: rows.map(([t, s]) => [t, doorOpen(s)]),
+                states: rows.map(([t, s]) => [
+                    t,
+                    doorOpen(s) === undefined ? undefined : s,
+                ]),
+            };
         return {
             ...source,
             unit: String(current?.attributes.unit_of_measurement ?? ""),
-            points,
+            points: rows.map(([t, s]) => [t, numeric(s)]),
         };
     });
 }
@@ -2458,6 +2502,16 @@ async function loadHistory(connection, sources, states, hours, now = Date.now())
 function valueAt(series, time) {
     let value;
     for (const [t, v] of series.points) {
+        if (t > time)
+            break;
+        value = v;
+    }
+    return value;
+}
+/** A door's own state at `time`, `undefined` while it was unreported. */
+function stateAt(series, time) {
+    let value;
+    for (const [t, v] of series.states ?? []) {
         if (t > time)
             break;
         value = v;
@@ -2480,9 +2534,11 @@ function ticks(min, max, count = 4) {
     return out;
 }
 
-const LEFT = 44, TOP = 24, BOTTOM = 196, H = 230, 
+const LEFT = 44, TOP = 24, PLOT_BOTTOM = 196, 
 /** Room right of the plot for the second scale. */
-GUTTER = 44;
+GUTTER = 44, 
+/** One door's lane below the plot, and the gap above the first. */
+LANE = 14, LANE_GAP = 6;
 /**
  * Unbroken spells of a series. With `hold`, a value lasts until the next
  * change, so the spell runs on to the moment it became unavailable.
@@ -2514,17 +2570,37 @@ function scale(series, pad) {
     const marks = ticks(lo - pad, hi + pad);
     return { marks, min: marks[0], max: marks[marks.length - 1] };
 }
+/**
+ * A door's spells until its next change: open, shut, or unreported (`undefined`),
+ * clipped to [start, end].
+ */
+function spells(points, end) {
+    return points.map(([t, v], i) => ({
+        from: t,
+        to: Math.min(end, points[i + 1]?.[0] ?? end),
+        value: v,
+    }));
+}
 /** The left unit: temperatures when there are any, else the first reading's. */
-function units(series) {
+function units(all) {
+    const series = all.filter((s) => !s.door);
     const left = series.find((s) => isTemperature(s.unit))?.unit ?? series[0]?.unit ?? "";
     return [left, series.find((s) => s.unit !== left)?.unit];
 }
 /**
  * One chart of an appliance's readings: the left scale in the main unit
- * (temperatures), a right-hand scale for a reading in another unit.
- * Unavailable spells are gaps; setpoints are dashed.
+ * (temperatures), a right-hand scale for a reading in another unit, and a
+ * lane per door below, filled while it was open. Unavailable spells are gaps;
+ * setpoints are dashed.
  */
-function chart(series, start, end, hover, text, W = 600) {
+function chart(all, start, end, hover, text, W = 600) {
+    const series = all.filter((s) => !s.door);
+    const doors = all.filter((s) => s.door);
+    // Without readings the chart is just its door lanes.
+    const BOTTOM = series.length ? PLOT_BOTTOM : TOP - LANE_GAP;
+    const LANES = doors.length ? LANE_GAP + doors.length * LANE : 0;
+    const END = BOTTOM + LANES;
+    const H = END + 34;
     const [leftUnit, rightUnit] = units(series);
     const RIGHT = W - (rightUnit === undefined ? 12 : GUTTER);
     const left = series.filter((s) => s.unit === leftUnit);
@@ -2579,6 +2655,15 @@ function chart(series, start, end, hover, text, W = 600) {
     // As many decimals as the tick steps need (2.5 steps show 57.5, not 58).
     const digits = (sc) => Math.min(2, Math.max(...sc.marks.map((v) => String(v).split(".")[1]?.length ?? 0)));
     const line = (s, sc) => w `<path class=${`line series-${s.color}${s.setpoint ? " dashed" : ""}`} data-entity=${s.entityId} d=${path(s, sc)}></path>`;
+    const lane = (s, i) => {
+        const top = BOTTOM + LANE_GAP + i * LANE;
+        const known = spells(s.points, end).filter((p) => p.value !== undefined);
+        const rect = (p, cls) => w `<rect class=${cls} x=${x(p.from).toFixed(1)} y=${top} width=${Math.max(1, x(p.to) - x(p.from)).toFixed(1)} height=${LANE - 4} rx="2"></rect>`;
+        return w `<g class=${`lane series-${s.color}`} data-entity=${s.entityId}>
+      ${known.map((p) => rect(p, "lane-track"))}
+      ${known.filter((p) => p.value === 1).map((p) => rect(p, "lane-open"))}
+    </g>`;
+    };
     const grid = l ?? r;
     return w `<svg class="history-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label=${text.label}>
     <title>${text.label}</title>
@@ -2595,13 +2680,14 @@ function chart(series, start, end, hover, text, W = 600) {
     ${r && rightUnit
         ? w `<text class="axis unit" x=${W - 4} y="12" text-anchor="end">${rightUnit}</text>`
         : A}
-    ${xTicks.map((t) => w `<line class="grid" x1=${x(t)} x2=${x(t)} y1=${TOP} y2=${BOTTOM}></line>
-        <text class="axis" x=${x(t)} y=${BOTTOM + 18} text-anchor="middle">${text.time(t, every >= 24)}</text>`)}
+    ${xTicks.map((t) => w `<line class="grid" x1=${x(t)} x2=${x(t)} y1=${TOP} y2=${END}></line>
+        <text class="axis" x=${x(t)} y=${END + 18} text-anchor="middle">${text.time(t, every >= 24)}</text>`)}
     ${l ? left.map((s) => line(s, l)) : A}
     ${r ? right.map((s) => line(s, r)) : A}
+    ${doors.map(lane)}
     ${hover === undefined
         ? A
-        : w `<line class="cursor" x1=${x(hover)} x2=${x(hover)} y1=${TOP} y2=${BOTTOM}></line>`}
+        : w `<line class="cursor" x1=${x(hover)} x2=${x(hover)} y1=${TOP} y2=${END}></line>`}
   </svg>`;
 }
 /** The time under a pointer over the chart. */
@@ -3120,6 +3206,19 @@ class ApplianceCard extends i$1 {
         const key = series.zone ? zones[series.zone] : undefined;
         return key ? this.t(key) : `${name} · ${this.t("target")}`;
     }
+    /** A door's state in the legend: Home Assistant's label, else Open/Closed. */
+    doorLabel(entityId, value) {
+        const state = this.ha?.states[entityId];
+        if (!state)
+            return value;
+        if (entityId.startsWith("binary_sensor.")) {
+            const formatted = this.ha?.formatEntityState?.(state, value);
+            if (formatted && formatted !== value)
+                return formatted;
+            return this.t(value === "on" ? "Open" : "Closed");
+        }
+        return stateLabel(this.ha, state, value);
+    }
     historyDialog() {
         const locale = formattingLocale(this.ha);
         const format = this.ha?.locale?.time_format;
@@ -3234,10 +3333,20 @@ class ApplianceCard extends i$1 {
             const value = at === undefined
                 ? s.points[s.points.length - 1]?.[1]
                 : valueAt(s, at);
+            const door = at === undefined
+                ? s.states?.[s.states.length - 1]?.[1]
+                : stateAt(s, at);
             const e = entity(s.entityId);
             const name = e ? this.seriesName(e, s) : s.entityId;
+            const shown = s.door
+                ? door === undefined
+                    ? "—"
+                    : this.doorLabel(s.entityId, door)
+                : value === undefined
+                    ? "—"
+                    : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`;
             return b `<button
-            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}`}
+            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}${s.door ? " door" : ""}`}
             data-series=${s.entityId}
             title=${s.setpoint ? this.t("Setpoint") : ""}
             @click=${() => {
@@ -3247,9 +3356,7 @@ class ApplianceCard extends i$1 {
           >
             <span class="swatch" aria-hidden="true"></span>
             <span class="label">${name}</span>
-            <strong
-              >${value === undefined ? "—" : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`}</strong
-            >
+            <strong>${shown}</strong>
           </button>`;
         })}
       </div>

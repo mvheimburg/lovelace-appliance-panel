@@ -21,6 +21,7 @@ import {
   hasHistory,
   historySources,
   loadHistory,
+  stateAt,
   valueAt,
   type Range,
   type Series,
@@ -596,6 +597,17 @@ export class ApplianceCard extends LitElement {
     const key = series.zone ? zones[series.zone] : undefined;
     return key ? this.t(key) : `${name} · ${this.t("target")}`;
   }
+  /** A door's state in the legend: Home Assistant's label, else Open/Closed. */
+  private doorLabel(entityId: string, value: string): string {
+    const state = this.ha?.states[entityId];
+    if (!state) return value;
+    if (entityId.startsWith("binary_sensor.")) {
+      const formatted = this.ha?.formatEntityState?.(state, value);
+      if (formatted && formatted !== value) return formatted;
+      return this.t(value === "on" ? "Open" : "Closed");
+    }
+    return stateLabel(this.ha, state, value);
+  }
   private historyDialog() {
     const locale = formattingLocale(this.ha);
     const format = this.ha?.locale?.time_format;
@@ -729,10 +741,21 @@ export class ApplianceCard extends LitElement {
             at === undefined
               ? s.points[s.points.length - 1]?.[1]
               : valueAt(s, at);
+          const door =
+            at === undefined
+              ? s.states?.[s.states.length - 1]?.[1]
+              : stateAt(s, at);
           const e = entity(s.entityId);
           const name = e ? this.seriesName(e, s) : s.entityId;
+          const shown = s.door
+            ? door === undefined
+              ? "—"
+              : this.doorLabel(s.entityId, door)
+            : value === undefined
+              ? "—"
+              : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`;
           return html`<button
-            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}`}
+            class=${`history-item series-${s.color}${s.setpoint ? " setpoint" : ""}${s.door ? " door" : ""}`}
             data-series=${s.entityId}
             title=${s.setpoint ? this.t("Setpoint") : ""}
             @click=${() => {
@@ -742,9 +765,7 @@ export class ApplianceCard extends LitElement {
           >
             <span class="swatch" aria-hidden="true"></span>
             <span class="label">${name}</span>
-            <strong
-              >${value === undefined ? "—" : `${reading(value)}${s.unit ? ` ${s.unit}` : ""}`}</strong
-            >
+            <strong>${shown}</strong>
           </button>`;
         })}
       </div>

@@ -18,10 +18,15 @@ export interface Source {
   setpoint: boolean;
   /** The zone a setpoint controls, for its "… target" label. */
   zone?: Zone;
+  /** A door: drawn as a lane of its open spells, not a line. */
+  door?: boolean;
 }
 export interface Series extends Source {
   unit: string;
+  /** For a door, 1 while open and 0 while shut. */
   points: Point[];
+  /** A door's own states at the same times, for the legend's readout. */
+  states?: Array<[number, string | undefined]>;
 }
 export const RANGES = [6, 24, 168] as const;
 export type Range = (typeof RANGES)[number];
@@ -57,14 +62,29 @@ const NOT_A_MEASUREMENT: Role[] = [
   "connection",
 ];
 
+/** States that mean a door is open; anything else reported means shut. */
+const OPEN = ["on", "open", "ajar"];
+
+/** 1 while a door is open, 0 while shut, `undefined` while unreported. */
+export function doorOpen(state: string): number | undefined {
+  if (["unavailable", "unknown", ""].includes(state)) return undefined;
+  return OPEN.includes(state.toLowerCase()) ? 1 : 0;
+}
+
 /**
- * A reading tile opens the history when it is a numeric sensor measurement.
- * Programme timing, progress, labels, on/off states and timestamps do not.
+ * A reading tile opens the history when it is a numeric sensor measurement or
+ * a door. Programme timing, progress, labels, other on/off states and
+ * timestamps do not.
  */
 export function hasHistory(
   entity: ApplianceEntity,
   state: HassEntity | undefined,
 ): boolean {
+  if (entity.role === "door")
+    return (
+      !!state &&
+      ["binary_sensor.", "sensor."].some((d) => entity.entityId.startsWith(d))
+    );
   if (!entity.entityId.startsWith("sensor.") || !state) return false;
   if (NOT_A_MEASUREMENT.includes(entity.role)) return false;
   const attributes = state.attributes;
@@ -96,8 +116,8 @@ function zone(entity: ApplianceEntity): Zone {
 
 /**
  * The readings drawn together for one appliance: its current temperatures,
- * the matching setpoints (dashed, in the reading's colour) and the reading
- * that was tapped when it is something else.
+ * the matching setpoints (dashed, in the reading's colour), the reading that
+ * was tapped when it is something else, and its doors as lanes below.
  */
 export function historySources(
   device: Appliance,
@@ -117,8 +137,15 @@ export function historySources(
       e.entityId.startsWith("number.") &&
       !!states[e.entityId],
   );
+  const doors = device.entities.filter(
+    (e) =>
+      e.role === "door" &&
+      (e.entityId === tapped.entityId || hasHistory(e, states[e.entityId])),
+  );
+  const door = tapped.role === "door";
   const temperature =
-    tapped.role === "current_temperature" || isTemperature(unit(tapped));
+    !door &&
+    (tapped.role === "current_temperature" || isTemperature(unit(tapped)));
   const sources: Source[] = [];
   const colors = new Map<string, number>();
   let next = 0;
@@ -129,7 +156,11 @@ export function historySources(
     const z = zone(e);
     if (z && !colors.has(z)) colors.set(z, c);
   }
-  if (!temperature && !readings.some((e) => e.entityId === tapped.entityId))
+  if (
+    !door &&
+    !temperature &&
+    !readings.some((e) => e.entityId === tapped.entityId)
+  )
     sources.push({
       entityId: tapped.entityId,
       color: color(),
@@ -160,6 +191,13 @@ export function historySources(
       color: color(),
       setpoint: false,
     });
+  for (const e of doors)
+    sources.push({
+      entityId: e.entityId,
+      color: color(),
+      setpoint: false,
+      door: true,
+    });
   return sources;
 }
 
@@ -187,15 +225,24 @@ export async function loadHistory(
     : {};
   return sources.map((source) => {
     const current = states[source.entityId];
-    const points: Point[] = (reply?.[source.entityId] ?? []).map((row) => [
-      Math.max(start, (row.lu ?? row.lc ?? 0) * 1000),
-      numeric(row.s),
-    ]);
-    if (current) points.push([now, numeric(current.state)]);
+    const rows: Array<[number, string]> = (reply?.[source.entityId] ?? []).map(
+      (row) => [Math.max(start, (row.lu ?? row.lc ?? 0) * 1000), row.s],
+    );
+    if (current) rows.push([now, current.state]);
+    if (source.door)
+      return {
+        ...source,
+        unit: "",
+        points: rows.map(([t, s]) => [t, doorOpen(s)]),
+        states: rows.map(([t, s]) => [
+          t,
+          doorOpen(s) === undefined ? undefined : s,
+        ]),
+      };
     return {
       ...source,
       unit: String(current?.attributes.unit_of_measurement ?? ""),
-      points,
+      points: rows.map(([t, s]) => [t, numeric(s)]),
     };
   });
 }
@@ -204,6 +251,16 @@ export async function loadHistory(
 export function valueAt(series: Series, time: number): number | undefined {
   let value: number | undefined;
   for (const [t, v] of series.points) {
+    if (t > time) break;
+    value = v;
+  }
+  return value;
+}
+
+/** A door's own state at `time`, `undefined` while it was unreported. */
+export function stateAt(series: Series, time: number): string | undefined {
+  let value: string | undefined;
+  for (const [t, v] of series.states ?? []) {
     if (t > time) break;
     value = v;
   }

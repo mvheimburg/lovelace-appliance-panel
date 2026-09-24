@@ -63,6 +63,11 @@ card's own style from Home Assistant's recorder:
   is drawn as steps. When the tapped reading is something else (for example a
   humidity sensor or a care countdown with a unit), it is added with its own
   **right-hand scale** in its unit.
+- **Doors**: from 0.5.0 a door tile opens the history too. Each door of the
+  appliance gets a lane under the chart, filled while the door was open, next
+  to the appliance's temperatures and setpoints, so you can see a fridge warm
+  up after the door was left open. The legend reads _Open_ or _Closed_ at the
+  pointer. An appliance with a door and no temperatures shows just the lanes.
 - **Ranges**: 6 h, 24 h and 7 d. Move the pointer (or drag a finger) over the
   chart to read every value at that moment in the legend; the time is shown
   above it, following Home Assistant's 12/24-hour setting and your regional
@@ -73,9 +78,9 @@ card's own style from Home Assistant's recorder:
 - A failed request is explained in the dialog; nothing on the card changes.
 
 A tile opens the history when it is a numeric **sensor** with a unit or state
-class. These stay plain, by design, to keep the card lean: programme remaining
+class, or a door. These stay plain, by design, to keep the card lean: programme remaining
 and elapsed time, delayed-start countdowns, progress, programme and phase names,
-operation state, on/off and door states, enum sensors such as salt or water tank
+operation state, other on/off states, enum sensors such as salt or water tank
 levels, and timestamps. Controls stay controls: temperature steppers, chips,
 selects and switches never become history buttons; their values appear in the
 chart as setpoints instead.

@@ -9,6 +9,7 @@ const HOUR = 3_600_000;
 const OVEN = "sensor.oven_sensor_oven_current_temperature";
 const PROBE = "sensor.oven_sensor_oven_current_meatprobe_temperature";
 const TARGET = "number.oven_number_oven_setpoint_temperature";
+const DOOR = "binary_sensor.fridge_binary_sensor_fridge_door_state";
 
 /** The fixture plus measured temperatures, with a recorder behind them. */
 async function mount(
@@ -92,6 +93,13 @@ async function mount(
       { s: "-18.5", lu: s(now - 20 * HOUR) },
     ],
     "sensor.fridge_sensor_humidity": [{ s: "58", lu: s(now - 20 * HOUR) }],
+    // Open 20 to 16 hours ago, unreported 12 to 10 hours ago, shut since.
+    [DOOR]: [
+      { s: "on", lu: s(now - 20 * HOUR) },
+      { s: "off", lu: s(now - 16 * HOUR) },
+      { s: "unavailable", lu: s(now - 12 * HOUR) },
+      { s: "off", lu: s(now - 10 * HOUR) },
+    ],
   };
   const history = vi.fn(async (m: Record<string, unknown>) => {
     if (options.fail) throw options.fail;
@@ -235,6 +243,7 @@ test("a reading in another unit gets the right-hand scale; setpoints share their
     "Humidity 61 %",
     "Fridge target 4 °C",
     "Freezer target -18 °C",
+    "Fridge door state Closed",
   ]);
   expect(
     Array.from(root.querySelectorAll(".history-chart .unit")).map(
@@ -265,13 +274,13 @@ test("a setpoint the user renamed keeps its name; Bokmål target labels", async 
     (e) => e.entity_id === "number.fridge_number_setpoint_freezer",
   )!.name = "Dypfryser";
   await open(root, "sensor.fridge_sensor_temperature_ambient");
-  expect(legend(root).slice(-2)).toEqual([
+  expect(legend(root).slice(-3, -1)).toEqual([
     "Kjøleskap, ønsket 4 °C",
     "Dypfryser −18 °C",
   ]);
 });
 
-test("timers, labels, doors and controls do not open a history", async () => {
+test("timers, labels and controls do not open a history", async () => {
   const { card, root, hass } = await mount();
   hass.states["sensor.oven_sensor_operation_state"].state = "run";
   card.hass = { ...hass };
@@ -335,4 +344,101 @@ test("choosing another appliance closes the history and drops a late reply", asy
   await settle();
   expect(root.querySelector<HTMLDialogElement>("#history")!.open).toBe(false);
   expect(legend(root)).toEqual([]);
+});
+
+const last = (items: string[]) => items[items.length - 1];
+
+/** Move the pointer to `hoursAgo` on a one-scale chart of the last 24 hours. */
+async function hover(
+  card: { updateComplete: Promise<boolean> },
+  root: ShadowRoot,
+  hoursAgo: number,
+) {
+  const svg = root.querySelector<SVGSVGElement>(".history-chart")!;
+  const box = svg.getBoundingClientRect();
+  const width = svg.viewBox.baseVal.width;
+  const ratio = (24 - hoursAgo) / 24;
+  root.querySelector(".history-plot")!.dispatchEvent(
+    new PointerEvent("pointermove", {
+      clientX: box.left + ((44 + (width - 56) * ratio) / width) * box.width,
+    }),
+  );
+  await card.updateComplete;
+}
+
+test("a door opens its appliance's history with the door as a lane of open spells", async () => {
+  const { card, root, history } = await mount("refrigerator-card", "fridge");
+  const tile = root.querySelector(`[data-reading="${DOOR}"]`)!;
+  expect(tile.tagName).toBe("BUTTON");
+  await open(root, DOOR);
+  expect(history.mock.calls[0][0].entity_ids).toEqual([
+    "sensor.fridge_sensor_temperature_memory_freezer",
+    "sensor.fridge_sensor_temperature_ambient",
+    "number.fridge_number_fridge_temperature",
+    "number.fridge_number_setpoint_freezer",
+    DOOR,
+  ]);
+  expect(legend(root)).toEqual([
+    "Freezer temperature -17.5 °C",
+    "Fridge temperature 4.6 °C",
+    "Fridge target 4 °C",
+    "Freezer target -18 °C",
+    "Fridge door state Closed",
+  ]);
+  const lane = root.querySelector(
+    `.history-chart .lane[data-entity="${DOOR}"]`,
+  )!;
+  expect(lane).not.toBeNull();
+  // Two reported spells, split by the unavailable one; one of them open.
+  expect(lane.querySelectorAll(".lane-track")).toHaveLength(4);
+  expect(lane.querySelectorAll(".lane-open")).toHaveLength(1);
+  // A door is not a line and brings no scale of its own.
+  expect(
+    root.querySelector(`.history-chart path[data-entity="${DOOR}"]`),
+  ).toBeNull();
+  expect(
+    Array.from(root.querySelectorAll(".history-chart .unit")).map(
+      (t) => t.textContent,
+    ),
+  ).toEqual(["°C"]);
+
+  await hover(card, root, 18);
+  expect(last(legend(root))).toBe("Fridge door state Open");
+  await hover(card, root, 11);
+  expect(last(legend(root))).toBe("Fridge door state —");
+  await hover(card, root, 2);
+  expect(last(legend(root))).toBe("Fridge door state Closed");
+
+  const info: string[] = [];
+  card.addEventListener("hass-more-info", (e) =>
+    info.push((e as CustomEvent).detail.entityId),
+  );
+  root.querySelector<HTMLButtonElement>(`[data-series="${DOOR}"]`)!.click();
+  expect(info).toEqual([DOOR]);
+});
+
+test("a temperature's history shows the doors too", async () => {
+  const { root } = await mount("refrigerator-card", "fridge");
+  await open(root, "sensor.fridge_sensor_temperature_memory_freezer");
+  expect(last(legend(root))).toBe("Fridge door state Closed");
+  expect(
+    root.querySelector(`.history-chart .lane[data-entity="${DOOR}"]`),
+  ).not.toBeNull();
+});
+
+test("an appliance with only a door draws just its lane; Bokmål door states", async () => {
+  const { root, add, card, hass } = await mount("dishwasher-card", "dish", {
+    language: "nb",
+  });
+  const door = add("dish", "sensor", "sensor_door_state", "open", {
+    device_class: "enum",
+    options: ["open", "closed", "locked"],
+  });
+  card.hass = { ...hass };
+  await settle();
+  await open(root, door);
+  expect(legend(root)).toEqual([expect.stringMatching(/ Åpen$/)]);
+  expect(root.querySelector(".history-chart .unit")).toBeNull();
+  expect(root.querySelectorAll(".history-chart .lane")).toHaveLength(1);
+  expect(root.querySelector(".history-chart path.line")).toBeNull();
 });

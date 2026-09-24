@@ -3,10 +3,12 @@ import { isTemperature, ticks, type Point, type Series } from "./history";
 
 const LEFT = 44,
   TOP = 24,
-  BOTTOM = 196,
-  H = 230,
+  PLOT_BOTTOM = 196,
   /** Room right of the plot for the second scale. */
-  GUTTER = 44;
+  GUTTER = 44,
+  /** One door's lane below the plot, and the gap above the first. */
+  LANE = 14,
+  LANE_GAP = 6;
 
 export interface ChartText {
   number: (value: number, digits: number) => string;
@@ -45,8 +47,21 @@ function scale(series: Series[], pad: number) {
   return { marks, min: marks[0], max: marks[marks.length - 1] };
 }
 
+/**
+ * A door's spells until its next change: open, shut, or unreported (`undefined`),
+ * clipped to [start, end].
+ */
+function spells(points: Point[], end: number) {
+  return points.map(([t, v], i) => ({
+    from: t,
+    to: Math.min(end, points[i + 1]?.[0] ?? end),
+    value: v,
+  }));
+}
+
 /** The left unit: temperatures when there are any, else the first reading's. */
-export function units(series: Series[]): [string, string | undefined] {
+export function units(all: Series[]): [string, string | undefined] {
+  const series = all.filter((s) => !s.door);
   const left =
     series.find((s) => isTemperature(s.unit))?.unit ?? series[0]?.unit ?? "";
   return [left, series.find((s) => s.unit !== left)?.unit];
@@ -54,17 +69,25 @@ export function units(series: Series[]): [string, string | undefined] {
 
 /**
  * One chart of an appliance's readings: the left scale in the main unit
- * (temperatures), a right-hand scale for a reading in another unit.
- * Unavailable spells are gaps; setpoints are dashed.
+ * (temperatures), a right-hand scale for a reading in another unit, and a
+ * lane per door below, filled while it was open. Unavailable spells are gaps;
+ * setpoints are dashed.
  */
 export function chart(
-  series: Series[],
+  all: Series[],
   start: number,
   end: number,
   hover: number | undefined,
   text: ChartText,
   W = 600,
 ) {
+  const series = all.filter((s) => !s.door);
+  const doors = all.filter((s) => s.door);
+  // Without readings the chart is just its door lanes.
+  const BOTTOM = series.length ? PLOT_BOTTOM : TOP - LANE_GAP;
+  const LANES = doors.length ? LANE_GAP + doors.length * LANE : 0;
+  const END = BOTTOM + LANES;
+  const H = END + 34;
   const [leftUnit, rightUnit] = units(series);
   const RIGHT = W - (rightUnit === undefined ? 12 : GUTTER);
   const left = series.filter((s) => s.unit === leftUnit);
@@ -137,6 +160,16 @@ export function chart(
     );
   const line = (s: Series, sc: { min: number; max: number }) =>
     svg`<path class=${`line series-${s.color}${s.setpoint ? " dashed" : ""}`} data-entity=${s.entityId} d=${path(s, sc)}></path>`;
+  const lane = (s: Series, i: number) => {
+    const top = BOTTOM + LANE_GAP + i * LANE;
+    const known = spells(s.points, end).filter((p) => p.value !== undefined);
+    const rect = (p: { from: number; to: number }, cls: string) =>
+      svg`<rect class=${cls} x=${x(p.from).toFixed(1)} y=${top} width=${Math.max(1, x(p.to) - x(p.from)).toFixed(1)} height=${LANE - 4} rx="2"></rect>`;
+    return svg`<g class=${`lane series-${s.color}`} data-entity=${s.entityId}>
+      ${known.map((p) => rect(p, "lane-track"))}
+      ${known.filter((p) => p.value === 1).map((p) => rect(p, "lane-open"))}
+    </g>`;
+  };
   const grid = l ?? r;
   return svg`<svg class="history-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label=${text.label}>
     <title>${text.label}</title>
@@ -172,15 +205,16 @@ export function chart(
     }
     ${xTicks.map(
       (t) =>
-        svg`<line class="grid" x1=${x(t)} x2=${x(t)} y1=${TOP} y2=${BOTTOM}></line>
-        <text class="axis" x=${x(t)} y=${BOTTOM + 18} text-anchor="middle">${text.time(t, every >= 24)}</text>`,
+        svg`<line class="grid" x1=${x(t)} x2=${x(t)} y1=${TOP} y2=${END}></line>
+        <text class="axis" x=${x(t)} y=${END + 18} text-anchor="middle">${text.time(t, every >= 24)}</text>`,
     )}
     ${l ? left.map((s) => line(s, l)) : nothing}
     ${r ? right.map((s) => line(s, r)) : nothing}
+    ${doors.map(lane)}
     ${
       hover === undefined
         ? nothing
-        : svg`<line class="cursor" x1=${x(hover)} x2=${x(hover)} y1=${TOP} y2=${BOTTOM}></line>`
+        : svg`<line class="cursor" x1=${x(hover)} x2=${x(hover)} y1=${TOP} y2=${END}></line>`
     }
   </svg>`;
 }
